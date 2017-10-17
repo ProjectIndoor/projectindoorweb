@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+    <!-- Leaflet library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+          integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+          crossorigin=""/>
+
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<!-- Leaflet Java Script -->
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+
+<!-- PAGE CONTENT -->
+
+<!-- Navigation Bar -->
+<div class="container red-accent-1">
+    <nav>
+        <div class="nav-wrapper red-darken-1">
+            <a href="#" class="brand-logo"><i class="material-icons">location_on</i>Indoor Localization</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="#"><i class="material-icons left">map</i>Show Map</a></li>
+                <li><a href="#"><i class="material-icons left">edit_location</i>Edit APs</a></li>
+                <li><a href="#"><i class="material-icons left">import_export</i>Import</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="map" style="height: 600px"></div>
+</div>
+
+<script type="text/javascript">
+
+        var map = L.map('map', {
+            maxZoom: 20,
+            minZoom: 19,
+            crs: L.CRS.Simple
+        }).setView([0, 0], 20);
+
+        var southWest = map.unproject([0, 1280], map.getMaxZoom());
+        var northEast = map.unproject([2048, 0], map.getMaxZoom());
+        map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
+
+        L.tileLayer('https://doblix.de/tiles/hft/building_2/{z}/map_{x}_{y}.png', {
+            attribution: 'Map data &copy; HfT Stuttgart',
+            maxZoom: 20,
+        }).addTo(map);
+
+        // pixel coordinates in large image
+        var m = {
+          x: 220,
+          y: 220
+        }
+        var icAP = L.icon({
+            iconUrl: '/icons/access-point.png',
+            iconSize: [36, 36],
+            iconAnchor: [36, 36],
+            popupAnchor: [-18, -18],
+        });
+        var marker = L.marker(map.unproject([m.x, m.y], map.getMaxZoom()), {icon: icAP}).addTo(map);
+        marker.bindPopup("<b>Access Point</b><br>AP 1");
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
