@@ -1,6 +1,18 @@
 group 'de.hft-stuttgart'
 version '1.0-SNAPSHOT'
 
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'checkstyle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def versions = [
+        checkstyle: '8.3',
+]
+
 buildscript {
     repositories {
         mavenCentral()
@@ -10,21 +22,23 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
+repositories {
+    mavenCentral()
+}
 
 jar {
     baseName = 'projectindoorweb'
     version =  '0.1.0'
 }
 
-repositories {
-    mavenCentral()
+configurations {
+    checkstyleConfig
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+checkstyle {
+    toolVersion = "${versions.checkstyle}"
+    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
+}
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
@@ -32,5 +46,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.apache.commons:commons-csv:1.5")
     compile("com.h2database:h2")
+    checkstyleConfig ("com.puppycrawl.tools:checkstyle:${versions.checkstyle}"){ transitive = false }
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
