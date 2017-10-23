@@ -14,4 +14,13 @@ node {
          bat "./gradlew.bat clean build --info"
       }
    }
+   stage('Check') {
+      // Run checkstyle and show results
+      step([$class: "CheckStylePublisher",
+            canComputeNew: false,
+            defaultEncoding: "",
+            healthy: "",
+            pattern: "build/reports/checkstyle/main.xml",
+            unHealthy: ""])
+   }
 }
