@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Getting Started: Serving Web Content</title>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+    <!-- Leaflet library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+          integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+          crossorigin=""/>
+</head>
+<body ng-app="IndoorApp" ng-cloak>
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<!-- Leaflet Java Script -->
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+
+<md-content>
+        <md-toolbar>
+            <h2 class="md-toolbar-tools">
+                <span>Indoor Map</span>
+            </h2>
+        </md-toolbar>
+    <!--
+
+    <div layout="row" layout-xs="column">
+
+        <div flex="20">
+            I'm above on mobile, and to the left on larger devices.
+        </div>
+        <div flex="80">
+            I'm below on mobile, and to the right on larger devices.
+        </div>
+        -->
+</md-content>
+
+<div ng-controller="AppCtrl" layout="column" style="height: 500px;" ng-cloak>
+
+    <section layout="row" flex>
+
+        <md-sidenav class="md-sidenav-left" md-component-id="left"
+                    md-disable-backdrop md-whiteframe="4">
+
+            <md-toolbar class="md-theme-indigo">
+                <h1 class="md-toolbar-tools">Set Parameters</h1>
+            </md-toolbar>
+
+            <md-content layout-margin>
+                <md-input-container flex="50">
+                    <label>Parameter 1</label>
+                    <input required name="param1" ng-model="project.param1">
+                    <div ng-messages="projectForm.param1.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container flex="50">
+                    <label>Parameter 2</label>
+                    <input required name="param2" ng-model="project.param2">
+                    <div ng-messages="projectForm.param2.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container flex="50">
+                    <label>Parameter 3</label>
+                    <input required name="param3" ng-model="project.param3">
+                    <div ng-messages="projectForm.param3.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+                <md-button ng-click="toggleLeft()" class="md-accent">
+                    Close this Sidenav
+                </md-button>
+            </md-content>
+
+        </md-sidenav>
+
+        <md-content flex layout-padding style="background-color:#D1DEEC; z-index:0">
+
+            <div layout="column" layout-align="top center">
+                <!--<p>
+                    Developers can also disable the backdrop of the sidenav.
+                    This will disable the functionality to click outside to close the sidenav.
+                    Developers can also disable the backdrop of the sidenav.
+                    This will disable the functionality to click outside to close the sidenav.
+                </p>-->
+                <div>
+                    <md-button ng-click="toggleLeft()" class="md-raised">
+                        Change Parameters
+                    </md-button>
+                </div>
+
+                <div class="container red-accent-1">
+                    <div id="map" style="height: 600px"></div>
+                </div>
+
+            </div>
+
+        </md-content>
+
+    </section>
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+<!-- Angular Material Library -->
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+
+<!-- Your application bootstrap  -->
+<script type="text/javascript">
+
+    angular.module('IndoorApp', ['ngMaterial']).controller('AppCtrl', function ($scope, $timeout, $mdSidenav) {
+        $scope.toggleLeft = buildToggler('left');
+        $scope.toggleRight = buildToggler('right');
+
+        function buildToggler(componentId) {
+            return function() {
+                $mdSidenav(componentId).toggle();
+            };
+        }
+    });
+</script>
+<script type="text/javascript">
+
+        var map = L.map('map', {
+            maxZoom: 20,
+            minZoom: 19,
+            crs: L.CRS.Simple
+        }).setView([0, 0], 20);
+
+        var southWest = map.unproject([0, 1280], map.getMaxZoom());
+        var northEast = map.unproject([2048, 0], map.getMaxZoom());
+        map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
+
+        L.tileLayer('https://doblix.de/tiles/hft/building_2/{z}/map_{x}_{y}.png', {
+            attribution: 'Map data &copy; HfT Stuttgart',
+            maxZoom: 20,
+        }).addTo(map);
+
+        // pixel coordinates in large image
+        var m = {
+          x: 220,
+          y: 220
+        }
+        var icAP = L.icon({
+            iconUrl: '/icons/access-point.png',
+            iconSize: [36, 36],
+            iconAnchor: [36, 36],
+            popupAnchor: [-18, -18],
+        });
+        var marker = L.marker(map.unproject([m.x, m.y], map.getMaxZoom()), {icon: icAP}).addTo(map);
+        marker.bindPopup("<b>Access Point</b><br>AP 1");
+</script>
+
+</body>
+</html>
