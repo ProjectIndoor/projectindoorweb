@@ -3,6 +3,7 @@ package de.hft_stuttgart.projectindoorweb.de.hft_stuttgart.projectindoorweb.pars
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.CSVFormat;
@@ -31,16 +32,35 @@ public class SensorFileReader {
     }
 
     public List readWifiDataFromFile() throws IOException{
-        return readValuesFromFile(WIFI_FIELDNAME);
+        return readValuesFromFile();
     }
 
     private List readValuesFromFile(String fieldName) throws IOException{
         List result= new ArrayList<String>();
         FileReader in = new FileReader(this.filePath);
-        Iterable<CSVRecord> records=CSVFormat.EXCEL.withDelimiter(';').parse(in);
+        Iterable<CSVRecord> records=CSVFormat.EXCEL.withDelimiter(';').withRecordSeparator("\n").parse(in);
         for(CSVRecord record: records){
             result.add(record.get(fieldName));
         }
+
+        return result;
+    }
+
+    private List readValuesFromFile() throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
+
+        List result = new ArrayList<String>();
+
+        String line;
+        while ((line = br.readLine()) != null) {
+            // skip empty lines
+            if (line.length() == 0) {  continue; }
+            // skip comments
+            if (line.substring(0,1).equals("%")) {  continue; }
+            // split data
+            result.add(line.split(Pattern.quote(";")));
+        }
+        br.close();
 
         return result;
     }
