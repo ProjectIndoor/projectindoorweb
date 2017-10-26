@@ -1,22 +1,21 @@
 pipeline {
    agent any
-   def gradleHome
    stages {
        stage('Preparation') { // for display purposes
           steps {
               // Get code from GitHub repository
               git 'https://github.com/ProjectIndoor/projectindoorweb'
-              // get Gradle
-              gradleHome = tool name: 'DefaultGradle', type: 'gradle'
           }
        }
        stage('Build') {
           steps {
-              // Run the gradle build
-              if (isUnix()) {
-                 sh "./gradlew clean build --info"
-              } else {
-                 bat "./gradlew.bat clean build --info"
+              script { //wrap in script to make it compatible with blue ocean syntax
+                  // Run the gradle build
+                  if (isUnix()) {
+                     sh "./gradlew clean build --info"
+                  } else {
+                     bat "./gradlew.bat clean build --info"
+                  }
               }
           }
        }
@@ -35,7 +34,7 @@ pipeline {
        }
    }
    post {
-       failed {3
+       failure {
             slackSend color: '#FF5555', message: 'Build failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}'
        }
 
