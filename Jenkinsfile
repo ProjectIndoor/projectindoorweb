@@ -35,7 +35,7 @@ pipeline {
    }
    post {
        failure {
-            slackSend color: '#FF5555', message: 'Build failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}'
+            slackSend color: '#FF5555', message: 'Build failed!'
        }
 
    }
