@@ -4,6 +4,7 @@ public enum ParserTypes {
 
     ACCELERATION_DATA,
     MAGNETOMETER_DATA,
-    LIGHT_DATA
+    LIGHT_DATA,
+    GNSS_DATA
 
 }

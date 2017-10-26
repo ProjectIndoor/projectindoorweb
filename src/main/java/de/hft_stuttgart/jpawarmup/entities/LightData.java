@@ -12,8 +12,8 @@ public class LightData extends SensorData {
 
     protected LightData(){}
 
-    public LightData(String rawName, int appTimestamp, long sensorTimestamp, float light, String dataUnit, int accuracy) {
-        super(rawName, appTimestamp);
+    public LightData(String logFileId, String rawName, long appTimestamp, long sensorTimestamp, float light, String dataUnit, int accuracy) {
+        super(logFileId, rawName, appTimestamp);
         this.sensorTimestamp = sensorTimestamp;
         this.light = light;
         this.dataUnit = dataUnit;

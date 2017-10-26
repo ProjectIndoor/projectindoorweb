@@ -14,8 +14,8 @@ public class AccelerometerData extends SensorData {
 
     protected AccelerometerData(){}
 
-    public AccelerometerData(String rawName, int appTimestamp, long sensorTimestamp, float accX, float accY, float accZ, String dataUnit, int accuracy) {
-        super(rawName, appTimestamp);
+    public AccelerometerData(String logFileId, String rawName, long appTimestamp, long sensorTimestamp, float accX, float accY, float accZ, String dataUnit, int accuracy) {
+        super(logFileId, rawName, appTimestamp);
         this.sensorTimestamp = sensorTimestamp;
         this.accX = accX;
         this.accY = accY;

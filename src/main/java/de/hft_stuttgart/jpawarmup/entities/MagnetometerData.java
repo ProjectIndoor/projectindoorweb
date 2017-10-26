@@ -23,8 +23,10 @@ public class MagnetometerData extends SensorData{
         this.accuracy = accuracy;
     }
 
-    public MagnetometerData(String rawName, int appTimestamp, long sensorTimestamp, float magnX, float magnY, float magnZ, String dataUnit, int accuracy) {
-        super(rawName, appTimestamp);
+    public MagnetometerData(String logFileId, String rawName, int appTimestamp, long sensorTimestamp, float magnX, float magnY,
+                            float magnZ, String dataUnit, int accuracy) {
+
+        super(logFileId, rawName, appTimestamp);
         this.sensorTimestamp = sensorTimestamp;
         this.magnX = magnX;
         this.magnY = magnY;

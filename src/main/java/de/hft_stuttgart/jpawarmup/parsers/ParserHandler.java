@@ -14,8 +14,6 @@ public class ParserHandler {
 
     private static ParserHandler theInstance;
 
-
-    private AccelerometerDataParser accelerometerDataParser;
     private Map<ParserTypes, Parser> parsers;
     private ExecutorService executorService;
 
@@ -35,6 +33,7 @@ public class ParserHandler {
         parsers.put(ParserTypes.ACCELERATION_DATA, new AccelerometerDataParser(fileName));
         parsers.put(ParserTypes.MAGNETOMETER_DATA, new MagnetometerDataParser(fileName));
         parsers.put(ParserTypes.LIGHT_DATA, new LightDataParser(fileName));
+        parsers.put(ParserTypes.GNSS_DATA, new GnssDataParser(fileName));
 
     }
 
@@ -50,7 +49,7 @@ public class ParserHandler {
 
         try {
             executorService.shutdown();
-            executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
+            executorService.awaitTermination(10000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

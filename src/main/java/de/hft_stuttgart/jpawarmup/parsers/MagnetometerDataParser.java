@@ -10,11 +10,10 @@ import java.util.stream.Collectors;
 
 public class MagnetometerDataParser extends Parser<SensorData> {
 
-    private String fileToParse;
 
 
     public MagnetometerDataParser(String fileToParse) {
-        this.fileToParse = fileToParse;
+        super(fileToParse);
     }
 
 
@@ -22,7 +21,7 @@ public class MagnetometerDataParser extends Parser<SensorData> {
     public void run() {
 
         try {
-            Files.readAllLines(Paths.get(this.fileToParse)).stream().filter(s -> {
+            Files.readAllLines(Paths.get(super.logFile.getSourceFileName())).stream().filter(s -> {
 
                 return !s.contains("%")
                         && !s.isEmpty()
@@ -41,8 +40,7 @@ public class MagnetometerDataParser extends Parser<SensorData> {
                 String dataUnit = "uT";
                 int accuracy = Integer.valueOf(elements[6]);
 
-                return new MagnetometerData(rawName, appTimestamp, sensorTimestamp, magnX, magnY, magnZ, dataUnit, accuracy);
-
+                return new MagnetometerData(super.logFile.getId(), rawName, appTimestamp, sensorTimestamp, magnX, magnY, magnZ, dataUnit, accuracy);
 
             }).collect(Collectors.toCollection(() -> super.parsed));
 

@@ -9,12 +9,14 @@ public abstract class SensorData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String logFileId;
     private String rawName;
-    private int appTimestamp;
+    private long appTimestamp;
 
     protected SensorData(){}
 
-    public SensorData(String rawName, int appTimestamp) {
+    public SensorData(String logFileId, String rawName, long appTimestamp) {
+        this.logFileId = logFileId;
         this.rawName = rawName;
         this.appTimestamp = appTimestamp;
     }
@@ -23,6 +25,7 @@ public abstract class SensorData {
         return id;
     }
 
+    public String getLogFileId() { return logFileId; }
 
     public String getRawName() {
         return rawName;
@@ -32,13 +35,16 @@ public abstract class SensorData {
         this.rawName = rawName;
     }
 
-    public int getAppTimestamp() {
+    public long getAppTimestamp() {
         return appTimestamp;
     }
 
-    public void setAppTimestamp(int appTimestamp) {
+    public void setAppTimestamp(long appTimestamp) {
         this.appTimestamp = appTimestamp;
     }
+
+
+
 
     @Override
     public String toString() {
