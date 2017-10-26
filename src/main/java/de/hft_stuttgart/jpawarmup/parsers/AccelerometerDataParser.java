@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class AccelerometerDataParser extends Parser<SensorData> {
 
-    private String fileToParse;
+    private final String fileToParse;
 
 
     public AccelerometerDataParser(String fileToParse) {

@@ -17,6 +17,7 @@ public class ParserHandler {
 
     private AccelerometerDataParser accelerometerDataParser;
     private Map<ParserTypes, Parser> parsers;
+    private ExecutorService executorService;
 
     private ParserHandler() {
     }
@@ -33,12 +34,13 @@ public class ParserHandler {
 
         parsers.put(ParserTypes.ACCELERATION_DATA, new AccelerometerDataParser(fileName));
         parsers.put(ParserTypes.MAGNETOMETER_DATA, new MagnetometerDataParser(fileName));
+        parsers.put(ParserTypes.LIGHT_DATA, new LightDataParser(fileName));
 
     }
 
     public void runParsers() {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(parsers.size());
+        executorService = Executors.newFixedThreadPool(parsers.size());
         for (ParserTypes type :
                 parsers.keySet()) {
 
@@ -47,8 +49,8 @@ public class ParserHandler {
         }
 
         try {
-            executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
             executorService.shutdown();
+            executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -56,20 +58,6 @@ public class ParserHandler {
 
     }
 
-
-    public Map<ParserTypes, List<SensorData>> collectParserResults() {
-
-        Map<ParserTypes, List<SensorData>> results = new HashMap<>();
-
-        for (ParserTypes type :
-                parsers.keySet()) {
-
-            results.put(type, parsers.get(type).getParsedData());
-        }
-
-        return results;
-
-    }
 
     public List<? extends SensorData> collectParseResultsByType(ParserTypes type) {
 

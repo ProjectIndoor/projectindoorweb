@@ -1,5 +1,7 @@
 package de.hft_stuttgart.jpawarmup.application;
 
+import de.hft_stuttgart.jpawarmup.entities.LightData;
+import de.hft_stuttgart.jpawarmup.interfaces.LightDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -42,14 +44,18 @@ public class WarmupApplication {
     }
 
     @Bean
-    public CommandLineRunner doRun(AccelerometerDataRepository accelerometerDataRepository, MagnetometerDataRepository magnetometerDataRepository){
+    public CommandLineRunner doRun(AccelerometerDataRepository accelerometerDataRepository, MagnetometerDataRepository magnetometerDataRepository, LightDataRepository lightDataRepository){
 
         return (args) -> {
             ParserHandler parserHandler;
             if (Files.exists(Paths.get(fileName))) {
                 parserHandler = ParserHandler.getInstance();
                 parserHandler.initParsersForFile(fileName);
+                long start = System.currentTimeMillis();
                 parserHandler.runParsers();
+                long end = System.currentTimeMillis();
+
+                LOG.info(String.format("File parsing took %d milliseconds.", end - start));
 
                 List<ParserTypes> allKnownParsers = parserHandler.getAllKnownParsers();
 
@@ -62,13 +68,16 @@ public class WarmupApplication {
                     }else if(type == ParserTypes.MAGNETOMETER_DATA){
                         List<MagnetometerData> sensorData = (List<MagnetometerData>) parserHandler.collectParseResultsByType(ParserTypes.MAGNETOMETER_DATA);
                         magnetometerDataRepository.save(sensorData);
+                    }else if(type == ParserTypes.LIGHT_DATA){
+                        List<LightData> sensorData = (List<LightData>) parserHandler.collectParseResultsByType(ParserTypes.LIGHT_DATA);
+                        lightDataRepository.save(sensorData);
                     }
 
                 }
 
                 LOG.info("Successfully saved sensor data.");
 
-                long numEntries = accelerometerDataRepository.count() + magnetometerDataRepository.count();
+                long numEntries = accelerometerDataRepository.count() + magnetometerDataRepository.count() + lightDataRepository.count();
                 LOG.info("Number of entries present in the database: " + numEntries);
 
                 numEntries = accelerometerDataRepository.countByRawName("ACCE");
@@ -76,6 +85,9 @@ public class WarmupApplication {
 
                 numEntries = magnetometerDataRepository.countByRawName("MAGN");
                 LOG.info("Number of entries with sensor type 'MAGN': " + numEntries);
+
+                numEntries = lightDataRepository.countByRawName("LIGH");
+                LOG.info("Number of entries with sensor type 'LIGH': " + numEntries);
 
                 LOG.info("All done.");
 
