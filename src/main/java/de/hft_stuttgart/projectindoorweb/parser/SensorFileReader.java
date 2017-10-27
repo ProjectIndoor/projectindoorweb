@@ -1,4 +1,4 @@
-package de.hft_stuttgart.projectindoorweb.de.hft_stuttgart.projectindoorweb.parser;
+package de.hft_stuttgart.projectindoorweb.parser;
 
 import java.io.*;
 import java.util.ArrayList;
