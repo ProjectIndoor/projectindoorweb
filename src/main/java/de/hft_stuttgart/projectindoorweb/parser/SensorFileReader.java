@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.CSVFormat;
 
+//TODO delete class when ready
 public class SensorFileReader {
     public static final String WIFI_FIELDNAME = "WIFI";
     public static final String POSITION_FIELDNAME = "POSI";
