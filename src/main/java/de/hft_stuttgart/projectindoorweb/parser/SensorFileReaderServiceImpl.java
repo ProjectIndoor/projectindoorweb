@@ -1,10 +1,15 @@
 package de.hft_stuttgart.projectindoorweb.parser;
 
+import de.hft_stuttgart.projectindoorweb.parser.internal.*;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SensorFileReaderServiceImpl implements SensorFileReaderService {
 
+    private final static String FILEPATH="";//TODO find out how to get the filepath. Local constant? Through another service? As a parameter?
+    private final static int TIMEOUT=10000;
 
     private ExecutorService executorService;
 
@@ -14,36 +19,59 @@ public class SensorFileReaderServiceImpl implements SensorFileReaderService {
 
     @Override
     public List parseWifiData() {
-        return null;
+        WifiDataParser wifiDataParser = new WifiDataParser(FILEPATH);
+        return parseData(wifiDataParser);
     }
 
     @Override
     public List parsePositionData() {
-        return null;
+        PositionDataParser positionDataParser = new PositionDataParser(FILEPATH);
+        return parseData(positionDataParser);
     }
 
     @Override
     public List parseGyroscopeData() {
-        return null;
+        GyroscopeDataParser gyroscopeDataParser = new GyroscopeDataParser(FILEPATH);
+        return parseData(gyroscopeDataParser);
     }
 
     @Override
     public List parseAccelerationData() {
-        return null;
+        AccelerationDataParser accelerationDataParser = new AccelerationDataParser(FILEPATH);
+        return parseData(accelerationDataParser);
     }
 
     @Override
     public List parseMagnetometerData() {
-        return null;
+        MagnetometerDataParser magnetometerDataParser = new MagnetometerDataParser(FILEPATH);
+        return parseData(magnetometerDataParser);
     }
 
     @Override
     public List parseGnssData() {
-        return null;
+        GnssDataParser gnssDataParser = new GnssDataParser(FILEPATH);
+        return parseData(gnssDataParser);
     }
 
     @Override
     public List parseLightData() {
-        return null;
+        LightDataParser lightDataParser = new LightDataParser(FILEPATH);
+        return parseData(lightDataParser);
+    }
+
+    //TODO Shutdown may shut all threads down, not just the one who calls it. Check if viable through testing.
+    private List parseData(SensorDataParser sensorDataParser){
+
+        executorService.execute(sensorDataParser);
+
+        try {
+            executorService.shutdown();
+            executorService.awaitTermination(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return sensorDataParser.getParsedDataList();
+
     }
 }
