@@ -7,7 +7,7 @@ public abstract class SensorDataParser<T> implements Runnable{
 
 
     protected List parsedDataList;
-    private String filePath;
+    protected String filePath;
 
 
     public SensorDataParser(String filePath) {
