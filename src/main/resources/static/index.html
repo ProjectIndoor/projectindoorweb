@@ -47,23 +47,23 @@
 
         var map = L.map('map', {
             maxZoom: 20,
-            minZoom: 19,
+            minZoom: 18,
             crs: L.CRS.Simple
         }).setView([0, 0], 20);
 
-        var southWest = map.unproject([0, 1280], map.getMaxZoom());
-        var northEast = map.unproject([2048, 0], map.getMaxZoom());
+        var southWest = map.unproject([0, 1536], map.getMaxZoom());
+        var northEast = map.unproject([2560, 0], map.getMaxZoom());
         map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
 
-        L.tileLayer('https://doblix.de/tiles/hft/building_2/{z}/map_{x}_{y}.png', {
+        L.tileLayer('https://doblix.de/tiles/hft/building_2/floor_3/{z}/map_{x}_{y}.png', {
             attribution: 'Map data &copy; HfT Stuttgart',
             maxZoom: 20,
         }).addTo(map);
 
         // pixel coordinates in large image
         var m = {
-          x: 220,
-          y: 220
+          x: 320,
+          y: 320
         }
         var icAP = L.icon({
             iconUrl: '/icons/access-point.png',

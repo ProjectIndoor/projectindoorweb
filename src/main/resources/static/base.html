@@ -2,117 +2,191 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Getting Started: Serving Web Content</title>
-
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!-- Angular Material style sheet -->
-    <link rel="stylesheet"
-          href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
-
-
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-
-    <!-- Leaflet library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
-          integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-          crossorigin=""/>
+    <title>Project Indoor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material CSS -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <!-- MD Icons CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/custom-indoor.css">
 </head>
 <body ng-app="IndoorApp" ng-cloak>
-<!--Import jQuery before materialize.js-->
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<!-- Compiled and minified JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-<!-- Leaflet Java Script -->
-<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
-<md-content>
-        <md-toolbar>
-            <h2 class="md-toolbar-tools">
-                <span>Indoor Map</span>
-            </h2>
-        </md-toolbar>
-    <!--
+<!--
+  HTML content here
+-->
 
-    <div layout="row" layout-xs="column">
+<md-content layout="column" style="height:100%">
 
-        <div flex="20">
-            I'm above on mobile, and to the left on larger devices.
+    <md-toolbar>
+        <div ng-controller="NavCtrl" class="md-toolbar-tools">
+
+            <!-- Nav drawer button -->
+            <md-button ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
+                <i class="material-icons">menu</i>
+            </md-button>
+
+            <!-- Nav title -->
+            <h2 flex md-truncate>Indoor Map View</h2>
         </div>
-        <div flex="80">
-            I'm below on mobile, and to the right on larger devices.
-        </div>
-        -->
-</md-content>
+    </md-toolbar>
 
-<div ng-controller="AppCtrl" layout="column" style="height: 500px;" ng-cloak>
+    <md-content layout="row" flex>
+        <md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
+                    md-whiteframe="4">
 
-    <section layout="row" flex>
-
-        <md-sidenav class="md-sidenav-left" md-component-id="left"
-                    md-disable-backdrop md-whiteframe="4">
-
+            <!-- Toolbar title -->
             <md-toolbar class="md-theme-indigo">
-                <h1 class="md-toolbar-tools">Set Parameters</h1>
+                <h1 class="md-toolbar-tools">Map Settings</h1>
             </md-toolbar>
 
             <md-content layout-margin>
-                <md-input-container flex="50">
-                    <label>Parameter 1</label>
-                    <input required name="param1" ng-model="project.param1">
-                    <div ng-messages="projectForm.param1.$error">
-                        <div ng-message="required">This is required.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container flex="50">
-                    <label>Parameter 2</label>
-                    <input required name="param2" ng-model="project.param2">
-                    <div ng-messages="projectForm.param2.$error">
-                        <div ng-message="required">This is required.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container flex="50">
-                    <label>Parameter 3</label>
-                    <input required name="param3" ng-model="project.param3">
-                    <div ng-messages="projectForm.param3.$error">
-                        <div ng-message="required">This is required.</div>
-                    </div>
-                </md-input-container>
-                <md-button ng-click="toggleLeft()" class="md-accent">
-                    Close this Sidenav
-                </md-button>
+                <!-- Toolbar map chooser -->
+                <md-card class="md-whiteframe-3dp" md-theme="default">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Map</span>
+                            <span class="md-subhead">Select a map you want to use</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <i class="material-icons">map</i>
+                        </md-card-title-media>
+                    </md-card-title>
+                    <md-card-content>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Building</label>
+                            <md-select ng-model="map.building">
+                                <md-option value="b1">
+                                    HFT Building 1
+                                </md-option>
+                                <md-option value="b2">
+                                    HFT Building 2
+                                </md-option>
+                                <md-option value="b3">
+                                    HFT Building 3
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Floor</label>
+                            <md-select ng-model="map.floor">
+                                <md-option value="f1">
+                                    Floor 1
+                                </md-option>
+                                <md-option value="f2">
+                                    Floor 2
+                                </md-option>
+                                <md-option value="f3">
+                                    Floor 3
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-card-content>
+
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button>Choose</md-button>
+                    </md-card-actions>
+                </md-card>
+
+                <!-- Toolbar track chooser -->
+                <md-card class="md-whiteframe-3dp" md-theme="default">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Track</span>
+                            <span class="md-subhead">Select a recorded track you want to use</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <i class="material-icons">pin_drop</i>
+                        </md-card-title-media>
+                    </md-card-title>
+                    <md-card-content>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Track</label>
+                            <md-select ng-model="track.track">
+                                <md-option value="t1">
+                                    2017-10.22 12:39
+                                </md-option>
+                                <md-option value="t2">
+                                    2017-10.24 14:28
+                                </md-option>
+                                <md-option value="t3">
+                                    2017-10.26 10:43
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-card-content>
+
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button>Choose</md-button>
+                    </md-card-actions>
+                </md-card>
+
+                <md-card class="md-whiteframe-3dp" md-theme="default">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Algorithm</span>
+                            <span class="md-subhead">Select an algorithm</span>
+                        </md-card-title-text>
+                        <md-card-title-media>
+                            <i class="material-icons">timeline</i>
+                        </md-card-title-media>
+                    </md-card-title>
+                    <md-card-content>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Algorithm Type</label>
+                            <md-select ng-model="algo.type">
+                                <md-option value="a1">
+                                    RadioMap Simple
+                                </md-option>
+                                <md-option value="a2">
+                                    RadioMap with Sensors
+                                </md-option>
+                                <md-option value="a3">
+                                    AP only mode
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </md-card-content>
+                    <md-divider></md-divider>
+                    <md-subheader class="md-primary">Parameters</md-subheader>
+
+                    <md-slider-container style="padding: 16px">
+                        <span>RSSI Thrsh.</span>
+                        <md-slider flex min="-100" max="0" id="rssi-slider">
+                        </md-slider>
+                    </md-slider-container>
+
+                    <md-input-container style="margin: 16px">
+                        <label>Parameter 1</label>
+                        <input ng-model="algo.p2">
+                    </md-input-container>
+
+                    <md-input-container style="margin: 16px">
+                        <label>Parameter 2</label>
+                        <input ng-model="algo.p1">
+                    </md-input-container>
+
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button class="md-accent">Calculate</md-button>
+                    </md-card-actions>
+                </md-card>
+
             </md-content>
 
         </md-sidenav>
-
-        <md-content flex layout-padding style="background-color:#D1DEEC; z-index:0">
-
-            <div layout="column" layout-align="top center">
-                <!--<p>
-                    Developers can also disable the backdrop of the sidenav.
-                    This will disable the functionality to click outside to close the sidenav.
-                    Developers can also disable the backdrop of the sidenav.
-                    This will disable the functionality to click outside to close the sidenav.
-                </p>-->
-                <div>
-                    <md-button ng-click="toggleLeft()" class="md-raised">
-                        Change Parameters
-                    </md-button>
-                </div>
-
-                <div class="container red-accent-1">
-                    <div id="map" style="height: 600px"></div>
-                </div>
-
-            </div>
-
+        <md-content ng-controller="MapCtrl" class="mapview" flex layout-padding>
+            <div id="map"></div>
         </md-content>
+    </md-content>
 
-    </section>
+</md-content>
+<!-- jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!-- Leaflet Java Script -->
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 <!-- Angular Material requires Angular.js Libraries -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
@@ -122,51 +196,86 @@
 <!-- Angular Material Library -->
 <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 
-
 <!-- Your application bootstrap  -->
 <script type="text/javascript">
+    /**
+     * Include the dependency on 'ngMaterial'
+     */
+    var aModule = angular.module('IndoorApp', ['ngMaterial']);
 
-    angular.module('IndoorApp', ['ngMaterial']).controller('AppCtrl', function ($scope, $timeout, $mdSidenav) {
+    aModule.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
         $scope.toggleLeft = buildToggler('left');
         $scope.toggleRight = buildToggler('right');
 
         function buildToggler(componentId) {
-            return function() {
-                $mdSidenav(componentId).toggle();
-            };
+          return function() {
+            $mdSidenav(componentId).toggle();
+          };
         }
-    });
-</script>
-<script type="text/javascript">
 
-        var map = L.map('map', {
-            maxZoom: 20,
-            minZoom: 19,
-            crs: L.CRS.Simple
-        }).setView([0, 0], 20);
 
-        var southWest = map.unproject([0, 1280], map.getMaxZoom());
-        var northEast = map.unproject([2048, 0], map.getMaxZoom());
-        map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
 
-        L.tileLayer('https://doblix.de/tiles/hft/building_2/{z}/map_{x}_{y}.png', {
-            attribution: 'Map data &copy; HfT Stuttgart',
-            maxZoom: 20,
-        }).addTo(map);
-
-        // pixel coordinates in large image
-        var m = {
-          x: 220,
-          y: 220
-        }
-        var icAP = L.icon({
-            iconUrl: '/icons/access-point.png',
-            iconSize: [36, 36],
-            iconAnchor: [36, 36],
-            popupAnchor: [-18, -18],
+        $scope.buildings = ('HFT Building 1;HFT Building 2;HFT Building 3').split(';').map(function(building) {
+            return {abbrev: building};
         });
-        var marker = L.marker(map.unproject([m.x, m.y], map.getMaxZoom()), {icon: icAP}).addTo(map);
-        marker.bindPopup("<b>Access Point</b><br>AP 1");
+
+
+        $scope.floors = ('Floor 1;Floor 2;Floor 3').split(';').map(function(floor) {
+            return {abbrev: floor};
+          });
+
+    });
+
+    function MapController() {
+        this.$afterViewInit = function () {
+            console.log('Hi')
+            map.invalidateSize();
+        };
+    }
+
+    aModule.controller('MapCtrl', MapController);
+
+
+    // map DOM element
+    mapDiv = document.getElementById("map")
+
+    // create a map inside the map DOM element
+    var map = L.map('map', {
+        maxZoom: 20,
+        minZoom: 18,
+        crs: L.CRS.Simple
+    }).setView([0, 0], 20);
+
+    var southWest = map.unproject([0, 1536], map.getMaxZoom());
+    var northEast = map.unproject([2560, 0], map.getMaxZoom());
+    map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
+
+    L.tileLayer('https://doblix.de/tiles/hft/building_2/floor_3/{z}/map_{x}_{y}.png', {
+        attribution: 'Map data &copy; HfT Stuttgart',
+        maxZoom: 20,
+    }).addTo(map);
+
+    // pixel coordinates in large image
+    var m = {
+      x: 320,
+      y: 320
+    }
+    var icAP = L.icon({
+        iconUrl: '/icons/access-point.png',
+        iconSize: [36, 36],
+        iconAnchor: [36, 36],
+        popupAnchor: [-18, -18],
+    });
+    var marker = L.marker(map.unproject([m.x, m.y], map.getMaxZoom()), {icon: icAP}).addTo(map);
+    marker.bindPopup("<b>Access Point</b><br>AP 1");
+
+    // resize map to use full height, also on window resize
+    $(window).on("resize", function() {
+        $("#map").height($(window).height()).width($(window).width());
+        map.invalidateSize();
+    }).trigger("resize");
+
+
 </script>
 
 </body>
