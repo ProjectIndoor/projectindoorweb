@@ -1,4 +1,4 @@
-package de.hft_stuttgart.projectindoorweb;
+package de.hftstuttgart.projectindoorweb;
 
 
 import org.springframework.boot.SpringApplication;

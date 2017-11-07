@@ -1,12 +1,12 @@
-package de.hft_stuttgart.projectindoorweb.de.hft_stuttgart.projectindoorweb.parser;
+package de.hftstuttgart.projectindoorweb.parser;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.CSVFormat;
 
 public class SensorFileReader {
     public static final String WIFI_FIELDNAME = "WIFI";
@@ -15,38 +15,38 @@ public class SensorFileReader {
     public static final String GYROSCOPE_FIELDNAME = "GYRO";
     private String filePath;
 
-    public SensorFileReader(String filePath){
-        this.filePath=filePath;
+    public SensorFileReader(String filePath) {
+        this.filePath = filePath;
     }
 
-    public List readPositionFromFile() throws IOException{
+    public List readPositionFromFile() throws IOException {
         return readValuesFromFile(POSITION_FIELDNAME);
     }
 
-    public List readAccelerationFromFile() throws IOException{
+    public List readAccelerationFromFile() throws IOException {
         return readValuesFromFile(ACCELERATION_FIELDNAME);
     }
 
-    public List readGyroscopeFromFile() throws IOException{
+    public List readGyroscopeFromFile() throws IOException {
         return readValuesFromFile(GYROSCOPE_FIELDNAME);
     }
 
-    public List readWifiDataFromFile() throws IOException{
+    public List readWifiDataFromFile() throws IOException {
         return readValuesFromFile();
     }
 
-    private List readValuesFromFile(String fieldName) throws IOException{
-        List result= new ArrayList<String>();
+    private List readValuesFromFile(String fieldName) throws IOException {
+        List result = new ArrayList<String>();
         FileReader in = new FileReader(this.filePath);
-        Iterable<CSVRecord> records=CSVFormat.EXCEL.withDelimiter(';').withRecordSeparator("\n").parse(in);
-        for(CSVRecord record: records){
+        Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withRecordSeparator("\n").parse(in);
+        for (CSVRecord record : records) {
             result.add(record.get(fieldName));
         }
 
         return result;
     }
 
-    private List readValuesFromFile() throws IOException{
+    private List readValuesFromFile() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"));
 
         List result = new ArrayList<String>();
@@ -54,9 +54,13 @@ public class SensorFileReader {
         String line;
         while ((line = br.readLine()) != null) {
             // skip empty lines
-            if (line.length() == 0) {  continue; }
+            if (line.length() == 0) {
+                continue;
+            }
             // skip comments
-            if (line.substring(0,1).equals("%")) {  continue; }
+            if (line.substring(0, 1).equals("%")) {
+                continue;
+            }
             // split data
             result.add(line.split(Pattern.quote(";")));
         }
