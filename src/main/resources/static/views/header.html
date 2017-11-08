@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material CSS -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+</head>
+<body ng-app="IndoorAppHeader" ng-cloak>
+<md-content layout="column" style="height:100%">
+    <md-toolbar>
+        <div ng-controller="NavCtrl" class="md-toolbar-tools">
+            <md-button ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
+                <i class="material-icons">menu</i>
+            </md-button>
+            <h2 flex md-truncate>Indoor Map View</h2>
+        </div>
+    </md-toolbar>
+</md-content>
+<!-- jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<!-- Angular Material Library -->
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+<!-- Your application bootstrap  -->
+<script type="text/javascript">
+    /**
+     * Include the dependency on 'ngMaterial'
+     */
+    var aModule = angular.module('IndoorAppHeader', ['ngMaterial']);
+</script>
+</body>
+</html>
