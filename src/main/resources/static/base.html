@@ -18,21 +18,9 @@
 <!--
   HTML content here
 -->
-
-<md-content layout="column" style="height:100%">
-
-    <md-toolbar>
-        <div ng-controller="NavCtrl" class="md-toolbar-tools">
-
-            <!-- Nav drawer button -->
-            <md-button ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
-                <i class="material-icons">menu</i>
-            </md-button>
-
-            <!-- Nav title -->
-            <h2 flex md-truncate>Indoor Map View</h2>
-        </div>
-    </md-toolbar>
+    <div class="container">
+        <div ng-include="'views/header.html'"></div>
+    </div>
 
     <md-content layout="row" flex>
         <md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
@@ -274,7 +262,7 @@
         $("#map").height($(window).height()).width($(window).width());
         map.invalidateSize();
     }).trigger("resize");
-    
+
 </script>
 </body>
 </html>
