@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<body ng-app="FormAlgorithmChooser" ng-cloak>
+
+<md-card class="md-whiteframe-3dp" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Algorithm</span>
+            <span class="md-subhead">Select an algorithm</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">timeline</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Algorithm Type</label>
+            <md-select ng-model="algo.type">
+                <md-option value="a1">
+                    RadioMap Simple
+                </md-option>
+                <md-option value="a2">
+                    RadioMap with Sensors
+                </md-option>
+                <md-option value="a3">
+                    AP only mode
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </md-card-content>
+    <md-divider></md-divider>
+    <md-subheader class="md-primary">Parameters</md-subheader>
+
+    <md-slider-container style="padding: 16px">
+        <span>RSSI Thrsh.</span>
+        <md-slider flex min="-100" max="0" id="rssi-slider">
+        </md-slider>
+    </md-slider-container>
+
+    <md-input-container style="margin: 16px">
+        <label>Parameter 1</label>
+        <input ng-model="algo.p2">
+    </md-input-container>
+
+    <md-input-container style="margin: 16px">
+        <label>Parameter 2</label>
+        <input ng-model="algo.p1">
+    </md-input-container>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button class="md-accent">Calculate</md-button>
+    </md-card-actions>
+</md-card>
+
+<script type="text/javascript">
+    /**
+     * Include the dependency on 'ngMaterial'
+     */
+    var aModule = angular.module('FormAlgorithmChooser', ['ngMaterial']);
+
+
+</script>
+</body>
+</html>
