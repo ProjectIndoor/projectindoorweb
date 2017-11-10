@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<body ng-app="FormMapChooser" ng-cloak>
+
+<md-card class="md-whiteframe-3dp" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Map</span>
+            <span class="md-subhead">Select a map you want to use</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">map</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Building</label>
+            <md-select ng-model="map.building">
+                <md-option value="b1">
+                    HFT Building 1
+                </md-option>
+                <md-option value="b2">
+                    HFT Building 2
+                </md-option>
+                <md-option value="b3">
+                    HFT Building 3
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Floor</label>
+            <md-select ng-model="map.floor">
+                <md-option value="f1">
+                    Floor 1
+                </md-option>
+                <md-option value="f2">
+                    Floor 2
+                </md-option>
+                <md-option value="f3">
+                    Floor 3
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button>Choose</md-button>
+    </md-card-actions>
+</md-card>
+
+<script type="text/javascript">
+    /**
+     * Include the dependency on 'ngMaterial'
+     */
+    var aModule = angular.module('FormMapChooser', ['ngMaterial']);
+
+
+</script>
+</body>
+</html>

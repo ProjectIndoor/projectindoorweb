@@ -33,134 +33,13 @@
 
             <md-content layout-margin>
                 <!-- Toolbar map chooser -->
-                <md-card class="md-whiteframe-3dp" md-theme="default">
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-headline">Map</span>
-                            <span class="md-subhead">Select a map you want to use</span>
-                        </md-card-title-text>
-                        <md-card-title-media>
-                            <i class="material-icons">map</i>
-                        </md-card-title-media>
-                    </md-card-title>
-                    <md-card-content>
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <label>Building</label>
-                            <md-select ng-model="map.building">
-                                <md-option value="b1">
-                                    HFT Building 1
-                                </md-option>
-                                <md-option value="b2">
-                                    HFT Building 2
-                                </md-option>
-                                <md-option value="b3">
-                                    HFT Building 3
-                                </md-option>
-                            </md-select>
-                        </md-input-container>
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <label>Floor</label>
-                            <md-select ng-model="map.floor">
-                                <md-option value="f1">
-                                    Floor 1
-                                </md-option>
-                                <md-option value="f2">
-                                    Floor 2
-                                </md-option>
-                                <md-option value="f3">
-                                    Floor 3
-                                </md-option>
-                            </md-select>
-                        </md-input-container>
-                    </md-card-content>
-
-                    <md-card-actions layout="row" layout-align="end center">
-                        <md-button>Choose</md-button>
-                    </md-card-actions>
-                </md-card>
+                <div ng-include="'forms/map-chooser.html'"></div>
 
                 <!-- Toolbar track chooser -->
-                <md-card class="md-whiteframe-3dp" md-theme="default">
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-headline">Track</span>
-                            <span class="md-subhead">Select a recorded track you want to use</span>
-                        </md-card-title-text>
-                        <md-card-title-media>
-                            <i class="material-icons">pin_drop</i>
-                        </md-card-title-media>
-                    </md-card-title>
-                    <md-card-content>
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <label>Track</label>
-                            <md-select ng-model="track.track">
-                                <md-option value="t1">
-                                    2017-10.22 12:39
-                                </md-option>
-                                <md-option value="t2">
-                                    2017-10.24 14:28
-                                </md-option>
-                                <md-option value="t3">
-                                    2017-10.26 10:43
-                                </md-option>
-                            </md-select>
-                        </md-input-container>
-                    </md-card-content>
+                <div ng-include="'forms/track-chooser.html'"></div>
 
-                    <md-card-actions layout="row" layout-align="end center">
-                        <md-button>Choose</md-button>
-                    </md-card-actions>
-                </md-card>
-
-                <md-card class="md-whiteframe-3dp" md-theme="default">
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-headline">Algorithm</span>
-                            <span class="md-subhead">Select an algorithm</span>
-                        </md-card-title-text>
-                        <md-card-title-media>
-                            <i class="material-icons">timeline</i>
-                        </md-card-title-media>
-                    </md-card-title>
-                    <md-card-content>
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <label>Algorithm Type</label>
-                            <md-select ng-model="algo.type">
-                                <md-option value="a1">
-                                    RadioMap Simple
-                                </md-option>
-                                <md-option value="a2">
-                                    RadioMap with Sensors
-                                </md-option>
-                                <md-option value="a3">
-                                    AP only mode
-                                </md-option>
-                            </md-select>
-                        </md-input-container>
-                    </md-card-content>
-                    <md-divider></md-divider>
-                    <md-subheader class="md-primary">Parameters</md-subheader>
-
-                    <md-slider-container style="padding: 16px">
-                        <span>RSSI Thrsh.</span>
-                        <md-slider flex min="-100" max="0" id="rssi-slider">
-                        </md-slider>
-                    </md-slider-container>
-
-                    <md-input-container style="margin: 16px">
-                        <label>Parameter 1</label>
-                        <input ng-model="algo.p2">
-                    </md-input-container>
-
-                    <md-input-container style="margin: 16px">
-                        <label>Parameter 2</label>
-                        <input ng-model="algo.p1">
-                    </md-input-container>
-
-                    <md-card-actions layout="row" layout-align="end center">
-                        <md-button class="md-accent">Calculate</md-button>
-                    </md-card-actions>
-                </md-card>
+                <!-- Toolbar algorithm chooser -->
+                <div ng-include="'forms/algorithm-chooser.html'"></div>
 
             </md-content>
 

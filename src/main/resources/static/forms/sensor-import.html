@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<body ng-app="FormLogImport" ng-cloak>
+
+<md-card class="md-whiteframe-3dp" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Log file import</span>
+            <span class="md-subhead">Select the file you want to import</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">insert_drive_file</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container style="margin: 16px">
+            <label for="input-file-id" class="md-button md-raised md-primary">Choose
+                Files</label>
+            <input class="ng-hide" id="input-file-id" multiple type="file"/>
+        </md-input-container>
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button>Upload</md-button>
+    </md-card-actions>
+</md-card>
+
+<script type="text/javascript">
+    /**
+     * Include the dependency on 'ngMaterial'
+     */
+    var aModule = angular.module('FormTrackChooser', ['ngMaterial']);
+
+
+
+</script>
+</body>
+</html>
