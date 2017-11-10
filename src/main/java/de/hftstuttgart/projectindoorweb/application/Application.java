@@ -28,7 +28,7 @@ public class Application {
 
         EvaalFileInputHandler inputHandler = EvaalFileInputHandler.getInstance();
 
-        File[] inputFiles = new File(ConfigContainer.RADIO_MAP_FILE_PATH).listFiles();
+        File[] inputFiles = new File(ConfigContainer.RADIO_MAP_TEST_FILE_PATH).listFiles();
 
         inputHandler.handleInput(true, inputFiles);
 

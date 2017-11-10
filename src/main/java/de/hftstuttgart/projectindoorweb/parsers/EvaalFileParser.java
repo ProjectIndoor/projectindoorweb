@@ -1,12 +1,7 @@
 package de.hftstuttgart.projectindoorweb.parsers;
 
-import de.hftstuttgart.projectindoorweb.config.ConfigContainer;
-import de.hftstuttgart.projectindoorweb.helper.EvaalFileParserHelper;
-import de.hftstuttgart.projectindoorweb.maths.LatLongCoord;
-import de.hftstuttgart.projectindoorweb.maths.LocXYZ;
-import de.hftstuttgart.projectindoorweb.maths.MyGeoMath;
+import de.hftstuttgart.projectindoorweb.helper.EvaalFileHelper;
 import de.hftstuttgart.projectindoorweb.pojos.PosiReference;
-import de.hftstuttgart.projectindoorweb.pojos.Position;
 import de.hftstuttgart.projectindoorweb.pojos.RadiomapElement;
 import de.hftstuttgart.projectindoorweb.pojos.RssiReading;
 
@@ -14,11 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EvaalFileParser extends Parser {
 
@@ -48,18 +40,22 @@ public class EvaalFileParser extends Parser {
 
         try {
 
-            List<String> posiLines = Files.lines(super.sourceFile.toPath()).filter(s -> {
-                return isDataValid(s) && isDataValidForPosi(s);
+            List<String> allLines =Files.lines(super.sourceFile.toPath()).filter(s -> {
+                return isDataValid(s);
             }).collect(Collectors.toList());
 
-            List<PosiReference> unshiftedPosiReferences = EvaalFileParserHelper.assemblePosiReferences(posiLines);
-            List<PosiReference> posiReferences = EvaalFileParserHelper.shiftPosiReferenceIntervals(unshiftedPosiReferences);
-
-            List<String> rssiLines = Files.lines(super.sourceFile.toPath()).filter(s -> {
-                return isDataValid(s) && isDataValidForWifi(s);
+            List<String> posiLines = allLines.stream().filter(s -> {
+                return isDataValidForPosi(s);
             }).collect(Collectors.toList());
 
-            List<RssiReading> rssiReadings = EvaalFileParserHelper.assembleRssiReadings(rssiLines);
+            List<String> rssiLines = allLines.stream().filter(s -> {
+                return isDataValidForWifi(s);
+            }).collect(Collectors.toList());
+
+            List<PosiReference> unshiftedPosiReferences = EvaalFileHelper.assemblePosiReferences(posiLines);
+            List<PosiReference> posiReferences = EvaalFileHelper.shiftPosiReferenceIntervals(unshiftedPosiReferences);
+
+            List<RssiReading> rssiReadings = EvaalFileHelper.assembleRssiReadings(rssiLines);
             radiomapElements = assembleRadiomapElements(posiReferences, rssiReadings);
 
 
@@ -84,9 +80,9 @@ public class EvaalFileParser extends Parser {
         List<RssiReading> relevantReadings;
         List<RssiReading> averagedReadings;
         for (PosiReference posiReference: posiReferences) {
-            relevantReadings = EvaalFileParserHelper.retrieveRssiReadingsForPosiReference(posiReference, rssiReadings);
+            relevantReadings = EvaalFileHelper.retrieveRssiReadingsForPosiReference(posiReference, rssiReadings);
             rssiReadings.removeAll(relevantReadings);
-            averagedReadings = EvaalFileParserHelper.retrieveAveragedReadings(relevantReadings);
+            averagedReadings = EvaalFileHelper.retrieveAveragedReadings(relevantReadings);
             result.add(new RadiomapElement(super.sourceFile, posiReference, averagedReadings));
         }
 

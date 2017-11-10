@@ -14,7 +14,140 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EvaalFileParserHelper {
+public class EvaalFileHelper {
+
+
+
+    public static List<RadiomapElement> mergeSimilarPositions(List<RadiomapElement> unmergedElements){
+
+        List<RadiomapElement> result = new ArrayList<>();
+
+        boolean unique;
+        Position a;
+        Position b;
+        for (RadiomapElement outerElement: unmergedElements) {
+            unique = true;
+            for(int i = 0; i < result.size(); i++){
+                RadiomapElement innerElement = result.get(i);
+                a = innerElement.getPosiReference().getReferencePosition();
+                b = outerElement.getPosiReference().getReferencePosition();
+                if(MathHelper.retrievePositionDistance(a, b) <= ConfigContainer.SIMILAR_POSITION_THRESHOLD_METERS){
+                    unique = false;
+                    result.set(i, mergeRadioMapElements(innerElement, outerElement));
+                    break;
+                }
+            }
+            if(unique){
+                result.add(outerElement);
+            }
+        }
+
+        return result;
+
+    }
+
+    public static RadiomapElement mergeRadioMapElements(RadiomapElement a, RadiomapElement b){
+
+
+        /*
+        * "SomeAverage" is not a joke (well, sort of): It is not apparent in the prototype what the "average" saved with
+        * every Posi reference is supposed to mean, so their sum is, quite literally, just "some average".
+        * */
+        int someAverage = a.getPosiReference().getAvgNumber() + b.getPosiReference().getAvgNumber();
+        Map<String, Double[]> averagedMacSignalStrength = new HashMap<>();
+
+        RadiomapElement result;
+        String macAddress;
+        for(RssiReading reading : a.getRssiReadings()){
+            macAddress = reading.getMacAddress();
+            if(!averagedMacSignalStrength.containsKey(macAddress)){
+                averagedMacSignalStrength.put(macAddress, null);
+            }
+        }
+
+        for(RssiReading reading : b.getRssiReadings()){
+            macAddress = reading.getMacAddress();
+            if(!averagedMacSignalStrength.containsKey(macAddress)){
+                averagedMacSignalStrength.put(macAddress, null);
+            }
+        }
+
+        double readingA;
+        double readingB;
+        for(String someOtherMacAddress : averagedMacSignalStrength.keySet()){
+            readingA = retrieveSignalStrengthByMacAddress(a.getRssiReadings(), someOtherMacAddress);
+            readingB = retrieveSignalStrengthByMacAddress(b.getRssiReadings(), someOtherMacAddress);
+            averagedMacSignalStrength.put(someOtherMacAddress, new Double[]{readingA, readingB});
+        }
+
+        List<RssiReading> mergedRadioMapElements = mergeRssiReadings(averagedMacSignalStrength, a, b);
+        PosiReference mergedPosiReference = mergePosiReferences(a.getPosiReference(), b.getPosiReference());
+
+        return new RadiomapElement(null, mergedPosiReference, mergedRadioMapElements);
+
+    }
+
+
+    private static PosiReference mergePosiReferences(PosiReference a, PosiReference b){
+
+        Position positionA = a.getReferencePosition();
+        Position positionB = b.getReferencePosition();
+        LocXYZ wrapperA = new LocXYZ(positionA.getLatitude(), positionA.getLongitude(), positionA.getHeight());
+        LocXYZ wrapperB = new LocXYZ(positionB.getLatitude(), positionB.getLongitude(), positionB.getHeight());
+
+        wrapperA = wrapperA.mul(a.getAvgNumber());
+        wrapperB = wrapperB.mul(b.getAvgNumber());
+
+        LocXYZ wrapperMerged = wrapperA.add(wrapperB);
+        wrapperMerged = wrapperMerged.mul(1.0d / (a.getAvgNumber() + b.getAvgNumber()));
+
+        return new PosiReference(-1, a.getAvgNumber() + b.getAvgNumber(),
+                new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z), -1, -1);
+
+    }
+
+    private static List<RssiReading> mergeRssiReadings(Map<String, Double[]> averagedMacSignalStrenghts, RadiomapElement a, RadiomapElement b){
+
+        List<RssiReading> result = new ArrayList<>(averagedMacSignalStrenghts.size());
+
+        double readingA;
+        double readingB;
+        double merged;
+        int avgA = a.getPosiReference().getAvgNumber();
+        int avgB = b.getPosiReference().getAvgNumber();
+        for(String macAddress : averagedMacSignalStrenghts.keySet()){
+            readingA = averagedMacSignalStrenghts.get(macAddress)[0];
+            readingB = averagedMacSignalStrenghts.get(macAddress)[1];
+            if(readingA != 0.0 && readingB != 0.0){
+                merged = (readingA * avgA + readingB * avgB) / (avgA + avgB);
+            }else if(readingA == 0.0){
+                merged = readingB;
+            }else{
+                merged = readingA;
+            }
+            result.add(new RssiReading(0.0, null, macAddress,
+                    merged, true));
+        }
+
+        return result;
+
+    }
+
+
+
+    private static double retrieveSignalStrengthByMacAddress(List<RssiReading> rssiReadings, String macAddress){
+
+        double result = 0.0;
+        for (RssiReading reading: rssiReadings) {
+            if(macAddress.equals(reading.getMacAddress())){
+                result = reading.getRssiSignalStrength();
+                break;
+            }
+        }
+
+        return result;
+
+    }
 
 
 

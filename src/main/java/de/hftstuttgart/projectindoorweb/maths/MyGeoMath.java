@@ -11,7 +11,6 @@ package de.hftstuttgart.projectindoorweb.maths;
  * given in lat/long
  *
  * @author stefan
- *
  */
 public class MyGeoMath {
 
@@ -67,16 +66,16 @@ public class MyGeoMath {
     /**
      * ll2xy converts a latitude/longitude coordinate to a local xy coordinate
      * it is not meant to be very accurate though ...
-     *
+     * <p>
      * besides the actual coordinate ll to be converted, also a basept and an
      * anglept are needed
      *
-     * @param ll coordinate for which the transofrmation will be calculated
-     * @param basept The latitude and longitude of the local xy-system (0/0)
-     * point
+     * @param ll      coordinate for which the transofrmation will be calculated
+     * @param basept  The latitude and longitude of the local xy-system (0/0)
+     *                point
      * @param anglept lat and long of a point on the x-Axis of the local xy
-     * system This point is used to detect the angle between the x-axis and the
-     * west-east direction
+     *                system This point is used to detect the angle between the x-axis and the
+     *                west-east direction
      * @return The return value holds the x- and y coordinate of the point ll,
      * in local xy coordinates, unit is meters
      */

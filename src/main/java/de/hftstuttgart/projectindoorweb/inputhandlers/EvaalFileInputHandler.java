@@ -1,6 +1,7 @@
 package de.hftstuttgart.projectindoorweb.inputhandlers;
 
 import de.hftstuttgart.projectindoorweb.config.ConfigContainer;
+import de.hftstuttgart.projectindoorweb.helper.EvaalFileHelper;
 import de.hftstuttgart.projectindoorweb.parsers.EvaalFileParser;
 import de.hftstuttgart.projectindoorweb.pojos.RadiomapElement;
 
@@ -63,9 +64,9 @@ public class EvaalFileInputHandler implements InputHandler {
         }
 
 
-        /*
-        * TODO: Add possibility to merge radio map elements in case ConfigContainer.MERGE_RADIOMAP_ELEMENTS is set to 'true'
-        * */
+        if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
+            radiomapElements = EvaalFileHelper.mergeSimilarPositions(radiomapElements);
+        }
 
         return handlingSuccessful;
 
