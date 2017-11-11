@@ -5,7 +5,7 @@ import de.hftstuttgart.projectindoorweb.maths.LatLongCoord;
 public class ConfigContainer {
 
     public static final String RADIO_MAP_FILE_PATH = "./radiomapfiles";
-    public static final String RADIO_MAP_TEST_FILE_PATH = "./radiomapfiles-test";
+    public static final String RADIO_MAP_TEST_FILE_PATH = "./radiomapfiles";
     public static final String EVALUATION_FILE_PATH = "./evaluationfiles";
 
     public static final LatLongCoord BASE_POSITION = new LatLongCoord(40.31320308, -3.48367648);
