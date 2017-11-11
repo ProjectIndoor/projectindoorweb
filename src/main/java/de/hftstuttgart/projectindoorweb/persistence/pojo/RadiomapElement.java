@@ -1,4 +1,4 @@
-package de.hftstuttgart.projectindoorweb.pojos;
+package de.hftstuttgart.projectindoorweb.persistence.pojo;
 
 import java.io.File;
 import java.util.List;

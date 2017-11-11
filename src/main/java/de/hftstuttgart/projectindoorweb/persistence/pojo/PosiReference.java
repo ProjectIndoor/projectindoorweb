@@ -1,6 +1,4 @@
-package de.hftstuttgart.projectindoorweb.pojos;
-
-import java.io.File;
+package de.hftstuttgart.projectindoorweb.persistence.pojo;
 
 public class PosiReference {
 
