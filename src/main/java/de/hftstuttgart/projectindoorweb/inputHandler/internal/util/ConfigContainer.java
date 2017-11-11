@@ -1,6 +1,6 @@
 package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 
 public class ConfigContainer {
 

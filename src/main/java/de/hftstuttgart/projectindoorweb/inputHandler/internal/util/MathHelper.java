@@ -1,6 +1,6 @@
 package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.LocXYZ;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.persistence.pojo.Position;
 
 public class MathHelper {

@@ -1,7 +1,7 @@
 package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.LatLongCoord;
-import de.hftstuttgart.projectindoorweb.geoCalculator.LocXYZ;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
 import de.hftstuttgart.projectindoorweb.persistence.pojo.PosiReference;
 import de.hftstuttgart.projectindoorweb.persistence.pojo.Position;

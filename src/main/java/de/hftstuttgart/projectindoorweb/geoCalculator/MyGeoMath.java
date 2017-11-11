@@ -4,6 +4,9 @@
  */
 package de.hftstuttgart.projectindoorweb.geoCalculator;
 
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
+
 /**
  * MyGeoMath contains static methods for coordinate conversions. Supported
  * conversions are Latitude/Longitude to local x/y coordinates and local x/y

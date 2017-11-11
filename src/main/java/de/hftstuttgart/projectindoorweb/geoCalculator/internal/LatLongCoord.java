@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.hftstuttgart.projectindoorweb.geoCalculator;
+package de.hftstuttgart.projectindoorweb.geoCalculator.internal;
 
 import java.io.Serializable;
 
