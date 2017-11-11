@@ -1,4 +1,4 @@
-package de.hftstuttgart.projectindoorweb.maths;
+package de.hftstuttgart.projectindoorweb.geoCalculator;
 
 public class LocXYZ extends LocalXYCoord {
 

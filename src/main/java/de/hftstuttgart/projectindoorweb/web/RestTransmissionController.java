@@ -18,7 +18,8 @@ public class RestTransmissionController {
     @RequestMapping(path="/simpleResponse", method=GET)
     public SimpleResponse simpleResponse(@RequestParam(value=DEFAULT_VALUE_PARAM, defaultValue=DEFAULT_VALUE) String value) {
 
-        return new RestTransmissionServiceImpl().createSimpleResponse(value);
+        RestTransmissionService restTransmissionService=RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+        return restTransmissionService.createSimpleResponse(value);
 
     }
 }

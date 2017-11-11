@@ -1,40 +1,28 @@
-package de.hftstuttgart.projectindoorweb.inputhandlers;
+package de.hftstuttgart.projectindoorweb.inputHandler;
 
-import de.hftstuttgart.projectindoorweb.config.ConfigContainer;
-import de.hftstuttgart.projectindoorweb.helper.EvaalFileHelper;
-import de.hftstuttgart.projectindoorweb.parsers.EvaalFileParser;
-import de.hftstuttgart.projectindoorweb.pojos.RadiomapElement;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.EvaalFileHelper;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.EvaalFileParser;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.RadiomapElement;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class EvaalFileInputHandler implements InputHandler {
 
-    private static EvaalFileInputHandler instance;
-
     private ExecutorService executorService;
 
-    private EvaalFileInputHandler(){}
-
-    public static EvaalFileInputHandler getInstance(){
-        if(instance == null){
-            instance = new EvaalFileInputHandler();
-        }
-        return instance;
+    public EvaalFileInputHandler(ExecutorService executorService) {
+        this.executorService = executorService;
     }
-
 
     @Override
     public boolean handleInput(boolean filesForRadiomap, File... inputFiles) {
 
         boolean handlingSuccessful = false;
-
-        executorService = Executors.newFixedThreadPool(inputFiles.length);
 
         List<EvaalFileParser> fileParsers = new ArrayList<>(inputFiles.length);
         for (File inputFile: inputFiles) {

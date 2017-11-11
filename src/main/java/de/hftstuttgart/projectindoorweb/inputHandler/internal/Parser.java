@@ -1,4 +1,4 @@
-package de.hftstuttgart.projectindoorweb.parsers;
+package de.hftstuttgart.projectindoorweb.inputHandler.internal;
 
 import java.io.File;
 

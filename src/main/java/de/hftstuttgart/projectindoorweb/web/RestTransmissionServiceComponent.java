@@ -3,7 +3,7 @@ package de.hftstuttgart.projectindoorweb.web;
 /**
  *  Rest Transmission component class to initialize and dispose of the Rest Transmission service.
  *  Do not use the <class>{@link RestTransmissionServiceImpl}</class> class implementation directly. Only initialize
- *  this class once through @initComponent on startup and access the object through the @getDeviceAccessor method.
+ *  this class once through @initComponent on startup and access the object through the @getRestTransmissionServiceInstance method.
  */
 public class RestTransmissionServiceComponent {
     private static RestTransmissionService instance;
@@ -26,7 +26,7 @@ public class RestTransmissionServiceComponent {
 
     }
 
-    public static RestTransmissionService getDeviceAccessor()
+    public static RestTransmissionService getRestTransmissionServiceInstance()
     {
         if (instance != null)
         {

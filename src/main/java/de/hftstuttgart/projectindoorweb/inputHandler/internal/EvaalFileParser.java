@@ -1,9 +1,9 @@
-package de.hftstuttgart.projectindoorweb.parsers;
+package de.hftstuttgart.projectindoorweb.inputHandler.internal;
 
-import de.hftstuttgart.projectindoorweb.helper.EvaalFileHelper;
-import de.hftstuttgart.projectindoorweb.pojos.PosiReference;
-import de.hftstuttgart.projectindoorweb.pojos.RadiomapElement;
-import de.hftstuttgart.projectindoorweb.pojos.RssiReading;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.EvaalFileHelper;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.PosiReference;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.RadiomapElement;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.RssiReading;
 
 import java.io.File;
 import java.io.IOException;

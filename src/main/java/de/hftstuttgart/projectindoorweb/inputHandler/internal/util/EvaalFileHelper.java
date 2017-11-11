@@ -1,13 +1,12 @@
-package de.hftstuttgart.projectindoorweb.helper;
+package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
-import de.hftstuttgart.projectindoorweb.config.ConfigContainer;
-import de.hftstuttgart.projectindoorweb.maths.LatLongCoord;
-import de.hftstuttgart.projectindoorweb.maths.LocXYZ;
-import de.hftstuttgart.projectindoorweb.maths.MyGeoMath;
-import de.hftstuttgart.projectindoorweb.pojos.PosiReference;
-import de.hftstuttgart.projectindoorweb.pojos.Position;
-import de.hftstuttgart.projectindoorweb.pojos.RadiomapElement;
-import de.hftstuttgart.projectindoorweb.pojos.RssiReading;
+import de.hftstuttgart.projectindoorweb.geoCalculator.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.LocXYZ;
+import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.PosiReference;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.Position;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.RadiomapElement;
+import de.hftstuttgart.projectindoorweb.persistence.pojo.RssiReading;
 
 import java.util.ArrayList;
 import java.util.HashMap;
