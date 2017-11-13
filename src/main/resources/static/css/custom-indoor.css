@@ -16,3 +16,12 @@
     height:50px;
     margin-bottom:0px;
 }
+
+.file-input-hide {
+    position: relative;
+    left: -6em;
+}
+
+.bring-forward {
+    z-index:10;
+}

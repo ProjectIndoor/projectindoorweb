@@ -32,6 +32,7 @@
             </md-toolbar>
 
             <md-content layout-margin>
+
                 <!-- Toolbar map chooser -->
                 <div ng-include="'forms/map-chooser.html'"></div>
 
@@ -79,8 +80,6 @@
             $mdSidenav(componentId).toggle();
           };
         }
-
-
 
         $scope.buildings = ('HFT Building 1;HFT Building 2;HFT Building 3').split(';').map(function(building) {
             return {abbrev: building};
@@ -141,6 +140,14 @@
         $("#map").height($(window).height()).width($(window).width());
         map.invalidateSize();
     }).trigger("resize");
+
+    function LogImportController($scope) {
+        $scope.upload = function () {
+            angular.element(document.querySelector('#inputFile')).click();
+        };
+    }
+
+    aModule.controller('LogImportCtrl', LogImportController);
 
 </script>
 </body>
