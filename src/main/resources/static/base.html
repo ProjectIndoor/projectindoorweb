@@ -5,11 +5,14 @@
     <title>Project Indoor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Angular Material CSS -->
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
     <!-- MD Icons CSS -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/custom-indoor.css">
 </head>
@@ -18,41 +21,42 @@
 <!--
   HTML content here
 -->
-    <div class="container">
-        <div ng-include="'views/header.html'"></div>
-    </div>
+<div class="container">
+    <div ng-include="'views/header.html'"></div>
+</div>
 
-    <md-content layout="row" flex>
-        <md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
-                    md-whiteframe="4">
+<md-content layout="row" flex>
+    <md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
+                md-whiteframe="4">
 
-            <!-- Toolbar title -->
-            <md-toolbar class="md-theme-indigo">
-                <h1 class="md-toolbar-tools">Map Settings</h1>
-            </md-toolbar>
+        <!-- Toolbar title -->
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">Map Settings</h1>
+        </md-toolbar>
 
-            <md-content layout-margin>
+        <md-content layout-margin>
 
-                <!-- Toolbar map chooser -->
-                <div ng-include="'forms/map-chooser.html'"></div>
+            <!-- Toolbar map chooser -->
+            <div ng-include="'forms/map-chooser.html'"></div>
 
-                <!-- Toolbar track chooser -->
-                <div ng-include="'forms/track-chooser.html'"></div>
+            <!-- Toolbar track chooser -->
+            <div ng-include="'forms/track-chooser.html'"></div>
 
-                <!-- Toolbar algorithm chooser -->
-                <div ng-include="'forms/algorithm-chooser.html'"></div>
+            <!-- Toolbar algorithm chooser -->
+            <div ng-include="'forms/algorithm-chooser.html'"></div>
 
-            </md-content>
-
-        </md-sidenav>
-        <md-content ng-controller="MapCtrl" class="mapview" flex layout-padding>
-            <div id="map"></div>
         </md-content>
+
+    </md-sidenav>
+    <md-content ng-controller="MapCtrl" class="mapview" flex layout-padding>
+        <div id="map"></div>
     </md-content>
+</md-content>
 
 </md-content>
 <!-- jQuery -->
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <!-- Leaflet Java Script -->
 <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 <!-- Angular Material requires Angular.js Libraries -->
@@ -70,6 +74,82 @@
      * Include the dependency on 'ngMaterial'
      */
     var aModule = angular.module('IndoorApp', ['ngMaterial']);
+
+    aModule.config(function($mdThemingProvider) {
+        $mdThemingProvider.definePalette('inpurple', {
+          '50': 'f4e3eb',
+          '100': 'e3b9cd',
+          '200': 'd08bab',
+          '300': 'bd5c89',
+          '400': 'af3970',
+          '500': 'a11657',
+          '600': '99134f',
+          '700': '8f1046',
+          '800': '850c3c',
+          '900': '74062c',
+          'A100': 'ffa3bd',
+          'A200': 'ff7098',
+          'A400': 'ff3d73',
+          'A700': 'ff2461',
+          'contrastDefaultColor': 'light',
+          'contrastDarkColors': [
+            '50',
+            '100',
+            '200',
+            'A100',
+            'A200'
+          ],
+          'contrastLightColors': [
+            '300',
+            '400',
+            '500',
+            '600',
+            '700',
+            '800',
+            '900',
+            'A400',
+            'A700'
+          ]
+        });
+        $mdThemingProvider.definePalette('inblue', {
+          '50': 'e1e8eb',
+          '100': 'b5c6ce',
+          '200': '83a0ad',
+          '300': '51798c',
+          '400': '2c5d74',
+          '500': '07405b',
+          '600': '063a53',
+          '700': '053249',
+          '800': '042a40',
+          '900': '021c2f',
+          'A100': '68b3ff',
+          'A200': '359aff',
+          'A400': '0280ff',
+          'A700': '0074e7',
+          'contrastDefaultColor': 'light',
+          'contrastDarkColors': [
+            '50',
+            '100',
+            '200',
+            'A100',
+            'A200'
+          ],
+          'contrastLightColors': [
+            '300',
+            '400',
+            '500',
+            '600',
+            '700',
+            '800',
+            '900',
+            'A400',
+            'A700'
+          ]
+        });
+        $mdThemingProvider.theme('default')
+        .primaryPalette('inpurple')
+        .accentPalette('inblue');
+    });
 
     aModule.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
         $scope.toggleLeft = buildToggler('left');
@@ -148,6 +228,7 @@
     }
 
     aModule.controller('LogImportCtrl', LogImportController);
+
 
 </script>
 </body>
