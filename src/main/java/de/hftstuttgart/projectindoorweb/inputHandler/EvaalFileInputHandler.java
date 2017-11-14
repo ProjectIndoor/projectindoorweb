@@ -50,6 +50,7 @@ public class EvaalFileInputHandler implements InputHandler {
                 radiomapElements.addAll(parser.getRadiomapElements());
             }
         }
+        System.out.println("Hi.");
 
 
         if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
