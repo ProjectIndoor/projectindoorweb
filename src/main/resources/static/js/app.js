@@ -88,6 +88,9 @@ app.config(function ($mdThemingProvider) {
     $mdThemingProvider.theme('default')
         .primaryPalette('inpurple')
         .accentPalette('inblue');
+    // add a palette variation for the toolbar
+    var whiteMap = $mdThemingProvider.extendPalette('inpurple', {'500': '#ffffff', 'contrastDefaultColor': 'dark'});
+    $mdThemingProvider.definePalette('inwhite', whiteMap);
 });
 
 // controller which handles the navigation
@@ -139,6 +142,7 @@ app.controller('LogImportCtrl', LogImportController);
 // map DOM element
 mapDiv = document.getElementById("map")
 
+/*
 // create a map inside the map DOM element
 var map = L.map('map', {
     maxZoom: 20,
@@ -163,7 +167,7 @@ var m = {
 
 // icon definition for access points
 var icAP = L.icon({
-    iconUrl: '/icons/access-point.png',
+    iconUrl: '/icons/access-point_p.png',
     iconSize: [36, 36],
     iconAnchor: [36, 36],
     popupAnchor: [-18, -18],
@@ -178,4 +182,35 @@ $(window).on("resize", function () {
     $("#map").height($(window).height()).width($(window).width());
     map.invalidateSize();
 }).trigger("resize");
+*/
 
+var extent = [0, 0, 2560, 1536];
+var projection = new ol.proj.Projection({
+    code: 'hft-image',
+    units: 'pixels',
+    extent: extent
+});
+
+var map = new ol.Map({
+    target: 'map',
+    layers: [
+        //new ol.layer.Tile({
+        //    source: new ol.source.OSM()
+        //}),
+        new ol.layer.Image({
+            source: new ol.source.ImageStatic({
+                url: '/maps/building_2_floor_3.png',
+                projection: projection,
+                imageExtent: extent
+            })
+        })
+    ],
+    view: new ol.View({
+        //center: ol.proj.fromLonLat([37.41, 8.82]),
+        //zoom: 19
+        projection: projection,
+        center: ol.extent.getCenter(extent),
+        zoom: 2,
+        maxZoom: 8
+    })
+});
