@@ -1,6 +1,5 @@
 package de.hftstuttgart.projectindoorweb.inputHandler;
 
-import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.EvaalFileHelper;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.EvaalFileParser;
@@ -22,8 +21,6 @@ public class EvaalFileInputHandler implements InputHandler {
 
     @Override
     public boolean handleInput(boolean filesForRadiomap, File... inputFiles) {
-
-        AssertParam.throwIfNull(inputFiles,"inputFiles");
 
         boolean handlingSuccessful = false;
 
