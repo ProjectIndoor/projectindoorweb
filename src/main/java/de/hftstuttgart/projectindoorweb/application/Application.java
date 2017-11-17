@@ -4,7 +4,8 @@ package de.hftstuttgart.projectindoorweb.application;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.InputHandler;
 import de.hftstuttgart.projectindoorweb.inputHandler.InputHandlerComponent;
-import de.hftstuttgart.projectindoorweb.web.RestTransmissionController;
+import de.hftstuttgart.projectindoorweb.web.PositioningController;
+import de.hftstuttgart.projectindoorweb.web.ProjectController;
 import de.hftstuttgart.projectindoorweb.web.RestTransmissionServiceComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses=RestTransmissionController.class)
+@ComponentScan(basePackageClasses=PositioningController.class)
+@ComponentScan(basePackageClasses=ProjectController.class)
 public class Application {
 
     public static void main(String[] args) {
@@ -39,6 +41,7 @@ public class Application {
         ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
 
         InputHandlerComponent.initComponent(executorService);
-        RestTransmissionServiceComponent.initComponent();
+
+        RestTransmissionServiceComponent.initComponent(InputHandlerComponent.getInputHandler());
     }
 }

@@ -1,5 +1,7 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.inputHandler.InputHandler;
+
 /**
  *  Rest Transmission component class to initialize and dispose of the Rest Transmission service.
  *  Do not use the <class>{@link RestTransmissionServiceImpl}</class> class implementation directly. Only initialize
@@ -8,9 +10,9 @@ package de.hftstuttgart.projectindoorweb.web;
 public class RestTransmissionServiceComponent {
     private static RestTransmissionService instance;
 
-    public static void initComponent()
+    public static void initComponent(InputHandler inputHandler)
     {
-        instance = new RestTransmissionServiceImpl();
+        instance = new RestTransmissionServiceImpl(inputHandler);
     }
 
     public static void disposeComponent()
