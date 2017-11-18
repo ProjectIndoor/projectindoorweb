@@ -17,6 +17,6 @@ public interface InputHandler {
      * @param inputFiles The files the InputHandler implementation will handle.
      * @return True if handling the input files was successful.
      */
-    boolean handleInput(boolean filesForRadiomap, File ... inputFiles);
+    boolean handleInput(boolean filesForRadiomap, File ... inputFiles);//TODO split into two methods if viable
 
 }
