@@ -18,7 +18,7 @@ public class AssertParam {
 
     public static void throwIfNullOrEmpty(String field, String message)
     {
-        if( field == null || field.isEmpty() || field.matches( "^\\s*$" ) ){
+        if( isNullOrEmpty(field) ){
             throw new NullPointerException(message);
         }
     }
