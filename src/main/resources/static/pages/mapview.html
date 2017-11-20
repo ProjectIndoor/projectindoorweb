@@ -1,1 +1,28 @@
+<!-- Sidebar definition for the map editor -->
+<md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
+            md-whiteframe="4">
+
+    <!-- Toolbar title -->
+    <md-toolbar class="md-theme-indigo">
+        <h1 class="md-toolbar-tools">Map Settings</h1>
+    </md-toolbar>
+
+    <md-content layout-margin>
+
+        <!-- Toolbar map chooser -->
+        <div ng-include="'pages/forms/map-chooser.html'"></div>
+
+        <!-- Toolbar track chooser -->
+        <div ng-include="'pages/forms/track-chooser.html'"></div>
+
+        <!-- Toolbar algorithm chooser -->
+        <div ng-include="'pages/forms/algorithm-chooser.html'"></div>
+
+    </md-content>
+
+</md-sidenav>
+<md-button class="md-fab" aria-label="Eat cake">
+    A
+</md-button>
+<!-- Actual map -->
 <div ng-init="initMap()" class="mapview" id="map" style="width: 100%; height: 100%; position:fixed"></div>
