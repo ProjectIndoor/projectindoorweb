@@ -49,7 +49,6 @@ public class WifiAlgorithmHandler implements AlgorithmHandler {
 
     private WifiPositionResult calculateSinglePosition(List<RssiSignal> rssiSignals, RadioMap radioMap) {
 
-        int totalNumberOfMacs = radioMap.getTotalNumberOfMacs();
 
         List<RadioMapElement> radioMapElements = radioMap.getRadioMapElements();
         List<WifiPositionResult> preResults = new ArrayList<>();
