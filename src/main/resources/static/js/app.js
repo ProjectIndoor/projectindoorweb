@@ -203,8 +203,3 @@ app.controller('LogImportCtrl', LogImportController);
  * Non angular specific entries, like map initializing
  * ----------------------------------------------
  */
-// resize map to use full height, also on window resize
-$(window).on("resize", function () {
-    $("#map").height($(window).height()).width($(window).width());
-    map.invalidateSize();
-}).trigger("resize");
