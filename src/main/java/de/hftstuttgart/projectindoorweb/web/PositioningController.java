@@ -24,15 +24,16 @@ public class PositioningController {
 
 
     @RequestMapping(path = "/generateRadioMap", method = POST)
-    public boolean generateRadioMap(@RequestBody List<File> radioMapFiles) {
+    public boolean generateRadioMap(@RequestBody List<File> radioMapFiles) {//TODO Change parameter to map with key name and value file. Add parameter buildingId
         return restTransmissionService.generateRadioMap(radioMapFiles);
     }
 
     @RequestMapping(path = "/generatePositionResults", method = POST)
-    public boolean generatePositionResults(@RequestBody List<File> evaluationFiles) {
+    public boolean generatePositionResults(@RequestBody List<File> evaluationFiles) {//TODO Rename to importEvaFile, Add parameter buildingId
         return restTransmissionService.generatePositionResults(evaluationFiles);
     }
 
+    //TODO add method getAllBuildings returns object adjusted to entity
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
     public ResponseEntity<CalculatedPosition> getPositionForWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading) {
         CalculatedPosition result = restTransmissionService.getPositionForWifiReading(wifiReading);

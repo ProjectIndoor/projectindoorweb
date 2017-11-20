@@ -1,8 +1,9 @@
-package de.hftstuttgart.projectindoorweb.algorithm;
+package de.hftstuttgart.projectindoorweb.positionCalculator;
 
-import de.hftstuttgart.projectindoorweb.algorithm.internal.CorrelationMode;
-import de.hftstuttgart.projectindoorweb.algorithm.internal.EvalFileParser;
-import de.hftstuttgart.projectindoorweb.algorithm.internal.WifiMathHelper;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.EvalFileParser;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.WifiMathHelper;
+import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.MathHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WifiAlgorithmHandler implements AlgorithmHandler {
+public class WifiPositionCalculatorServiceImpl implements PositionCalculatorService {
 
 
     @Override
@@ -49,6 +50,9 @@ public class WifiAlgorithmHandler implements AlgorithmHandler {
 
     private WifiPositionResult calculateSinglePosition(List<RssiSignal> rssiSignals, RadioMap radioMap) {
 
+
+        AssertParam.throwIfNull(rssiSignals,"rssiSignals");
+        AssertParam.throwIfNull(radioMap,"radioMap");
 
         List<RadioMapElement> radioMapElements = radioMap.getRadioMapElements();
         List<WifiPositionResult> preResults = new ArrayList<>();

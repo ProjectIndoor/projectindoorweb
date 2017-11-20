@@ -1,8 +1,8 @@
 package de.hftstuttgart.projectindoorweb.application;
 
 
-import de.hftstuttgart.projectindoorweb.algorithm.AlgorithmHandler;
-import de.hftstuttgart.projectindoorweb.algorithm.AlgorithmHandlerComponent;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.InputHandler;
 import de.hftstuttgart.projectindoorweb.inputHandler.InputHandlerComponent;
@@ -40,8 +40,8 @@ public class Application {
         InputHandler inputHandler = InputHandlerComponent.getInputHandler();
         inputHandler.handleInput(true, inputFiles);
 
-        AlgorithmHandler algorithmHandler = AlgorithmHandlerComponent.getAlgorithmHandler();
-        List<? extends PositionResult> positionResults = algorithmHandler.calculatePositions(evalFile, inputHandler.getGeneratedRadioMaps());
+        PositionCalculatorService positionCalculator = PositionCalculatorComponent.getPositionCalculator();
+        List<? extends PositionResult> positionResults = positionCalculator.calculatePositions(evalFile, inputHandler.getGeneratedRadioMaps());
 
     }
 
@@ -50,7 +50,7 @@ public class Application {
         ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
 
         InputHandlerComponent.initComponent(executorService);
+        PositionCalculatorComponent.initComponent();
         RestTransmissionServiceComponent.initComponent(InputHandlerComponent.getInputHandler());
-        AlgorithmHandlerComponent.initComponent();
     }
 }

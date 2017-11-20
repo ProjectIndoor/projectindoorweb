@@ -9,7 +9,7 @@ import java.util.List;
  * Top level interface for classes which can handle input files
  * (e.g. parse and persist their data)
  */
-public interface InputHandler {
+public interface InputHandler { //TODO change name to PreProcessingService and package name to prepocessing?
 
     /**
      * Implementations should be able to extract data from an input file and
@@ -20,7 +20,7 @@ public interface InputHandler {
      * @param inputFiles The files the InputHandler implementation will handle.
      * @return True if handling the input files was successful.
      */
-    boolean handleInput(boolean filesForRadiomap, File ... inputFiles);//TODO split into two methods if viable
+    boolean handleInput(boolean filesForRadiomap, File ... inputFiles);//TODO split into two methods if viable. Ex. processRadioMapFiles, processEvalFiles?
 
 
     List<RadioMap> getGeneratedRadioMaps();

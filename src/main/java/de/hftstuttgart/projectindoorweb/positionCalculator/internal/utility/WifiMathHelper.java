@@ -1,6 +1,5 @@
-package de.hftstuttgart.projectindoorweb.algorithm.internal;
+package de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.MathHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;

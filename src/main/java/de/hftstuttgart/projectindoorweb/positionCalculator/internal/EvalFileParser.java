@@ -1,4 +1,4 @@
-package de.hftstuttgart.projectindoorweb.algorithm.internal;
+package de.hftstuttgart.projectindoorweb.positionCalculator.internal;
 
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.RssiSignal;
