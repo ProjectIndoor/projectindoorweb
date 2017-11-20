@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class LogFileInputHandler implements InputHandler {
 
     private ExecutorService executorService;
-    private RadioMap preProcessingResult;
+    private List<RadioMap> preProcessingRadioMaps;
 
     public LogFileInputHandler(ExecutorService executorService) {
         this.executorService = executorService;
@@ -53,18 +53,17 @@ public class LogFileInputHandler implements InputHandler {
         List<RadioMapElement> radiomapElements = new ArrayList<>();
         for (LogFileParser parser: fileParsers) {
             if(parser.isParsingFinished()){
-                radiomapElements.addAll(parser.getRadiomapElements());
-                totalNumberOfMacs += parser.getNumberOfMacs();
+                preProcessingRadioMaps.add(new RadioMap(radiomapElements));
             }
         }
-        System.out.println("Hi.");
 
 
         if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
-            radiomapElements = LogFileHelper.mergeSimilarPositions(radiomapElements);
+            RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(preProcessingRadioMaps);
+            preProcessingRadioMaps.clear();
+            preProcessingRadioMaps.add(tmp);
         }
 
-        preProcessingResult = new RadioMap(null, radiomapElements, totalNumberOfMacs);
 
         return handlingSuccessful;
 
@@ -72,7 +71,7 @@ public class LogFileInputHandler implements InputHandler {
     }
 
     @Override
-    public RadioMap getGeneratedRadioMap() {
-        return this.preProcessingResult;
+    public List<RadioMap> getGeneratedRadioMaps() {
+        return this.preProcessingRadioMaps;
     }
 }

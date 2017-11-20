@@ -3,6 +3,7 @@ package de.hftstuttgart.projectindoorweb.inputHandler;
 import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Top level interface for classes which can handle input files
@@ -22,6 +23,6 @@ public interface InputHandler {
     boolean handleInput(boolean filesForRadiomap, File ... inputFiles);//TODO split into two methods if viable
 
 
-    RadioMap getGeneratedRadioMap();
+    List<RadioMap> getGeneratedRadioMaps();
 
 }

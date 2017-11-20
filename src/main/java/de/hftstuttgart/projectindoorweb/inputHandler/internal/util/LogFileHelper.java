@@ -12,10 +12,15 @@ import java.util.Map;
 
 public class LogFileHelper {
 
-    public static List<RadioMapElement> mergeSimilarPositions(List<RadioMapElement> unmergedElements){
+    public static RadioMap mergeRadioMapsBySimilarPositions(List<RadioMap> radioMaps){
 
         List<RadioMapElement> result = new ArrayList<>();
+        List<RadioMapElement> unmergedElements = new ArrayList<>();
 
+        for (RadioMap radioMap:
+             radioMaps) {
+            unmergedElements.addAll(radioMap.getRadioMapElements());
+        }
         boolean unique;
         Position a;
         Position b;
@@ -36,7 +41,7 @@ public class LogFileHelper {
             }
         }
 
-        return result;
+        return new RadioMap(result);
 
     }
 

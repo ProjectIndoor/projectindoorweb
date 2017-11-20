@@ -41,8 +41,8 @@ public class Application {
         inputHandler.handleInput(true, inputFiles);
 
         AlgorithmHandler algorithmHandler = AlgorithmHandlerComponent.getAlgorithmHandler();
-        List<? extends PositionResult> positionResults = algorithmHandler.calculatePositions(evalFile, inputHandler.getGeneratedRadioMap());
-        System.out.println("Hi.");
+        List<? extends PositionResult> positionResults = algorithmHandler.calculatePositions(evalFile, inputHandler.getGeneratedRadioMaps());
+
     }
 
     private static void initComponents(int threadPoolSize) {
