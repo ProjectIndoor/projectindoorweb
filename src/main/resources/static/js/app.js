@@ -9,9 +9,32 @@
  */
 
 // definition of the angular app
-var app = angular.module('IndoorApp', ['ngMaterial']);
+var app = angular.module('IndoorApp', ['ngMaterial', 'ngRoute']);
 
-// app configuration, defining color palettes
+// ------------- Page routing
+app.config(['$routeProvider',
+
+    function ($routeProvider) {
+        $routeProvider
+            .when('/map', {
+                templateUrl: 'pages/mapview.html',
+                controller: 'MapCtrl'
+            })
+            .when('/edit', {
+                templateUrl: 'pages/sensor-import.html',
+                controller: 'LogImportCtrl'
+            })
+            .when('/import', {
+                templateUrl: 'pages/sensor-import.html',
+                controller: 'LogImportCtrl'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    }]);
+
+
+// ------------- Color definitions
 app.config(function ($mdThemingProvider) {
     // palette for our purple color tone
     $mdThemingProvider.definePalette('inpurple', {
@@ -93,6 +116,7 @@ app.config(function ($mdThemingProvider) {
     $mdThemingProvider.definePalette('inwhite', whiteMap);
 });
 
+// ------------- Controllers
 // controller which handles the navigation
 app.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
     $scope.toggleLeft = buildToggler('left');
@@ -116,10 +140,50 @@ app.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
 });
 
 // controller which handles the map
-function MapController() {
+function MapController($scope) {
+
+    $scope.initMap = function () {
+
+
+        // map DOM element
+        mapDiv = document.getElementById("map")
+
+        var extent = [0, 0, 2560, 1536];
+        var projection = new ol.proj.Projection({
+            code: 'hft-image',
+            units: 'pixels',
+            extent: extent
+        });
+
+        var map = new ol.Map({
+            target: 'map',
+            layers: [
+                //new ol.layer.Tile({
+                //    source: new ol.source.OSM()
+                //}),
+                new ol.layer.Image({
+                    source: new ol.source.ImageStatic({
+                        url: '/maps/building_2_floor_3.png',
+                        projection: projection,
+                        imageExtent: extent
+                    })
+                })
+            ],
+            view: new ol.View({
+                //center: ol.proj.fromLonLat([37.41, 8.82]),
+                //zoom: 19
+                projection: projection,
+                center: ol.extent.getCenter(extent),
+                zoom: 2,
+                maxZoom: 8
+            })
+        });
+
+    };
+
     this.$afterViewInit = function () {
         console.log('Hi')
-        map.invalidateSize();
+        //map.invalidateSize();
     };
 }
 
@@ -139,78 +203,8 @@ app.controller('LogImportCtrl', LogImportController);
  * Non angular specific entries, like map initializing
  * ----------------------------------------------
  */
-// map DOM element
-mapDiv = document.getElementById("map")
-
-/*
-// create a map inside the map DOM element
-var map = L.map('map', {
-    maxZoom: 20,
-    minZoom: 18,
-    crs: L.CRS.Simple
-}).setView([0, 0], 20);
-
-var southWest = map.unproject([0, 1536], map.getMaxZoom());
-var northEast = map.unproject([2560, 0], map.getMaxZoom());
-map.setMaxBounds(new L.LatLngBounds(southWest, northEast));
-
-L.tileLayer('https://doblix.de/tiles/hft/building_2/floor_3/{z}/map_{x}_{y}.png', {
-    attribution: 'Map data &copy; HfT Stuttgart',
-    maxZoom: 20,
-}).addTo(map);
-
-// pixel coordinates in large image
-var m = {
-    x: 320,
-    y: 320
-}
-
-// icon definition for access points
-var icAP = L.icon({
-    iconUrl: '/icons/access-point_p.png',
-    iconSize: [36, 36],
-    iconAnchor: [36, 36],
-    popupAnchor: [-18, -18],
-});
-
-// a demo marker
-var marker = L.marker(map.unproject([m.x, m.y], map.getMaxZoom()), {icon: icAP}).addTo(map);
-marker.bindPopup("<b>Access Point</b><br>AP 1");
-
 // resize map to use full height, also on window resize
 $(window).on("resize", function () {
     $("#map").height($(window).height()).width($(window).width());
     map.invalidateSize();
 }).trigger("resize");
-*/
-
-var extent = [0, 0, 2560, 1536];
-var projection = new ol.proj.Projection({
-    code: 'hft-image',
-    units: 'pixels',
-    extent: extent
-});
-
-var map = new ol.Map({
-    target: 'map',
-    layers: [
-        //new ol.layer.Tile({
-        //    source: new ol.source.OSM()
-        //}),
-        new ol.layer.Image({
-            source: new ol.source.ImageStatic({
-                url: '/maps/building_2_floor_3.png',
-                projection: projection,
-                imageExtent: extent
-            })
-        })
-    ],
-    view: new ol.View({
-        //center: ol.proj.fromLonLat([37.41, 8.82]),
-        //zoom: 19
-        projection: projection,
-        center: ol.extent.getCenter(extent),
-        zoom: 2,
-        maxZoom: 8
-    })
-});
