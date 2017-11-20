@@ -32,7 +32,7 @@ app.config(['$routeProvider',
                 controller: 'LogImportCtrl'
             })
             .otherwise({
-                redirectTo: '/'
+                redirectTo: '/map'
             });
     }]);
 
@@ -119,9 +119,27 @@ app.config(function ($mdThemingProvider) {
     $mdThemingProvider.definePalette('inwhite', whiteMap);
 });
 
+// ------------- Application run
+app.run(['$rootScope', '$route', function ($rootScope, $route) {
+    $rootScope.$on('$routeChangeSuccess', function () {
+        document.title = $route.current.title;
+    });
+}]);
+
 // ------------- Controllers
-// controller which handles the navigation
-app.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
+// controller which handels page navigation
+app.controller('NavToolbarCtrl', function ($scope, $timeout) {
+    $scope.currentTitle = 'Map View'
+
+    // change Toolbar title when route changes
+    $scope.$on('$routeChangeSuccess', function (event, current) {
+        $scope.currentTitle = current.title;
+    });
+
+})
+
+// controller which handles map configuration
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
