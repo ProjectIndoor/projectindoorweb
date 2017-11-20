@@ -17,7 +17,7 @@ app.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider
             .when('/map', {
-                templateUrl: 'pages/mapview.html',
+                templateUrl: 'pages/map.html',
                 controller: 'MapCtrl'
             })
             .when('/edit', {
