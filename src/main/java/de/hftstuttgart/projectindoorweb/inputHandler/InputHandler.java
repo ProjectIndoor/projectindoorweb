@@ -1,5 +1,7 @@
 package de.hftstuttgart.projectindoorweb.inputHandler;
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+
 import java.io.File;
 
 /**
@@ -18,5 +20,8 @@ public interface InputHandler {
      * @return True if handling the input files was successful.
      */
     boolean handleInput(boolean filesForRadiomap, File ... inputFiles);//TODO split into two methods if viable
+
+
+    RadioMap getGeneratedRadioMap();
 
 }

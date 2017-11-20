@@ -38,4 +38,5 @@ public class CalculatedPosition {
     public String getIdentifier() {
         return identifier;
     }
+
 }

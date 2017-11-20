@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 
 /**
  *  Input handler component class to initialize and dispose of the Eva File input handler.
- *  Do not use the <class>{@link EvaalFileInputHandler}</class> class implementation directly. Only initialize
+ *  Do not use the <class>{@link LogFileInputHandler}</class> class implementation directly. Only initialize
  *  this class once through @initComponent on startup and access the object through the @getInputHandler method.
  */
 public class InputHandlerComponent {
@@ -13,7 +13,7 @@ public class InputHandlerComponent {
 
     public static void initComponent(ExecutorService executorService)
     {
-        instance = new EvaalFileInputHandler(executorService);
+        instance = new LogFileInputHandler(executorService);
     }
 
     public static void disposeComponent()

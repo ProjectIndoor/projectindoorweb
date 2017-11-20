@@ -9,4 +9,5 @@ public class TransmissionConstants {
     public static final String PROJECT_IDENTIFIER_PARAM = "projectIdentifier";
     public static final String PROJECT_NAME_PARAM = "projectName";
     public static final String ALGORITHM_TYPE_PARAM = "algorithmType";
+
 }

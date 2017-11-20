@@ -4,5 +4,15 @@ public class Algorithm extends ModelBase {
 
     private String algorithmName;
 
-    private RadioMap usedRadioMap;
+    public Algorithm(String algorithmName) {
+        this.algorithmName = algorithmName;
+    }
+
+    public String getAlgorithmName() {
+        return algorithmName;
+    }
+
+    public void setAlgorithmName(String algorithmName) {
+        this.algorithmName = algorithmName;
+    }
 }
