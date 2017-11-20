@@ -20,6 +20,7 @@ public class LogFileInputHandler implements InputHandler {
 
     public LogFileInputHandler(ExecutorService executorService) {
         this.executorService = executorService;
+        this.preProcessingRadioMaps = new ArrayList<>();
     }
 
     @Override
@@ -53,6 +54,7 @@ public class LogFileInputHandler implements InputHandler {
         List<RadioMapElement> radiomapElements = new ArrayList<>();
         for (LogFileParser parser: fileParsers) {
             if(parser.isParsingFinished()){
+                radiomapElements = parser.getRadiomapElements();
                 preProcessingRadioMaps.add(new RadioMap(radiomapElements));
             }
         }
