@@ -1,6 +1,6 @@
 package de.hft_stuttgart.projectindoorweb;
 
-import de.hft_stuttgart.projectindoorweb.de.hft_stuttgart.projectindoorweb.parser.SensorFileReader;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
