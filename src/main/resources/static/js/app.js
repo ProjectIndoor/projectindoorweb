@@ -17,15 +17,18 @@ app.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider
             .when('/map', {
+                title: 'Map View',
                 templateUrl: 'pages/map.html',
                 controller: 'MapCtrl'
             })
             .when('/edit', {
-                templateUrl: 'pages/sensor-import.html',
+                title: 'Edit',
+                templateUrl: 'pages/edit.html',
                 controller: 'LogImportCtrl'
             })
             .when('/import', {
-                templateUrl: 'pages/sensor-import.html',
+                title: 'Import',
+                templateUrl: 'pages/import.html',
                 controller: 'LogImportCtrl'
             })
             .otherwise({
