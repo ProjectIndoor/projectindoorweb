@@ -1,6 +1,8 @@
 package de.hftstuttgart.projectindoorweb.application;
 
 
+import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
@@ -10,9 +12,13 @@ import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
 import de.hftstuttgart.projectindoorweb.web.PositioningController;
 import de.hftstuttgart.projectindoorweb.web.ProjectController;
 import de.hftstuttgart.projectindoorweb.web.RestTransmissionServiceComponent;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.io.File;
 import java.util.List;
@@ -22,6 +28,8 @@ import java.util.concurrent.Executors;
 @SpringBootApplication
 @ComponentScan(basePackageClasses=PositioningController.class)
 @ComponentScan(basePackageClasses=ProjectController.class)
+@EntityScan("de.hftstuttgart.projectindoorweb.persistence.entities")
+@EnableJpaRepositories("de.hftstuttgart.projectindoorweb.persistence.repositories")
 public class Application {
 
     public static void main(String[] args) {
@@ -52,5 +60,13 @@ public class Application {
         InputHandlerComponent.initComponent(executorService);
         PositionCalculatorComponent.initComponent();
         RestTransmissionServiceComponent.initComponent(InputHandlerComponent.getInputHandler());
+    }
+
+    @Bean
+    CommandLineRunner initApplication(ProjectRepository projectRepository){
+        return (args) -> {
+            RepositoryRegistry.initRepositoryMap();
+            RepositoryRegistry.registerRepository(ProjectRepository.class.getName(),projectRepository);
+        };
     }
 }

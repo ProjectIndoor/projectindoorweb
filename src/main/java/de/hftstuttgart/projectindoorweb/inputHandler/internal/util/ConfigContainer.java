@@ -3,7 +3,7 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 
-public class ConfigContainer {
+public class ConfigContainer {//TODO move to more visible container. Add all current constant classes to this cotainer class
 
     public static final String RADIO_MAP_FILE_PATH = "./radiomapfiles";
     public static final String RADIO_MAP_TEST_FILE_PATH = "./radiomapfiles/testfile";

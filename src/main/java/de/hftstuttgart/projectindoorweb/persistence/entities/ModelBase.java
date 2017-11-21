@@ -25,6 +25,15 @@ public abstract class ModelBase implements Serializable {
     @Column(name = "date_updated", nullable = false)
     private Date dateUpdated;
 
+    protected  ModelBase(){}
+
+    public ModelBase(Long id, Integer version, Date dateCreated, Date dateUpdated) {
+        this.id = id;
+        this.version = version;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
     public Long getId() {
         return id;
     }

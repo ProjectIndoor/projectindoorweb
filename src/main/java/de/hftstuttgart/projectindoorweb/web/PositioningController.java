@@ -23,8 +23,8 @@ public class PositioningController {
             = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
 
-    @RequestMapping(path = "/generateRadioMap", method = POST)
-    public boolean generateRadioMap(@RequestBody List<File> radioMapFiles) {//TODO Change parameter to map with key name and value file. Add parameter buildingId
+    @RequestMapping(path = "/generateRadioMaps", method = POST)
+    public boolean generateRadioMaps(@RequestBody List<File> radioMapFiles) {//TODO Change parameter to map with key name and value file. Add parameter buildingId, Add projectId
         return restTransmissionService.generateRadioMap(radioMapFiles);
     }
 
@@ -35,12 +35,14 @@ public class PositioningController {
 
     //TODO add method getAllBuildings returns object adjusted to entity
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
-    public ResponseEntity<CalculatedPosition> getPositionForWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading) {
+    public ResponseEntity<CalculatedPosition> getPositionForWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading) {
         CalculatedPosition result = restTransmissionService.getPositionForWifiReading(wifiReading);
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
     }
 
     @RequestMapping(path = "/getPositionResultsForIdentifier", method = GET)
+//TODO add new parameters projectId and buildingId:
     public ResponseEntity<List<CalculatedPosition>> getPositionResultsForIdentifier(@RequestParam(value = TransmissionConstants.POSITION_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String positionIdentifier) {
         List<CalculatedPosition> result = restTransmissionService.getPositionResultsForIdentifier(positionIdentifier);
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);

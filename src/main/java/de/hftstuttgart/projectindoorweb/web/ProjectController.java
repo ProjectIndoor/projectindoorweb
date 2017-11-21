@@ -18,25 +18,31 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/project")
 public class ProjectController {
 
-    private RestTransmissionService restTransmissionService= RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+    private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
-    @RequestMapping(path="/saveNewProject", method=POST)
-    public boolean saveNewProject(@RequestBody Set<ProjectParameter> projectParameterSet, @RequestParam(value=TransmissionConstants.PROJECT_NAME_PARAM, defaultValue=TransmissionConstants.EMPTY_STRING_VALUE) String projectName,@RequestParam(value=TransmissionConstants.ALGORITHM_TYPE_PARAM, defaultValue=TransmissionConstants.EMPTY_STRING_VALUE) String algorithmType) {
-        return restTransmissionService.saveNewProject(projectParameterSet,projectName, algorithmType);
+    @RequestMapping(path = "/saveNewProject", method = POST)//TODO return projectId as String
+    public boolean saveNewProject(@RequestBody Set<ProjectParameter> projectParameterSet,
+                                  @RequestParam(value = TransmissionConstants.PROJECT_NAME_PARAM,
+                                          defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                          String projectName,
+                                  @RequestParam(value = TransmissionConstants.ALGORITHM_TYPE_PARAM,
+                                          defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                          String algorithmType) {
+        return restTransmissionService.saveNewProject(projectParameterSet, projectName, algorithmType);
     }
 
-    @RequestMapping(path="/saveCurrentProject", method=POST)
-    public boolean saveCurrentProject(@RequestBody Set<ProjectParameter> projectParameterSet, @RequestParam(value=TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue=TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier,@RequestParam(value=TransmissionConstants.ALGORITHM_TYPE_PARAM, defaultValue=TransmissionConstants.EMPTY_STRING_VALUE) String algorithmType) {
-        return restTransmissionService.saveCurrentProject(projectParameterSet,projectIdentifier, algorithmType);
+    @RequestMapping(path = "/saveCurrentProject", method = POST)
+    public boolean saveCurrentProject(@RequestBody Set<ProjectParameter> projectParameterSet, @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier, @RequestParam(value = TransmissionConstants.ALGORITHM_TYPE_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String algorithmType) {
+        return restTransmissionService.saveCurrentProject(projectParameterSet, projectIdentifier, algorithmType);
     }
 
-    @RequestMapping(path="/deleteSelectedProject", method=DELETE)
-    public boolean deleteSelectedProject(@RequestParam(value=TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue= TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
+    @RequestMapping(path = "/deleteSelectedProject", method = DELETE)
+    public boolean deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
         return restTransmissionService.deleteSelectedProject(projectIdentifier);
     }
 
-    @RequestMapping(path="/loadSelectedProject", method=GET)
-    public ResponseEntity<ProjectElement> loadSelectedProject(@RequestParam(value=TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue=TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
+    @RequestMapping(path = "/loadSelectedProject", method = GET)
+    public ResponseEntity<ProjectElement> loadSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
         ProjectElement result = restTransmissionService.loadSelectedProject(projectIdentifier);
         return new ResponseEntity<ProjectElement>(result, HttpStatus.OK);
     }

@@ -5,6 +5,8 @@ import java.util.List;
 public class RadioMap extends ModelBase {
 
 
+    //TODO Add 2 new coordinates for latlong
+
     private List<RadioMapElement> radioMapElements;
 
 
