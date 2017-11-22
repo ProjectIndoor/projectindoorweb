@@ -127,16 +127,6 @@ app.controller('NavCtrl', function ($scope, $timeout, $mdSidenav) {
             $mdSidenav(componentId).toggle();
         };
     }
-
-    $scope.buildings = ('HFT Building 1;HFT Building 2;HFT Building 3').split(';').map(function (building) {
-        return {abbrev: building};
-    });
-
-
-    $scope.floors = ('Floor 1;Floor 2;Floor 3').split(';').map(function (floor) {
-        return {abbrev: floor};
-    });
-
 });
 
 // controller which handles the map
@@ -197,6 +187,22 @@ function LogImportController($scope) {
 }
 
 app.controller('LogImportCtrl', LogImportController);
+
+//Controller to fetch the building and floor data using GET method
+function BuildingController($scope, $http) {
+    $http({
+        method : "GET",
+        url : "config/config.json"
+    }).then(function success(response) {
+        $scope.buildings = response.data.buildings;
+        $scope.floors = response.data.floors;
+    }, function error(response) {
+        $scope.buildings = response.statusText;
+        $scope.floors = response.statusText;
+    });
+}
+
+app.controller('BuildingCtrl', BuildingController);
 
 /**
  * ----------------------------------------------

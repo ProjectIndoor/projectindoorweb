@@ -1,4 +1,4 @@
-<md-card class="md-whiteframe-3dp" md-theme="default">
+<md-card class="md-whiteframe-3dp" md-theme="default" ng-controller="BuildingCtrl">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">Map</span>
@@ -12,28 +12,14 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Building</label>
             <md-select ng-model="map.building">
-                <md-option value="b1">
-                    HFT Building 1
-                </md-option>
-                <md-option value="b2">
-                    HFT Building 2
-                </md-option>
-                <md-option value="b3">
-                    HFT Building 3
+                <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.name}}
                 </md-option>
             </md-select>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Floor</label>
             <md-select ng-model="map.floor">
-                <md-option value="f1">
-                    Floor 1
-                </md-option>
-                <md-option value="f2">
-                    Floor 2
-                </md-option>
-                <md-option value="f3">
-                    Floor 3
+                <md-option ng-repeat="floor in floors" value="{{floor.id}}">{{floor.name}}
                 </md-option>
             </md-select>
         </md-input-container>
