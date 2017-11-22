@@ -1,23 +1,34 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.Entity;
+import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
+
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class Project extends ModelBase {
+public class Project {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String projectName;
+    private CalculationAlgorithm calculationAlgorithm;
 
-   // private List<Parameter> parameters;
-    //private EvalFile evalFile;
-  //  private Algorithm algorithm;
+    @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
+    private List<Parameter> projectParameters;
+
+    protected Project(){}
 
 
-    public Project(String projectName) {
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
         this.projectName = projectName;
-        //this.parameters = parameters;
-       // this.evalFile = evalFile;
-        //this.algorithm = algorithm;
+        this.calculationAlgorithm = calculationAlgorithm;
+        this.projectParameters = projectParameters;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getProjectName() {
@@ -26,5 +37,21 @@ public class Project extends ModelBase {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public CalculationAlgorithm getCalculationAlgorithm() {
+        return calculationAlgorithm;
+    }
+
+    public void setCalculationAlgorithm(CalculationAlgorithm calculationAlgorithm) {
+        this.calculationAlgorithm = calculationAlgorithm;
+    }
+
+    public List<Parameter> getProjectParameters() {
+        return projectParameters;
+    }
+
+    public void setProjectParameters(List<Parameter> projectParameters) {
+        this.projectParameters = projectParameters;
     }
 }

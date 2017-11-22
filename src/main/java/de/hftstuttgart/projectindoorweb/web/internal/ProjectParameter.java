@@ -5,6 +5,8 @@ public class ProjectParameter {
     private  String name;
     private  String value;
 
+    public ProjectParameter(){}
+
     public ProjectParameter(String name, String value) {
         this.name = name;
         this.value = value;

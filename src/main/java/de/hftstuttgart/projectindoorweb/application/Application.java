@@ -1,7 +1,9 @@
 package de.hftstuttgart.projectindoorweb.application;
 
 
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
@@ -59,14 +61,16 @@ public class Application {
 
         InputHandlerComponent.initComponent(executorService);
         PositionCalculatorComponent.initComponent();
+        PersistencyServiceComponent.initComponent();
+
         RestTransmissionServiceComponent.initComponent(InputHandlerComponent.getInputHandler());
     }
 
     @Bean
-    CommandLineRunner initApplication(ProjectRepository projectRepository){
+    public CommandLineRunner initApplication(ProjectRepository projectRepository){
+
         return (args) -> {
-            RepositoryRegistry.initRepositoryMap();
-            RepositoryRegistry.registerRepository(ProjectRepository.class.getName(),projectRepository);
+            RepositoryRegistry.registerRepository(Project.class.getName(),projectRepository);
         };
     }
 }

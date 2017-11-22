@@ -15,15 +15,10 @@ import java.util.stream.Collectors;
 public class LogFileParser extends Parser {
 
     private List<RadioMapElement> radiomapElements;
-    private int numberOfMacs;
 
     public LogFileParser(boolean fileForRadiomap, File sourceFile) {
         super(fileForRadiomap, sourceFile);
-        this.numberOfMacs = 0;
-    }
 
-    public int getNumberOfMacs() {
-        return numberOfMacs;
     }
 
     @Override

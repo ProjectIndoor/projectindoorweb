@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
-public abstract class ModelBase implements Serializable {
+public abstract class ModelBase implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
@@ -26,13 +26,6 @@ public abstract class ModelBase implements Serializable {
     private Date dateUpdated;
 
     protected  ModelBase(){}
-
-    public ModelBase(Long id, Integer version, Date dateCreated, Date dateUpdated) {
-        this.id = id;
-        this.version = version;
-        this.dateCreated = dateCreated;
-        this.dateUpdated = dateUpdated;
-    }
 
     public Long getId() {
         return id;

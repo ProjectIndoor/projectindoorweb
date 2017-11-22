@@ -19,11 +19,13 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<CalculatedPosition> getPositionResultsForIdentifier(String positionIdentifier);
 
-    boolean saveNewProject(Set<ProjectParameter> projectParameterSet, String projectName, String algorithmType);
+    long saveNewProject(Set<ProjectParameter> projectParameterSet, String projectName, String algorithmType);
 
-    boolean saveCurrentProject(Set<ProjectParameter> projectParameterSet, String projectIdentifier, String algorithmType);
+    boolean saveCurrentProject(String projectName, Set<ProjectParameter> projectParameterSet, String projectIdentifier, String algorithmType);
 
     boolean deleteSelectedProject(String projectIdentifier);
 
     ProjectElement loadSelectedProject(String projectIdentifier);
+
+    List<ProjectElement> getAllProjects();
 }

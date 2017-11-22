@@ -6,7 +6,7 @@ public class PersistencyServiceComponent {
     private PersistencyServiceComponent(){}
 
     public static void initComponent(){
-
+        RepositoryRegistry.initRepositoryMap();
         theInstance = new PersistencyServiceImpl();
     }
 
@@ -18,7 +18,7 @@ public class PersistencyServiceComponent {
 
     }
 
-    public static PersistencyService getPositionCalculator(){
+    public static PersistencyService getPersistencyService(){
 
         if(theInstance != null){
             return theInstance;

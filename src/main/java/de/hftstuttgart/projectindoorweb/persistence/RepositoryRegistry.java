@@ -22,7 +22,7 @@ public class RepositoryRegistry {
         repositoryMap=null;
     }
 
-    public static CrudRepository getRepositoryForName(String repositoryName){
+    public static CrudRepository getRepositoryByEntityName(String repositoryName){
         return repositoryMap.get(repositoryName);
     }
 }
