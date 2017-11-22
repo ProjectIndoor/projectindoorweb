@@ -15,25 +15,25 @@
 
             <md-input-container flex="100">
                 <label>Name</label>
-                <input/>
+                <input ng-model="fileName"/>
             </md-input-container>
 
             <md-input-container flex="100">
-                <md-switch>Use for algorithm training</md-switch>
+                <md-switch ng-model="trainData">Use for algorithm training</md-switch>
             </md-input-container>
 
             <md-input-container flex="100">
-                <input id="inputFile" class="ng-hide" type="file"/>
+                <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"/>
                 <md-button class="md-button" ng-click="upload()">
                     Choose File
                 </md-button>
-                <p id="fileNameField"></p>
+                <p id="fileNameField">{{fileUploaded}}</p>
             </md-input-container>
 
         </md-card-content>
 
         <md-card-actions layout="row" layout-align="end center">
-            <md-button>Upload</md-button>
+            <md-button ng-click="uploadFiles()">Upload</md-button>
         </md-card-actions>
     </md-card>
 

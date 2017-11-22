@@ -179,15 +179,6 @@ function MapController($scope) {
 
 app.controller('MapCtrl', MapController);
 
-// controller which handles the log import view
-function LogImportController($scope) {
-    $scope.upload = function () {
-        angular.element(document.querySelector('#inputFile')).click();
-    };
-}
-
-app.controller('LogImportCtrl', LogImportController);
-
 //Controller to fetch the building and floor data using GET method
 function BuildingController($scope, $http) {
     $http({
@@ -203,6 +194,56 @@ function BuildingController($scope, $http) {
 }
 
 app.controller('BuildingCtrl', BuildingController);
+
+/**
+ * POST the uploaded log file
+ * Custom directive to define ng-files attribute
+ */
+ app.directive('ngFiles', ['$parse', function ($parse) {
+     function filelink(scope, element, attrs) {
+         var onChange = $parse(attrs.ngFiles);
+         element.on('change', function (event) {
+             onChange(scope, {$files: event.target.files});
+         });
+     };
+
+     return {
+         link: filelink
+     }
+ }]);
+
+ app.controller('LogImportCtrl', function ($scope, $http) {
+    $scope.upload = function () {
+        angular.element(document.querySelector('#inputFile')).click();
+    };
+
+    var formData = new FormData();
+
+    $scope.getTheFiles = function ($files) {
+        formData.append('fileName', $scope.fileName);
+        formData.append('isTrainData', $scope.trainData ? $scope.trainData : false);
+        formData.append('logFile', $files[0]);
+        //console.log($files[0].name);
+        $scope.fileUploaded = $files[0].name;
+    };
+
+    //Post the file and parameters
+    $scope.uploadFiles = function () {
+        var request = $http({
+            method: 'POST',
+            url: '/fileupload',
+            data: formData,
+            transformRequest: angular.identity,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (data, status, headers, config) {
+                //alert("success!");
+        }).error(function (data, status, headers, config) {
+                //alert("failed!");
+        });
+    }
+});
 
 /**
  * ----------------------------------------------
