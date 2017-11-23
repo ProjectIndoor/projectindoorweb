@@ -148,16 +148,6 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
             $mdSidenav(componentId).toggle();
         };
     }
-
-    $scope.buildings = ('HFT Building 1;HFT Building 2;HFT Building 3').split(';').map(function (building) {
-        return {abbrev: building};
-    });
-
-
-    $scope.floors = ('Floor 1;Floor 2;Floor 3').split(';').map(function (floor) {
-        return {abbrev: floor};
-    });
-
 });
 
 // controller which handles the map
@@ -241,12 +231,6 @@ function MapController($scope) {
 
 app.controller('MapCtrl', MapController);
 
-function MapDirective() {
-    function link(scope, element, attrs) {
-
-    }
-}
-
 // controller which handles the building import view
 function BuildingImportController($scope) {
     $scope.upload = function () {
@@ -256,11 +240,69 @@ function BuildingImportController($scope) {
 
 app.controller('BuildingImportCtrl', BuildingImportController);
 
+//Controller to fetch the building and floor data using GET method
+function BuildingController($scope, $http) {
+    $http({
+        method : "GET",
+        url : "config/config.json"
+    }).then(function success(response) {
+        $scope.buildings = response.data.buildings;
+        $scope.floors = response.data.floors;
+    }, function error(response) {
+        $scope.buildings = response.statusText;
+        $scope.floors = response.statusText;
+    });
+}
+
+app.controller('BuildingCtrl', BuildingController);
+
+/**
+ * POST the uploaded log file
+ * Custom directive to define ng-files attribute
+ */
+app.directive('ngFiles', ['$parse', function ($parse) {
+    function filelink(scope, element, attrs) {
+        var onChange = $parse(attrs.ngFiles);
+        element.on('change', function (event) {
+            onChange(scope, {$files: event.target.files});
+        });
+    };
+
+    return {
+        link: filelink
+    }
+}]);
+
 // controller which handles the log import view
-function LogImportController($scope) {
+function LogImportController($scope, $http) {
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
+    var formData = new FormData();
+
+    $scope.getTheFiles = function ($files) {
+        formData.append('fileName', $scope.fileName);
+        formData.append('isTrainData', $scope.trainData ? $scope.trainData : false);
+        formData.append('logFile', $files[0]);
+        //console.log($files[0].name);
+        $scope.fileUploaded = $files[0].name;
+    };
+
+    //Post the file and parameters
+    $scope.uploadFiles = function () {
+        var request = $http({
+            method: 'POST',
+            url: '/fileupload',
+            data: formData,
+            transformRequest: angular.identity,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (data, status, headers, config) {
+            //alert("success!");
+        }).error(function (data, status, headers, config) {
+            //alert("failed!");
+        });
 }
 
 app.controller('LogImportCtrl', LogImportController);

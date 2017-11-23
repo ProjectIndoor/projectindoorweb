@@ -32,8 +32,9 @@ configurations {
 }
 
 checkstyle {
+    ignoreFailures = true
     toolVersion = "${versions.checkstyle}"
-    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
+    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'sun_checks.xml')
 }
 
 pmd {
