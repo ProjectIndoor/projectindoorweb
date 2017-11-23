@@ -1,0 +1,29 @@
+<md-card flex="100" flex-gt-sm="50" ng-controller="BuildingImportCtrl" class="md-whiteframe-3dp"
+         md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Add a building</span>
+            <span class="md-subhead">Select a name and the number of floors</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">home</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content layout="column">
+
+        <md-input-container flex="100">
+            <label>Name of building</label>
+            <input/>
+        </md-input-container>
+
+        <md-input-container flex="100">
+            <label>Number of floors</label>
+            <input type="number"/>
+        </md-input-container>
+
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button>Add</md-button>
+    </md-card-actions>
+</md-card>
