@@ -1,7 +1,9 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 public class PersistencyServiceImpl implements PersistencyService {
+
 
 
 
@@ -76,6 +79,17 @@ public class PersistencyServiceImpl implements PersistencyService {
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         return (List<Project>) projectRepository.findAll();
+
+    }
+
+    @Override
+    public boolean saveLogFiles(List<LogFile> logFiles) {
+
+        LogFileRepository logFileRepository = (LogFileRepository) RepositoryRegistry.getRepositoryByEntityName(LogFile.class.getName());
+
+        Iterable<LogFile> saved = logFileRepository.save(logFiles);
+
+        return saved != null;
 
     }
 

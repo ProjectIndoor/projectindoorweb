@@ -1,6 +1,7 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
+import sun.rmi.runtime.Log;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,8 +19,17 @@ public class Project {
     @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
     private List<Parameter> projectParameters;
 
+    @OneToMany(targetEntity = LogFile.class, mappedBy = "generatedFromProject")
+    private List<LogFile> logFiles;
+
     protected Project(){}
 
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<LogFile> logFiles) {
+        this.projectName = projectName;
+        this.calculationAlgorithm = calculationAlgorithm;
+        this.projectParameters = projectParameters;
+        this.logFiles = logFiles;
+    }
 
     public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
         this.projectName = projectName;
@@ -53,5 +63,13 @@ public class Project {
 
     public void setProjectParameters(List<Parameter> projectParameters) {
         this.projectParameters = projectParameters;
+    }
+
+    public List<LogFile> getLogFiles() {
+        return logFiles;
+    }
+
+    public void setLogFiles(List<LogFile> logFiles) {
+        this.logFiles = logFiles;
     }
 }

@@ -8,8 +8,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -25,18 +29,46 @@ public class PositioningController {
 
     @RequestMapping(path = "/generateRadioMaps", method = POST)
     public boolean generateRadioMaps(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
-                                             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                              String projectIdentifier,
                                      @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                              String buildingIdentifier,
-                                     @RequestBody List<File> radioMapFiles) {
-        return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
+                                     @RequestBody MultipartFile[] radioMapFiles) {
+
+        List<File> localRadioMapFiles = new ArrayList<>(radioMapFiles.length);
+
+        try {
+            for (MultipartFile file :
+                    radioMapFiles) {
+                localRadioMapFiles.add(convertToLocalFile(file));
+            }
+        } catch (IOException ex) {
+            return false;
+        }
+
+
+        return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, localRadioMapFiles);
     }
 
     @RequestMapping(path = "/generatePositionResults", method = POST)
-    public boolean generatePositionResults(@RequestBody List<File> evaluationFiles) {//TODO Rename to importEvaFile, Add parameter buildingId
-        return restTransmissionService.generatePositionResults(evaluationFiles);
+    public ResponseEntity<List<CalculatedPosition>> generatePositionResults(
+            @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String projectIdentifier,
+            @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String buildingIdentifier,
+            @RequestBody MultipartFile evaluationFile) {
+
+        List<CalculatedPosition> result = null;
+        try {
+            result = restTransmissionService.generatePositionResults(projectIdentifier, buildingIdentifier, convertToLocalFile(evaluationFile));
+            return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     //TODO add method getAllBuildings returns object adjusted to entity
@@ -52,5 +84,18 @@ public class PositioningController {
     public ResponseEntity<List<CalculatedPosition>> getPositionResultsForIdentifier(@RequestParam(value = TransmissionConstants.POSITION_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String positionIdentifier) {
         List<CalculatedPosition> result = restTransmissionService.getPositionResultsForIdentifier(positionIdentifier);
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+    }
+
+
+    private File convertToLocalFile(MultipartFile multipartFile) throws IOException {
+
+        File convertedFile = new File(multipartFile.getOriginalFilename());
+        convertedFile.createNewFile();
+        FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
+        fileOutputStream.write(multipartFile.getBytes());
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        return convertedFile;
+
     }
 }

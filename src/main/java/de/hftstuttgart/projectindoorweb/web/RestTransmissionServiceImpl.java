@@ -2,10 +2,11 @@ package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
@@ -14,10 +15,6 @@ import java.io.File;
 import java.util.*;
 
 public class RestTransmissionServiceImpl implements RestTransmissionService {
-
-
-
-
 
 
     @Override
@@ -30,22 +27,40 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         File[] radioMapFileArray = radioMapFiles.toArray(new File[radioMapFiles.size()]);
-        List<RadioMap> generatedRadioMaps = PreProcessingServiceComponent.getPreProcessingService().generateRadioMap(radioMapFileArray);
 
-        return true;
-    }
+        try{
+            long projectId = Long.parseLong(projectIdentifier);
+            Project project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
+            List<LogFile> processedLogFiles = PreProcessingServiceComponent.getPreProcessingService().processIntoLogFiles(project, radioMapFileArray);
 
-    @Override
-    public boolean generatePositionResults(List<File> evaluationFiles) {
-
-        if (evaluationFiles == null || evaluationFiles.size() == 0) {
+            boolean persistencySuccess = PersistencyServiceComponent.getPersistencyService().saveLogFiles(processedLogFiles);
+            return true;
+        }catch(NumberFormatException ex){
             return false;
         }
 
-        File[] evaluationFileArray = evaluationFiles.toArray(new File[evaluationFiles.size()]);
 
 
-        return false;
+    }
+
+    @Override
+    public List<CalculatedPosition> generatePositionResults(String projectIdentifier, String buildingIdentifier, File evaluationFile) {
+
+        if(evaluationFile == null){
+            return null;
+        }
+
+        try{
+            long projectId = Long.parseLong(projectIdentifier);
+            Project project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
+            List<WifiPositionResult> results = (List<WifiPositionResult>) PositionCalculatorComponent
+                    .getPositionCalculator().calculatePositions(evaluationFile, project);
+            List<CalculatedPosition> calculatedPositions = convertToCalculatedPositions(results);
+            return calculatedPositions;
+        }catch(NumberFormatException ex){
+            return null;
+        }
+
     }
 
     @Override
@@ -192,6 +207,20 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         return projectParameters;
 
+
+    }
+
+    private List<CalculatedPosition> convertToCalculatedPositions(List<? extends PositionResult> positionResults){
+
+
+        List<CalculatedPosition> result = new ArrayList<>(positionResults.size());
+
+        for (PositionResult positionResult:
+             positionResults) {
+            result.add(new CalculatedPosition(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
+        }
+
+        return result;
 
     }
 

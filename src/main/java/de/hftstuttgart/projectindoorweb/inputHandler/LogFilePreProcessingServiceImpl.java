@@ -4,8 +4,7 @@ import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.LogFileHelper;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.LogFileParser;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMapElement;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class LogFilePreProcessingServiceImpl implements PreProcessingService {
 
 
     @Override
-    public List<RadioMap> generateRadioMap(File... radioMapFiles) {
+    public List<LogFile> processIntoLogFiles(Project project, File... radioMapFiles) {
 
         AssertParam.throwIfNull(radioMapFiles,"radioMapFiles");
 
@@ -45,23 +44,31 @@ public class LogFilePreProcessingServiceImpl implements PreProcessingService {
 
         int totalNumberOfMacs = 0;
         List<RadioMapElement> radiomapElements = new ArrayList<>();
-        List<RadioMap> preProcessingRadioMaps = new ArrayList<>();
+        List<LogFile> processedLogFiles = new ArrayList<>();
+        LogFile logFile;
+        String fileName;
+        RadioMap generatedRadioMap;
         for (LogFileParser parser: fileParsers) {
             if(parser.isParsingFinished()){
+                fileName = parser.getSourceFile().getName();
                 radiomapElements = parser.getRadiomapElements();
-                preProcessingRadioMaps.add(new RadioMap(radiomapElements));
+                generatedRadioMap = new RadioMap(radiomapElements);
+                processedLogFiles.add(new LogFile(fileName, fileName, 0, generatedRadioMap, project));
+
             }
         }
 
         //TODO Move merging to position calculation
+        /*
         if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
-            RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(preProcessingRadioMaps);
-            preProcessingRadioMaps.clear();
-            preProcessingRadioMaps.add(tmp);
+            RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(processedLogFiles);
+            processedLogFiles.clear();
+            processedLogFiles.add(tmp);
         }
+        */
 
 
-        return preProcessingRadioMaps;
+        return processedLogFiles;
 
     }
 

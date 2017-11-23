@@ -1,12 +1,22 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-public class RssiSignal extends ModelBase {
+import javax.persistence.*;
+
+@Entity
+public class RssiSignal {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private double appTimestamp;
     private double rssiSignalStrength;
     private boolean averagedSignalStrength;
 
+    @ManyToOne(targetEntity = WifiAccessPoint.class, cascade = CascadeType.ALL)
     private WifiAccessPoint wifiAccessPoint;
+
+    protected RssiSignal(){}
 
     public RssiSignal(double appTimestamp, double rssiSignalStrength,
                       boolean averagedSignalStrength, WifiAccessPoint emittedByAccessPoint) {

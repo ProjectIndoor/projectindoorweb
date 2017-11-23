@@ -1,13 +1,27 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-public class PosiReference extends ModelBase {
+import javax.persistence.*;
+
+@Entity
+public class PosiReference {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private int positionInSourceFile;
     private int avgNumber;
+
+    @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position referencePosition;
+
     private double intervalStart;
     private double intervalEnd;
+
+    @ManyToOne(targetEntity = Floor.class, cascade = CascadeType.ALL)
     private Floor floor;
+
+    protected PosiReference(){}
 
     public PosiReference(int positionInSourceFile, int avgNumber, Position referencePosition,
                          double intervalStart, double intervalEnd, Floor floor) {
@@ -18,6 +32,10 @@ public class PosiReference extends ModelBase {
         this.intervalStart = intervalStart;
         this.intervalEnd = intervalEnd;
         this.floor = floor;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public int getPositionInSourceFile() {

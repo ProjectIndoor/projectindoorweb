@@ -1,6 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-public class PositionResult extends ModelBase {
+public class PositionResult {
 
     private double x;
     private double y;

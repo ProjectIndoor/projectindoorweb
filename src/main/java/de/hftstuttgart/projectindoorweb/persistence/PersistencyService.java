@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
 
@@ -17,5 +18,7 @@ public interface PersistencyService {
     Project getProjectById(long projectId);
 
     List<Project> getAllProjects();
+
+    boolean saveLogFiles(List<LogFile> logFiles);
 
 }

@@ -13,7 +13,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     boolean generateRadioMap(String projectId, String buildingId, List<File> radioMapFiles);
 
-    boolean generatePositionResults(List<File> evaluationFiles);
+    List<CalculatedPosition> generatePositionResults(String projectId, String buildingId, File evaluationFile);
 
     CalculatedPosition getPositionForWifiReading(String wifiReading);
 

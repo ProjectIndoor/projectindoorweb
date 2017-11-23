@@ -15,4 +15,8 @@ public abstract class Parser implements Runnable {
     protected abstract boolean isDataValid(String source);
 
     public abstract boolean isParsingFinished();
+
+    public File getSourceFile() {
+        return sourceFile;
+    }
 }

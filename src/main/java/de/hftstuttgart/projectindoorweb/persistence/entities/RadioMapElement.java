@@ -1,15 +1,30 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
+import javax.persistence.*;
 import java.util.List;
 
-public class RadioMapElement extends ModelBase {
+@Entity
+public class RadioMapElement {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @OneToOne(targetEntity = PosiReference.class, cascade = CascadeType.ALL)
     private PosiReference posiReference;
+
+    @OneToMany(targetEntity = RssiSignal.class, cascade = CascadeType.ALL)
     private List<RssiSignal> rssiSignals;
+
+    protected RadioMapElement(){}
 
     public RadioMapElement(PosiReference posiReference, List<RssiSignal> rssiSignals) {
         this.posiReference = posiReference;
         this.rssiSignals = rssiSignals;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public PosiReference getPosiReference() {

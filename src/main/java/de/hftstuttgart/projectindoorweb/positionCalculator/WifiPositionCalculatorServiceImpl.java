@@ -17,7 +17,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
 
     @Override
-    public List<WifiPositionResult> calculatePositions(File evalFile, List<RadioMap> radioMaps) {
+    public List<WifiPositionResult> calculatePositions(File evalFile, Project project) {
 
 
         EvalFileParser parser = new EvalFileParser(evalFile);
@@ -29,6 +29,13 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         WifiPositionResult previousResult;
         WifiPositionResult result;
+
+        List<LogFile> logFiles = project.getLogFiles();
+        List<RadioMap> radioMaps = new ArrayList<>(logFiles.size());
+        for (LogFile logFile:
+             logFiles) {
+            radioMaps.add(logFile.getRadioMap());
+        }
 
         for (RadioMap radioMap:
              radioMaps) {

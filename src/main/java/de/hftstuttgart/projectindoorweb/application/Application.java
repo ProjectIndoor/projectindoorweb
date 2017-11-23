@@ -3,7 +3,9 @@ package de.hftstuttgart.projectindoorweb.application;
 
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
+import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
@@ -41,10 +43,11 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner initApplication(ProjectRepository projectRepository){
+    public CommandLineRunner initApplication(ProjectRepository projectRepository, LogFileRepository logFileRepository){
 
         return (args) -> {
             RepositoryRegistry.registerRepository(Project.class.getName(),projectRepository);
+            RepositoryRegistry.registerRepository(LogFile.class.getName(), logFileRepository);
         };
     }
 }

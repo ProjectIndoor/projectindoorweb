@@ -1,6 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-public class Algorithm extends ModelBase {
+public class Algorithm {
 
     private String algorithmName;
 

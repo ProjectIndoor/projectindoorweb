@@ -1,19 +1,28 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
+import javax.persistence.*;
 import java.util.List;
 
-public class RadioMap extends ModelBase {
+@Entity
+public class RadioMap {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-    //TODO Add 2 new coordinates for latlong
-
+    @OneToMany(targetEntity = RadioMapElement.class, cascade = CascadeType.ALL)
     private List<RadioMapElement> radioMapElements;
+
+    protected RadioMap(){}
 
 
     public RadioMap(List<RadioMapElement> radioMapElements) {
         this.radioMapElements = radioMapElements;
     }
 
+    public Long getId() {
+        return id;
+    }
 
     public List<RadioMapElement> getRadioMapElements() {
         return radioMapElements;
@@ -22,4 +31,5 @@ public class RadioMap extends ModelBase {
     public void setRadioMapElements(List<RadioMapElement> radioMapElements) {
         this.radioMapElements = radioMapElements;
     }
+
 }

@@ -2,7 +2,7 @@ package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import java.util.List;
 
-public class EvalFile extends ModelBase {
+public class EvalFile {
 
     private String sourceFileName;
     private String customFileName;
