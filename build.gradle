@@ -1,12 +1,15 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'com.craigburke.client-dependencies' version '1.4.0'
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'checkstyle'
+    id 'pmd'
+    id 'findbugs'
+}
+
 group 'de.hft-stuttgart'
 version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
-apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -14,15 +17,6 @@ targetCompatibility = 1.8
 def versions = [
         checkstyle: '8.3',
 ]
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
-    }
-}
 
 repositories {
     mavenCentral()
@@ -53,11 +47,22 @@ pmd {
 }
 
 findbugs {
-
     ignoreFailures = true
-
     sourceSets = [sourceSets.main]
+}
 
+clientDependencies {
+    installDir = 'src/main/resources/static/assets/vendor'
+    npm {
+        'jquery'('3.2.1')
+        'angular'('1.5.5')
+        'angular-animate'('1.5.5', into: 'angular/modules')
+        'angular-aria'('1.5.5', into: 'angular/modules')
+        'angular-messages'('1.5.5', into: 'angular/modules')
+        'angular-route'('1.5.5', into: 'angular/modules')
+        'angular-material'('1.1.0')
+        'openlayers'('4.5.0', transitive: false)
+    }
 }
 
 dependencies {
