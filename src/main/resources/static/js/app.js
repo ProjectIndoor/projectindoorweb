@@ -163,6 +163,29 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
 // controller which handles the map
 function MapController($scope) {
 
+    // map styles
+    var styles = {
+        'refPoint': new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 5,
+                fill: new ol.style.Fill({color: '#a11657'}),
+                stroke: new ol.style.Stroke({color: '#d3d3d3', width: 1})
+            })
+        }),
+        'calcPoint': new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 10,
+                fill: new ol.style.Fill({color: '#07405b'}),
+                stroke: new ol.style.Stroke({color: '#d3d3d3', width: 1})
+            })
+        })
+    };
+
+    // map objects
+    var map;
+
+
+    //function to initialize the map
     $scope.initMap = function () {
 
 
@@ -176,12 +199,9 @@ function MapController($scope) {
             extent: extent
         });
 
-        var map = new ol.Map({
+        map = new ol.Map({
             target: 'map',
             layers: [
-                //new ol.layer.Tile({
-                //    source: new ol.source.OSM()
-                //}),
                 new ol.layer.Image({
                     source: new ol.source.ImageStatic({
                         url: '/maps/building_2_floor_3.png',
@@ -191,8 +211,6 @@ function MapController($scope) {
                 })
             ],
             view: new ol.View({
-                //center: ol.proj.fromLonLat([37.41, 8.82]),
-                //zoom: 19
                 projection: projection,
                 center: ol.extent.getCenter(extent),
                 zoom: 2,
@@ -200,7 +218,20 @@ function MapController($scope) {
             })
         });
 
+        // Test marker
+        $scope.placeWaypoint(220, 350);
+
     };
+
+    $scope.placeWaypoint = function (x, y) {
+        var marker = new ol.Overlay({
+            position: [x, y],
+            positioning: 'center-center',
+            element: document.getElementById('marker'),
+            stopEvent: false
+        });
+        map.addOverlay(marker);
+    }
 
     this.$afterViewInit = function () {
         console.log('Hi')
@@ -209,6 +240,21 @@ function MapController($scope) {
 }
 
 app.controller('MapCtrl', MapController);
+
+function MapDirective() {
+    function link(scope, element, attrs) {
+
+    }
+}
+
+// controller which handles the building import view
+function BuildingImportController($scope) {
+    $scope.upload = function () {
+        angular.element(document.querySelector('#inputFile')).click();
+    };
+}
+
+app.controller('BuildingImportCtrl', BuildingImportController);
 
 // controller which handles the log import view
 function LogImportController($scope) {
