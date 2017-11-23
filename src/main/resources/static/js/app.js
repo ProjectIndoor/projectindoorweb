@@ -9,7 +9,7 @@
  */
 
 // definition of the angular app
-var app = angular.module('IndoorApp', ['ngMaterial', 'ngRoute']);
+var app = angular.module('IndoorApp', ['ngMaterial', 'ngRoute', 'openlayers-directive']);
 
 // ------------- Page routing
 app.config(['$routeProvider',
@@ -151,82 +151,69 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
 });
 
 // controller which handles the map
-function MapController($scope) {
+function MapController($scope, $http, olData) {
 
-    // map styles
-    var styles = {
-        'refPoint': new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 5,
-                fill: new ol.style.Fill({color: '#a11657'}),
-                stroke: new ol.style.Stroke({color: '#d3d3d3', width: 1})
-            })
-        }),
-        'calcPoint': new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 10,
-                fill: new ol.style.Fill({color: '#07405b'}),
-                stroke: new ol.style.Stroke({color: '#d3d3d3', width: 1})
-            })
-        })
-    };
+    var refPoints = [
+        {
+            name: 'p1',
+            coord: [350, 220],
+            projection: 'pixel',
+            "label": {
+                "message": "Point 1",
+                "show": false,
+                "showOnMouseOver": true
+            }
+        },
+        {
+            name: 'p2',
+            coord: [450, 220],
+            projection: 'pixel',
+            "label": {
+                "message": "Point 2",
+                "show": false,
+                "showOnMouseOver": true
+            }
+        },
+        {
+            name: 'p3',
+            coord: [550, 220],
+            projection: 'pixel',
+            "label": {
+                "message": "Point 3",
+                "show": false,
+                "showOnMouseOver": true
+            }
+        }
+    ];
 
-    // map objects
-    var map;
+    angular.extend($scope, {
+        center: {
+            coord: [1280, 768],
+            zoom: 2
+        },
+        defaults: {
+            view: {
+                projection: 'pixel',
+                extent: [0, 0, 2560, 1536],
+            }
+        },
+        static: {
+            source: {
+                type: "ImageStatic",
+                url: "/maps/building_2_floor_3.png",
+                imageSize: [2560, 1536]
+            }
+        },
+        refPoints: refPoints
+    });
 
-
-    //function to initialize the map
-    $scope.initMap = function () {
-
-
-        // map DOM element
-        mapDiv = document.getElementById("map")
-
-        var extent = [0, 0, 2560, 1536];
-        var projection = new ol.proj.Projection({
-            code: 'hft-image',
-            units: 'pixels',
-            extent: extent
-        });
-
-        map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Image({
-                    source: new ol.source.ImageStatic({
-                        url: '/maps/building_2_floor_3.png',
-                        projection: projection,
-                        imageExtent: extent
-                    })
-                })
-            ],
-            view: new ol.View({
-                projection: projection,
-                center: ol.extent.getCenter(extent),
-                zoom: 2,
-                maxZoom: 8
-            })
-        });
-
-        // Test marker
-        $scope.placeWaypoint(220, 350);
-
-    };
-
-    $scope.placeWaypoint = function (x, y) {
-        var marker = new ol.Overlay({
-            position: [x, y],
-            positioning: 'center-center',
-            element: document.getElementById('marker'),
-            stopEvent: false
-        });
-        map.addOverlay(marker);
+    $scope.addRefPoint = function (x, y) {
+        var newRef = {
+            coord: [x, y],
+            projection: 'pixel'
+        };
+        refPoints.push(newRef)
     }
-
-    this.$afterViewInit = function () {
-        console.log('Hi')
-        //map.invalidateSize();
-    };
 }
 
 app.controller('MapCtrl', MapController);
@@ -243,8 +230,8 @@ app.controller('BuildingImportCtrl', BuildingImportController);
 //Controller to fetch the building and floor data using GET method
 function BuildingController($scope, $http) {
     $http({
-        method : "GET",
-        url : "config/config.json"
+        method: "GET",
+        url: "config/config.json"
     }).then(function success(response) {
         $scope.buildings = response.data.buildings;
         $scope.floors = response.data.floors;
@@ -278,6 +265,7 @@ function LogImportController($scope, $http) {
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
+
     var formData = new FormData();
 
     $scope.getTheFiles = function ($files) {
@@ -303,7 +291,8 @@ function LogImportController($scope, $http) {
         }).error(function (data, status, headers, config) {
             //alert("failed!");
         });
-}
+    }
+};
 
 app.controller('LogImportCtrl', LogImportController);
 
