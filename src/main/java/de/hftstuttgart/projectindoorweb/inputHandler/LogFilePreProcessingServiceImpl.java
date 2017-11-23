@@ -11,32 +11,26 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class LogFileInputHandler implements InputHandler {
+public class LogFilePreProcessingServiceImpl implements PreProcessingService {
 
-    private ExecutorService executorService;
-    private List<RadioMap> preProcessingRadioMaps;
 
-    public LogFileInputHandler(ExecutorService executorService) {
-        this.executorService = executorService;
-        this.preProcessingRadioMaps = new ArrayList<>();
-    }
 
     @Override
-    public boolean handleInput(boolean filesForRadiomap, File... inputFiles) {
+    public List<RadioMap> generateRadioMap(File... radioMapFiles) {
 
-        AssertParam.throwIfNull(inputFiles,"inputFiles");
+        AssertParam.throwIfNull(radioMapFiles,"radioMapFiles");
 
-        boolean handlingSuccessful = false;
-
-        List<LogFileParser> fileParsers = new ArrayList<>(inputFiles.length);
-        for (File inputFile: inputFiles) {
+        List<LogFileParser> fileParsers = new ArrayList<>(radioMapFiles.length);
+        for (File inputFile: radioMapFiles) {
             if(!inputFile.isDirectory() && !inputFile.getPath().contains(".swp")){
                 fileParsers.add(new LogFileParser(true, inputFile));
             }
         }
 
+        ExecutorService executorService = Executors.newFixedThreadPool(radioMapFiles.length);
         for (LogFileParser parser: fileParsers) {
             executorService.execute(parser);
         }
@@ -45,13 +39,13 @@ public class LogFileInputHandler implements InputHandler {
         executorService.shutdown();
         try {
             executorService.awaitTermination(ConfigContainer.PARSERS_TERMINATION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-            handlingSuccessful = true;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         int totalNumberOfMacs = 0;
         List<RadioMapElement> radiomapElements = new ArrayList<>();
+        List<RadioMap> preProcessingRadioMaps = new ArrayList<>();
         for (LogFileParser parser: fileParsers) {
             if(parser.isParsingFinished()){
                 radiomapElements = parser.getRadiomapElements();
@@ -59,7 +53,7 @@ public class LogFileInputHandler implements InputHandler {
             }
         }
 
-
+        //TODO Move merging to position calculation
         if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
             RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(preProcessingRadioMaps);
             preProcessingRadioMaps.clear();
@@ -67,13 +61,8 @@ public class LogFileInputHandler implements InputHandler {
         }
 
 
-        return handlingSuccessful;
-
+        return preProcessingRadioMaps;
 
     }
 
-    @Override
-    public List<RadioMap> getGeneratedRadioMaps() {
-        return this.preProcessingRadioMaps;
-    }
 }

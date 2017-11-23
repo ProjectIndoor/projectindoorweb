@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
-    boolean generateRadioMap(List<File> radioMapFiles);
+    boolean generateRadioMap(String projectId, String buildingId, List<File> radioMapFiles);
 
     boolean generatePositionResults(List<File> evaluationFiles);
 

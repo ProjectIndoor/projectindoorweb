@@ -24,8 +24,14 @@ public class PositioningController {
 
 
     @RequestMapping(path = "/generateRadioMaps", method = POST)
-    public boolean generateRadioMaps(@RequestBody List<File> radioMapFiles) {//TODO Change parameter to map with key name and value file. Add parameter buildingId, Add projectId
-        return restTransmissionService.generateRadioMap(radioMapFiles);
+    public boolean generateRadioMaps(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
+                                             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                             String projectIdentifier,
+                                     @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+                                             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                             String buildingIdentifier,
+                                     @RequestBody List<File> radioMapFiles) {
+        return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
     }
 
     @RequestMapping(path = "/generatePositionResults", method = POST)

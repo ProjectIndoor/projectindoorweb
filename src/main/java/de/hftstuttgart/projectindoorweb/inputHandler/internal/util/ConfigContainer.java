@@ -21,7 +21,7 @@ public class ConfigContainer {//TODO move to more visible container. Add all cur
 
     public static final long PARSERS_TERMINATION_TIMEOUT_MILLIS = 15000;
 
-    public static final boolean MERGE_RADIOMAP_ELEMENTS = true;
+    public static final boolean MERGE_RADIOMAP_ELEMENTS = false;
     public static final boolean USE_FIXED_WEIGHTS = true;
 
     public static final CorrelationMode CORRELATION_MODE = CorrelationMode.EUCLIDIAN;

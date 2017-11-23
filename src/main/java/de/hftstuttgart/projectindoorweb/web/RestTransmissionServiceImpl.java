@@ -1,12 +1,11 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
-import de.hftstuttgart.projectindoorweb.inputHandler.InputHandler;
-import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
-import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceImpl;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
@@ -16,21 +15,24 @@ import java.util.*;
 
 public class RestTransmissionServiceImpl implements RestTransmissionService {
 
-    private InputHandler inputHandler;
 
-    public RestTransmissionServiceImpl(InputHandler inputHandler) {
-        this.inputHandler = inputHandler;
-    }
+
+
+
 
     @Override
-    public boolean generateRadioMap(List<File> radioMapFiles) {
+    public boolean generateRadioMap(String projectIdentifier, String buildingIdentifier, List<File> radioMapFiles) {
 
-        if (radioMapFiles == null || radioMapFiles.size() == 0) {
+        if (projectIdentifier == null || projectIdentifier.isEmpty()
+                || buildingIdentifier == null || buildingIdentifier.isEmpty()
+                || radioMapFiles == null || radioMapFiles.isEmpty()) {
             return false;
         }
 
         File[] radioMapFileArray = radioMapFiles.toArray(new File[radioMapFiles.size()]);
-        return inputHandler.handleInput(true, radioMapFileArray);//TODO call correct method as soon as available
+        List<RadioMap> generatedRadioMaps = PreProcessingServiceComponent.getPreProcessingService().generateRadioMap(radioMapFileArray);
+
+        return true;
     }
 
     @Override
@@ -41,7 +43,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         File[] evaluationFileArray = evaluationFiles.toArray(new File[evaluationFiles.size()]);
-        return inputHandler.handleInput(false, evaluationFileArray);//TODO call correct method as soon as available
+
+
+        return false;
     }
 
     @Override
@@ -93,9 +97,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         try {
             long projectId = Long.parseLong(projectIdentifier);
             updateSuccess = PersistencyServiceComponent.getPersistencyService().updateProject(projectId, projectName, algorithmType, projectParameterSet);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             updateSuccess = false;
-        }finally {
+        } finally {
             return updateSuccess;
         }
 
@@ -109,12 +113,12 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         boolean deletionSuccess = false;
-        try{
+        try {
             long projectId = Long.parseLong(projectIdentifier);
             deletionSuccess = PersistencyServiceComponent.getPersistencyService().deleteProject(projectId);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             deletionSuccess = false;
-        }finally {
+        } finally {
             return deletionSuccess;
         }
 
@@ -130,15 +134,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         try {
             long projectId = Long.parseLong(projectIdentifier);
             project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             project = null;
         }
 
         ProjectElement element;
-        if(project != null){
+        if (project != null) {
             element = new ProjectElement(project.getProjectName(), String.valueOf(project.getId()),
                     getProjectParametersFromInternalEntity(project.getProjectParameters()));
-        }else{
+        } else {
             element = createEmptyProjectElement();
         }
 
@@ -162,11 +166,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         return new ProjectElement("", "", new HashSet<>());
     }
 
-    private List<ProjectElement> convertToProjectElements(List<Project> projects){
+    private List<ProjectElement> convertToProjectElements(List<Project> projects) {
 
         List<ProjectElement> result = new ArrayList<>(projects.size());
 
-        for (Project project:
+        for (Project project :
                 projects) {
             result.add(new ProjectElement(project.getProjectName(), String.valueOf(project.getId()),
                     getProjectParametersFromInternalEntity(project.getProjectParameters())));
@@ -177,12 +181,12 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     }
 
-    private Set<ProjectParameter> getProjectParametersFromInternalEntity(List<Parameter> parameters){
+    private Set<ProjectParameter> getProjectParametersFromInternalEntity(List<Parameter> parameters) {
 
         Set<ProjectParameter> projectParameters = new LinkedHashSet<>();
 
-        for (Parameter parameter:
-             parameters) {
+        for (Parameter parameter :
+                parameters) {
             projectParameters.add(new ProjectParameter(parameter.getParameterName(), parameter.getParamenterValue()));
         }
 
