@@ -25,7 +25,6 @@ public class PersistencyServiceImpl implements PersistencyService {
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
         newProject = projectRepository.save(newProject);
 
-
         return newProject.getId();
 
     }
@@ -36,10 +35,11 @@ public class PersistencyServiceImpl implements PersistencyService {
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         Project project = projectRepository.findOne(projectId);
+        CalculationAlgorithm requestedAlgorithm = getAlgorithmFromText(newAlgorithmType);
 
-        if(project != null){
+        if(project != null && requestedAlgorithm != null){
             project.setProjectName(newProjectName);
-            project.setCalculationAlgorithm(getAlgorithmFromText(newAlgorithmType));
+            project.setCalculationAlgorithm(requestedAlgorithm);
             project.setProjectParameters(convertToEntityParameters(newProjectParameters));
             projectRepository.save(project);
             return true;
