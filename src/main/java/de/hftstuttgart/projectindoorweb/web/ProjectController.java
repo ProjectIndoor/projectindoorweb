@@ -21,7 +21,7 @@ public class ProjectController {
 
     private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
-    @RequestMapping(path = "/saveNewProject", method = POST)//TODO return projectId as String
+    @RequestMapping(path = "/saveNewProject", method = GET)//TODO return projectId as String
     public long saveNewProject(@RequestBody Set<ProjectParameter> projectParameterSet,
                                @RequestParam(value = TransmissionConstants.PROJECT_NAME_PARAM,
                                        defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -32,7 +32,7 @@ public class ProjectController {
         return restTransmissionService.saveNewProject(projectParameterSet, projectName, algorithmType);
     }
 
-    @RequestMapping(path = "/saveCurrentProject", method = POST)
+    @RequestMapping(path = "/saveCurrentProject", method = GET)
     public boolean saveCurrentProject(@RequestBody Set<ProjectParameter> projectParameterSet,
                                       @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
                                               defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -46,7 +46,7 @@ public class ProjectController {
         return restTransmissionService.saveCurrentProject(projectName, projectParameterSet, projectIdentifier, algorithmType);
     }
 
-    @RequestMapping(path = "/deleteSelectedProject", method = DELETE)
+    @RequestMapping(path = "/deleteSelectedProject", method = GET)
     public boolean deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                  String projectIdentifier) {

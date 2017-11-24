@@ -1,64 +1,94 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
+import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class RestTransmissionServiceImpl implements RestTransmissionService {
 
+    private PersistencyService persistencyService;
+    private PreProcessingService preProcessingService;
+    private PositionCalculatorService positionCalculatorService;
+
+    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService
+            , PositionCalculatorService positionCalculatorService) {
+        this.persistencyService = persistencyService;
+        this.preProcessingService = preProcessingService;
+        this.positionCalculatorService = positionCalculatorService;
+    }
 
     @Override
-    public boolean generateRadioMap(String projectIdentifier, String buildingIdentifier, List<File> radioMapFiles) {
+    public boolean generateRadioMap(String projectIdentifier, String buildingIdentifier, MultipartFile[] radioMapFiles) {
 
         if (projectIdentifier == null || projectIdentifier.isEmpty()
                 || buildingIdentifier == null || buildingIdentifier.isEmpty()
-                || radioMapFiles == null || radioMapFiles.isEmpty()) {
+                || radioMapFiles == null || radioMapFiles.length == 0) {
             return false;
         }
 
-        File[] radioMapFileArray = radioMapFiles.toArray(new File[radioMapFiles.size()]);
+        File[] radioMapFileArray = new File[radioMapFiles.length];
 
-        try{
+        try {
+            for (int i = 0; i < radioMapFiles.length; i++) {
+                radioMapFileArray[i] = TransmissionHelper.convertMultipartFileToLocalFile(radioMapFiles[i]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
             long projectId = Long.parseLong(projectIdentifier);
-            Project project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
-            List<LogFile> processedLogFiles = PreProcessingServiceComponent.getPreProcessingService().processIntoLogFiles(project, radioMapFileArray);
+            Project project = this.persistencyService.getProjectById(projectId);
+            List<LogFile> processedLogFiles = this.preProcessingService.processIntoLogFiles(project, radioMapFileArray);
 
-            boolean persistencySuccess = PersistencyServiceComponent.getPersistencyService().saveLogFiles(processedLogFiles);
-            return true;
-        }catch(NumberFormatException ex){
+            return this.persistencyService.saveLogFiles(processedLogFiles);
+        } catch (NumberFormatException ex) {
             return false;
         }
-
 
 
     }
 
     @Override
-    public List<CalculatedPosition> generatePositionResults(String projectIdentifier, String buildingIdentifier, File evaluationFile) {
+    public List<CalculatedPosition> generatePositionResults(String projectIdentifier, String buildingIdentifier, MultipartFile evaluationFile) {
 
-        if(evaluationFile == null){
-            return null;
+        List<CalculatedPosition> result = new ArrayList<>();
+        if (AssertParam.isNullOrEmpty(projectIdentifier) || AssertParam.isNullOrEmpty(buildingIdentifier)
+                || evaluationFile == null) {
+            return result;
         }
 
-        try{
+        try {
+
             long projectId = Long.parseLong(projectIdentifier);
-            Project project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
-            List<WifiPositionResult> results = (List<WifiPositionResult>) PositionCalculatorComponent
-                    .getPositionCalculator().calculatePositions(evaluationFile, project);
-            List<CalculatedPosition> calculatedPositions = convertToCalculatedPositions(results);
-            return calculatedPositions;
-        }catch(NumberFormatException ex){
-            return null;
+            Project project = this.persistencyService.getProjectById(projectId);
+
+            File convertedEvaluationFile = TransmissionHelper.convertMultipartFileToLocalFile(evaluationFile);
+
+            List<WifiPositionResult> retrievedWifiResults =
+                    (List<WifiPositionResult>) this.positionCalculatorService.calculatePositions(convertedEvaluationFile, project);
+            result = convertToCalculatedPositions(retrievedWifiResults);
+            return result;
+
+        } catch (NumberFormatException | IOException ex) {
+            ex.printStackTrace();
+            return result;
         }
 
     }
@@ -88,34 +118,32 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public long saveNewProject(Set<ProjectParameter> projectParameterSet, String projectName, String algorithmType) {
 
-        if (projectParameterSet == null || projectParameterSet.size() == 0 || AssertParam.isNullOrEmpty(projectName) || AssertParam.isNullOrEmpty(algorithmType)) {
+        if (projectParameterSet == null
+                || projectParameterSet.size() == 0
+                || AssertParam.isNullOrEmpty(projectName)
+                || AssertParam.isNullOrEmpty(algorithmType)) {
             return -1;
         }
 
-        long generatedProjectId = PersistencyServiceComponent.getPersistencyService()
-                .createNewProject(projectName, algorithmType, projectParameterSet);
+        return this.persistencyService.createNewProject(projectName, algorithmType, projectParameterSet);
 
-        return generatedProjectId;
     }
 
     @Override
     public boolean saveCurrentProject(String projectName, Set<ProjectParameter> projectParameterSet, String projectIdentifier, String algorithmType) {
 
 
-        if (projectName == null || projectParameterSet == null ||
+        if (AssertParam.isNullOrEmpty(projectName) || projectParameterSet == null ||
                 projectParameterSet.size() == 0 || AssertParam.isNullOrEmpty(projectIdentifier)
                 || AssertParam.isNullOrEmpty(algorithmType)) {
             return false;
         }
 
-        boolean updateSuccess = false;
         try {
             long projectId = Long.parseLong(projectIdentifier);
-            updateSuccess = PersistencyServiceComponent.getPersistencyService().updateProject(projectId, projectName, algorithmType, projectParameterSet);
+            return this.persistencyService.updateProject(projectId, projectName, algorithmType, projectParameterSet);
         } catch (NumberFormatException ex) {
-            updateSuccess = false;
-        } finally {
-            return updateSuccess;
+            return false;
         }
 
     }
@@ -127,41 +155,36 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return false;
         }
 
-        boolean deletionSuccess = false;
         try {
             long projectId = Long.parseLong(projectIdentifier);
-            deletionSuccess = PersistencyServiceComponent.getPersistencyService().deleteProject(projectId);
+            return this.persistencyService.deleteProject(projectId);
         } catch (NumberFormatException ex) {
-            deletionSuccess = false;
-        } finally {
-            return deletionSuccess;
+            return false;
         }
 
     }
 
     @Override
     public ProjectElement loadSelectedProject(String projectIdentifier) {
+
         if (AssertParam.isNullOrEmpty(projectIdentifier)) {
             return createEmptyProjectElement();
         }
 
-        Project project = null;
         try {
             long projectId = Long.parseLong(projectIdentifier);
-            project = PersistencyServiceComponent.getPersistencyService().getProjectById(projectId);
+            Project project = this.persistencyService.getProjectById(projectId);
+
+            if (project != null) {
+                return new ProjectElement(project.getProjectName(), String.valueOf(project.getId()),
+                        getProjectParametersFromInternalEntity(project.getProjectParameters()));
+            }
+
         } catch (NumberFormatException ex) {
-            project = null;
+            ex.printStackTrace();
         }
 
-        ProjectElement element;
-        if (project != null) {
-            element = new ProjectElement(project.getProjectName(), String.valueOf(project.getId()),
-                    getProjectParametersFromInternalEntity(project.getProjectParameters()));
-        } else {
-            element = createEmptyProjectElement();
-        }
-
-        return element;
+        return createEmptyProjectElement();
     }
 
     @Override
@@ -210,13 +233,13 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     }
 
-    private List<CalculatedPosition> convertToCalculatedPositions(List<? extends PositionResult> positionResults){
+    private List<CalculatedPosition> convertToCalculatedPositions(List<? extends PositionResult> positionResults) {
 
 
         List<CalculatedPosition> result = new ArrayList<>(positionResults.size());
 
-        for (PositionResult positionResult:
-             positionResults) {
+        for (PositionResult positionResult :
+                positionResults) {
             result.add(new CalculatedPosition(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
         }
 

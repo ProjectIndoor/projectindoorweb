@@ -27,7 +27,7 @@ public class PositioningController {
             = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
 
-    @RequestMapping(path = "/generateRadioMaps", method = POST)
+    @RequestMapping(path = "/generateRadioMaps", method = GET)
     public boolean generateRadioMaps(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                              String projectIdentifier,
@@ -36,22 +36,10 @@ public class PositioningController {
                                              String buildingIdentifier,
                                      @RequestBody MultipartFile[] radioMapFiles) {
 
-        List<File> localRadioMapFiles = new ArrayList<>(radioMapFiles.length);
-
-        try {
-            for (MultipartFile file :
-                    radioMapFiles) {
-                localRadioMapFiles.add(convertToLocalFile(file));
-            }
-        } catch (IOException ex) {
-            return false;
-        }
-
-
-        return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, localRadioMapFiles);
+        return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
     }
 
-    @RequestMapping(path = "/generatePositionResults", method = POST)
+    @RequestMapping(path = "/generatePositionResults", method = GET)
     public ResponseEntity<List<CalculatedPosition>> generatePositionResults(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -61,14 +49,9 @@ public class PositioningController {
                     String buildingIdentifier,
             @RequestBody MultipartFile evaluationFile) {
 
-        List<CalculatedPosition> result = null;
-        try {
-            result = restTransmissionService.generatePositionResults(projectIdentifier, buildingIdentifier, convertToLocalFile(evaluationFile));
-            return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.UNPROCESSABLE_ENTITY);
+        List<CalculatedPosition> result = restTransmissionService.generatePositionResults(projectIdentifier, buildingIdentifier, evaluationFile);
+        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+
     }
 
     //TODO add method getAllBuildings returns object adjusted to entity
@@ -86,16 +69,4 @@ public class PositioningController {
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
     }
 
-
-    private File convertToLocalFile(MultipartFile multipartFile) throws IOException {
-
-        File convertedFile = new File(multipartFile.getOriginalFilename());
-        convertedFile.createNewFile();
-        FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
-        fileOutputStream.write(multipartFile.getBytes());
-        fileOutputStream.flush();
-        fileOutputStream.close();
-        return convertedFile;
-
-    }
 }

@@ -12,7 +12,7 @@ import java.util.List;
  * Top level interface for classes which can handle input files
  * (e.g. parse and persist their data)
  */
-public interface PreProcessingService { //TODO change name to PreProcessingService and package name to prepocessing?
+public interface PreProcessingService {
 
     /**
      * Implementations should be able to extract data from an input file and

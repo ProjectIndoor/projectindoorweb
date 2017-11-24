@@ -15,6 +15,7 @@ public class PersistencyServiceComponent {
         if(theInstance != null){
             theInstance = null;
         }
+        RepositoryRegistry.disposeRepositories();
 
     }
 
@@ -25,6 +26,6 @@ public class PersistencyServiceComponent {
 
         }
 
-        throw new IllegalStateException("Persistency service was not initialized yet. Please call 'initComponent()' first." );
+        throw new IllegalStateException("Persistency service was not initialized. Please call 'initComponent()' first." );
     }
 }

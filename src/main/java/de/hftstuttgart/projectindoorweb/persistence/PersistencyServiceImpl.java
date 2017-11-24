@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
+import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
@@ -14,15 +15,21 @@ import java.util.Set;
 
 public class PersistencyServiceImpl implements PersistencyService {
 
-
-
-
     @Override
     public long createNewProject(String projectName, String algorithmType, Set<ProjectParameter> projectParameters) {
 
-        List<Parameter> parametersAsList = convertToEntityParameters(projectParameters);
+        AssertParam.throwIfNullOrEmpty(projectName,"projectName");
+        AssertParam.throwIfNullOrEmpty(algorithmType,"algorithmType");
+        AssertParam.throwIfNull(projectParameters,"projectParameters");
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
+
+        if(calculationAlgorithm==null){
+            return -1;
+        }
+
+        List<Parameter> parametersAsList = convertToEntityParameters(projectParameters);
+
         Project newProject = new Project(projectName, calculationAlgorithm, parametersAsList);
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
@@ -34,6 +41,11 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<ProjectParameter> newProjectParameters) {
+
+        AssertParam.throwIfNull(projectId,"projectId");
+        AssertParam.throwIfNullOrEmpty(newProjectName,"newProjectName");
+        AssertParam.throwIfNullOrEmpty(newAlgorithmType,"newAlgorithmType");
+        AssertParam.throwIfNull(newProjectParameters,"newProjectParameters");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
@@ -55,6 +67,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean deleteProject(long projectId) {
 
+        AssertParam.throwIfNull(projectId,"projectId");
+
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         projectRepository.delete(projectId);
@@ -66,6 +80,8 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public Project getProjectById(long projectId) {
+
+        AssertParam.throwIfNull(projectId,"projectId");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
@@ -84,6 +100,8 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public boolean saveLogFiles(List<LogFile> logFiles) {
+
+        AssertParam.throwIfNull(logFiles,"logFiles");
 
         LogFileRepository logFileRepository = (LogFileRepository) RepositoryRegistry.getRepositoryByEntityName(LogFile.class.getName());
 

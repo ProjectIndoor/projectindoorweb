@@ -29,7 +29,8 @@ public class LogFilePreProcessingServiceImpl implements PreProcessingService {
             }
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(radioMapFiles.length);
+        ExecutorService executorService = Executors.newFixedThreadPool(radioMapFiles.length); //Can not be globalised as thread pool has to be redefined on every call
+
         for (LogFileParser parser: fileParsers) {
             executorService.execute(parser);
         }

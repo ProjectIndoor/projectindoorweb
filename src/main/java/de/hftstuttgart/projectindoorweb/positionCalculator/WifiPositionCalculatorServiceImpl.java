@@ -19,6 +19,8 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     @Override
     public List<WifiPositionResult> calculatePositions(File evalFile, Project project) {
 
+        AssertParam.throwIfNull(evalFile,"evalFile");
+        AssertParam.throwIfNull(project,"project");
 
         EvalFileParser parser = new EvalFileParser(evalFile);
 
@@ -32,6 +34,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         List<LogFile> logFiles = project.getLogFiles();
         List<RadioMap> radioMaps = new ArrayList<>(logFiles.size());
+
         for (LogFile logFile:
              logFiles) {
             radioMaps.add(logFile.getRadioMap());
@@ -56,10 +59,6 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     }
 
     private WifiPositionResult calculateSinglePosition(List<RssiSignal> rssiSignals, RadioMap radioMap) {
-
-
-        AssertParam.throwIfNull(rssiSignals,"rssiSignals");
-        AssertParam.throwIfNull(radioMap,"radioMap");
 
         List<RadioMapElement> radioMapElements = radioMap.getRadioMapElements();
         List<WifiPositionResult> preResults = new ArrayList<>();

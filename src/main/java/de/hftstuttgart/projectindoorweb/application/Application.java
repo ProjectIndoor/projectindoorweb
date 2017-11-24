@@ -1,6 +1,8 @@
 package de.hftstuttgart.projectindoorweb.application;
 
 
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
@@ -9,6 +11,7 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileReposito
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.web.PositioningController;
 import de.hftstuttgart.projectindoorweb.web.ProjectController;
 import de.hftstuttgart.projectindoorweb.web.RestTransmissionServiceComponent;
@@ -38,7 +41,12 @@ public class Application {
         PreProcessingServiceComponent.initComponent();
         PositionCalculatorComponent.initComponent();
         PersistencyServiceComponent.initComponent();
-        RestTransmissionServiceComponent.initComponent();
+
+        PersistencyService persistencyService = PersistencyServiceComponent.getPersistencyService();
+        PreProcessingService preProcessingService = PreProcessingServiceComponent.getPreProcessingService();
+        PositionCalculatorService positionCalculatorService = PositionCalculatorComponent.getPositionCalculator();
+
+        RestTransmissionServiceComponent.initComponent(persistencyService, preProcessingService, positionCalculatorService);
 
     }
 

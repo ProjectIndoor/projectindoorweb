@@ -15,6 +15,9 @@ public class RepositoryRegistry {
     }
 
     public static void registerRepository(String name, CrudRepository repository){
+        if(repositoryMap==null){
+            throw new IllegalStateException("Repository registry was not initialized." );
+        }
         repositoryMap.putIfAbsent(name,repository);
     }
 
@@ -23,6 +26,9 @@ public class RepositoryRegistry {
     }
 
     public static CrudRepository getRepositoryByEntityName(String repositoryName){
+        if(repositoryMap==null){
+            throw new IllegalStateException("Repository registry was not initialized." );
+        }
         return repositoryMap.get(repositoryName);
     }
 }
