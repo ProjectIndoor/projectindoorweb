@@ -9,9 +9,8 @@ import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
-import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
+import de.hftstuttgart.projectindoorweb.web.internal.*;
+import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,11 +103,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<CalculatedPosition> getPositionResultsForIdentifier(String positionIdentifier) {
+    public List<CalculatedPosition> getPositionResultsForProjectIdentifier(String projectIdentifier) {
 
         List<CalculatedPosition> result = new ArrayList<>();
 
-        if (AssertParam.isNullOrEmpty(positionIdentifier)) {
+        if (AssertParam.isNullOrEmpty(projectIdentifier)) {
             return result;
         }
 
@@ -190,10 +189,64 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public List<ProjectElement> getAllProjects() {
 
-        List<Project> projects = PersistencyServiceComponent.getPersistencyService().getAllProjects();
+        List<Project> projects = this.persistencyService.getAllProjects();
 
         return convertToProjectElements(projects);
 
+    }
+
+    @Override
+    public List<BuildingElement> getAllBuildings() {
+        List<Building> buildings = this.persistencyService.getAllBuildings();
+
+        return convertToBuildingElements(buildings);
+    }
+
+    @Override
+    public List<AlgorithmType> getAllAlgorithmTypes() {//TODO use reflection instead if viable
+        List<AlgorithmType> result= new ArrayList<>();
+
+        AlgorithmType wifiAlgorithm= new AlgorithmType("WifiPositionCalculatorServiceImpl", "Wifi");
+
+        result.add(wifiAlgorithm);
+
+        return result;
+    }
+
+    @Override
+    public List<EvaluationEntry> getEvaluationEntriesForBuildingId(String buildingIdentifier) {
+        List<EvaluationEntry> result = new ArrayList<>();
+        if (AssertParam.isNullOrEmpty(buildingIdentifier)) {
+            return result;
+        }
+        return result;//TODO implement when ready
+    }
+
+    @Override
+    public List<ParameterElement> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier) {
+        List<ParameterElement> result = new ArrayList<>();
+        if (AssertParam.isNullOrEmpty(algorithmIdentifier)) {
+            return result;
+        }
+        return result;//TODO implement when ready
+    }
+
+    @Override
+    public long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
+        if (AssertParam.isNullOrEmpty(buildingName)
+            || AssertParam.isNullOrEmpty(numberOfFloors)
+            || southEastAnchor==null
+            || southWestAnchor==null
+            || northEastAnchor==null
+            || northWestAnchor==null) {
+            return -1;
+        }
+        try {
+            long actualNumberOfFloors = Long.parseLong(numberOfFloors);
+            return this.persistencyService.addNewBuilding( buildingName, actualNumberOfFloors, southEastAnchor,  southWestAnchor,  northEastAnchor, northWestAnchor);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
     }
 
     private CalculatedPosition createEmptyCalculatedPosition() {
@@ -245,6 +298,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         return result;
 
+    }
+
+    private List<BuildingElement> convertToBuildingElements(List<Building> buildings) {
+        List<BuildingElement> result = new ArrayList<>(buildings.size());
+
+        for (Building building :
+                buildings) {
+            result.add(new BuildingElement(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
+        }
+
+        return result;
     }
 
 

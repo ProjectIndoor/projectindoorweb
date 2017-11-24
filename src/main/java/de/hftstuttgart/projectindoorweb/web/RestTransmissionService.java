@@ -1,9 +1,8 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 
-import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
+import de.hftstuttgart.projectindoorweb.web.internal.*;
+import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     CalculatedPosition getPositionForWifiReading(String wifiReading);
 
-    List<CalculatedPosition> getPositionResultsForIdentifier(String positionIdentifier);
+    List<CalculatedPosition> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
     long saveNewProject(Set<ProjectParameter> projectParameterSet, String projectName, String algorithmType);
 
@@ -28,4 +27,14 @@ public interface RestTransmissionService { //If too many methods get introduced,
     ProjectElement loadSelectedProject(String projectIdentifier);
 
     List<ProjectElement> getAllProjects();
+
+    List<BuildingElement>getAllBuildings();
+
+    List<AlgorithmType> getAllAlgorithmTypes();
+
+    List<EvaluationEntry> getEvaluationEntriesForBuildingId(String buildingIdentifier);
+
+    List<ParameterElement> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
+
+    long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
 }

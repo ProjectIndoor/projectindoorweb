@@ -1,8 +1,6 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectElement;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
-import de.hftstuttgart.projectindoorweb.web.internal.TransmissionConstants;
+import de.hftstuttgart.projectindoorweb.web.internal.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +19,7 @@ public class ProjectController {
 
     private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
-    @RequestMapping(path = "/saveNewProject", method = GET)//TODO return projectId as String
+    @RequestMapping(path = "/saveNewProject", method = GET)
     public long saveNewProject(@RequestBody Set<ProjectParameter> projectParameterSet,
                                @RequestParam(value = TransmissionConstants.PROJECT_NAME_PARAM,
                                        defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -66,6 +64,25 @@ public class ProjectController {
         List<ProjectElement> result = restTransmissionService.getAllProjects();
 
         return new ResponseEntity<List<ProjectElement>>(result, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(path = "/getAllAlgorithmTypes", method = GET)
+    public ResponseEntity<List<AlgorithmType>> getAllAlgorithmTypes() {
+
+        List<AlgorithmType> result = restTransmissionService.getAllAlgorithmTypes();
+
+        return new ResponseEntity<List<AlgorithmType>>(result, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(path = "/getAlgorithmParameterListForAlgorithmId", method = GET)
+    public ResponseEntity<List<ParameterElement>> getAlgorithmParameterListForAlgorithmId(@RequestParam(value = TransmissionConstants.ALGORITHM_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String algorithmIdentifier) {
+
+        List<ParameterElement> result = restTransmissionService.getAlgorithmParameterListForAlgorithmId(algorithmIdentifier);
+
+        return new ResponseEntity<List<ParameterElement>>(result, HttpStatus.OK);
 
     }
 }

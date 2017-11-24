@@ -1,7 +1,10 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.web.internal.BuildingElement;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
+import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.TransmissionConstants;
+import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,8 +37,10 @@ public class PositioningController {
                                      @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                              String buildingIdentifier,
-                                     @RequestBody MultipartFile[] radioMapFiles) {
-
+                                     @RequestBody MultipartFile[] radioMapFiles,
+                                     @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
+                                             defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
+                                             boolean withPixelPosition) {
         return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
     }
 
@@ -47,26 +52,60 @@ public class PositioningController {
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                     String buildingIdentifier,
-            @RequestBody MultipartFile evaluationFile) {
+            @RequestBody MultipartFile evaluationFile,
+            @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
+                    defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
+                    boolean withPixelPosition) {
 
         List<CalculatedPosition> result = restTransmissionService.generatePositionResults(projectIdentifier, buildingIdentifier, evaluationFile);
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
 
     }
 
-    //TODO add method getAllBuildings returns object adjusted to entity
+    @RequestMapping(path = "/getAllBuildings", method = GET)
+    public ResponseEntity<List<BuildingElement>> getAllBuildings() {
+        List<BuildingElement> result = restTransmissionService.getAllBuildings();
+        return new ResponseEntity<List<BuildingElement>>(result, HttpStatus.OK);
+    }
+
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
     public ResponseEntity<CalculatedPosition> getPositionForWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading) {
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading,
+                                                                        @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
+                                                                                defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
+                                                                                boolean withPixelPosition) {
         CalculatedPosition result = restTransmissionService.getPositionForWifiReading(wifiReading);
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(path = "/getPositionResultsForIdentifier", method = GET)
-//TODO add new parameters projectId and buildingId:
-    public ResponseEntity<List<CalculatedPosition>> getPositionResultsForIdentifier(@RequestParam(value = TransmissionConstants.POSITION_IDENTIFIER_PARAM, defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String positionIdentifier) {
-        List<CalculatedPosition> result = restTransmissionService.getPositionResultsForIdentifier(positionIdentifier);
+    @RequestMapping(path = "/getPositionResultsForProjectIdentifier", method = GET)
+    public ResponseEntity<List<CalculatedPosition>> getPositionResultsForProjectIdentifier(
+            @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
+        List<CalculatedPosition> result = restTransmissionService.getPositionResultsForProjectIdentifier(projectIdentifier);
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/getEvaluationEntriesForBuildingId", method = GET)
+    public ResponseEntity<List<EvaluationEntry>> getEvaluationEntriesForBuildingId(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingIdentifier) {
+        List<EvaluationEntry> result = restTransmissionService.getEvaluationEntriesForBuildingId(buildingIdentifier);
+        return new ResponseEntity<List<EvaluationEntry>>(result, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(path = "/addNewBuilding", method = GET)
+    public long addNewBuilding(@RequestParam(value = TransmissionConstants.BUILDING_NAME_PARAM,
+                                  defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingName,
+                               @RequestParam(value = TransmissionConstants.NUMBER_OF_FLOORS_PARAM,
+                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String numberOfFloors,
+                               @RequestBody PositionAnchor southEastAnchor,
+                               @RequestBody PositionAnchor southWestAnchor,
+                               @RequestBody PositionAnchor northEastAnchor,
+                               @RequestBody PositionAnchor northWestAnchor) {
+
+        return restTransmissionService.addNewBuilding(buildingName,numberOfFloors,southEastAnchor,southWestAnchor,northEastAnchor,northWestAnchor);
+
     }
 
 }

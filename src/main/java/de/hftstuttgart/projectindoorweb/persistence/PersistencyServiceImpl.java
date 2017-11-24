@@ -1,12 +1,14 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
+import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
 
 import java.util.ArrayList;
@@ -79,6 +81,19 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
+    public long addNewBuilding(String buildingName, long actualNumberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
+
+        AssertParam.throwIfNullOrEmpty(buildingName,"buildingName");
+        AssertParam.throwIfNull(actualNumberOfFloors,"actualNumberOfFloors");
+        AssertParam.throwIfNull(southEastAnchor,"southEastAnchor");
+        AssertParam.throwIfNull(southWestAnchor,"southWestAnchor");
+        AssertParam.throwIfNull(northEastAnchor,"northEastAnchor");
+        AssertParam.throwIfNull(northWestAnchor,"northWestAnchor");
+
+        return 0;//TODO implement when ready
+    }
+
+    @Override
     public Project getProjectById(long projectId) {
 
         AssertParam.throwIfNull(projectId,"projectId");
@@ -96,6 +111,12 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         return (List<Project>) projectRepository.findAll();
 
+    }
+
+    @Override
+    public List<Building> getAllBuildings() {
+        //TODO implement when ready
+        return new ArrayList<>();
     }
 
     @Override

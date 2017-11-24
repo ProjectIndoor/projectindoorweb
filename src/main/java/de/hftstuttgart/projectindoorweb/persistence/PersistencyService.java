@@ -1,7 +1,9 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
 
 import java.util.List;
@@ -15,9 +17,13 @@ public interface PersistencyService {
 
     boolean deleteProject(long projectId);
 
+    long addNewBuilding(String buildingName, long actualNumberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
+
     Project getProjectById(long projectId);
 
     List<Project> getAllProjects();
+
+    List<Building> getAllBuildings();
 
     boolean saveLogFiles(List<LogFile> logFiles);
 
