@@ -172,6 +172,9 @@ function MapController($scope, $http, olData) {
             view: {
                 projection: 'pixel',
                 extent: [0, 0, 2560, 1536],
+            },
+            interactions: {
+                mouseWheelZoom: true
             }
         },
         static: {
