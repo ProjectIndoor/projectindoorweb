@@ -148,43 +148,20 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
             $mdSidenav(componentId).toggle();
         };
     }
+
+    $scope.calculatePos = function () {
+        angular.element($('#map')).scope().addRefPoint(430, 554)
+        angular.element($('#map')).scope().addRefPoint(440, 744)
+        angular.element($('#map')).scope().addRefPoint(445, 864)
+        angular.element($('#map')).scope().addRefPoint(450, 974)
+
+    }
 });
 
 // controller which handles the map
 function MapController($scope, $http, olData) {
 
-    var refPoints = [
-        {
-            name: 'p1',
-            coord: [350, 220],
-            projection: 'pixel',
-            "label": {
-                "message": "Point 1",
-                "show": false,
-                "showOnMouseOver": true
-            }
-        },
-        {
-            name: 'p2',
-            coord: [450, 220],
-            projection: 'pixel',
-            "label": {
-                "message": "Point 2",
-                "show": false,
-                "showOnMouseOver": true
-            }
-        },
-        {
-            name: 'p3',
-            coord: [550, 220],
-            projection: 'pixel',
-            "label": {
-                "message": "Point 3",
-                "show": false,
-                "showOnMouseOver": true
-            }
-        }
-    ];
+    var refPoints = [];
 
     angular.extend($scope, {
         center: {
@@ -210,7 +187,12 @@ function MapController($scope, $http, olData) {
     $scope.addRefPoint = function (x, y) {
         var newRef = {
             coord: [x, y],
-            projection: 'pixel'
+            projection: 'pixel'//,
+            //"label": {
+            //    "message": "Point 3",
+            //    "show": false,
+            //    "showOnMouseOver": true
+            //}
         };
         refPoints.push(newRef)
     }
