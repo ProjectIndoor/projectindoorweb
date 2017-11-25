@@ -1,7 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 public class LogFile {
@@ -10,44 +9,43 @@ public class LogFile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String customName;
     private String sourceFileName;
-    private Long creationDate;
+    private String customFileName;
     private int appVersion;
-    private boolean radiomapFile;
 
-    @ManyToOne
-    @JoinColumn(name = "phoneId")
-    private Phone recordedByPhone;
-
-    @OneToMany(mappedBy = "containedInFile", cascade = CascadeType.ALL)
-    private Set<SignalVector> signalVectors;
-
-    @ManyToOne
-    @JoinColumn(name = "buildingId")
+    @ManyToOne(targetEntity = Building.class, cascade = CascadeType.ALL)
     private Building recordedInBuilding;
 
-    public LogFile(String customName, String sourceFileName, Long creationDate, int appVersion,
-                   boolean radiomapFile, Phone recordedByPhone, Building recordedInBuilding) {
-        this.customName = customName;
+    @ManyToOne(targetEntity = Phone.class, cascade = CascadeType.ALL)
+    private Phone recordedByPhone;
+
+    @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
+    private RadioMap radioMap;
+
+    @ManyToOne(targetEntity = Project.class, cascade = CascadeType.ALL)
+    private Project generatedFromProject;
+
+    protected LogFile(){}
+
+    public LogFile(String sourceFileName, String customFileName, int appVersion, RadioMap radioMap, Project project) {
         this.sourceFileName = sourceFileName;
-        this.creationDate = creationDate;
+        this.customFileName = customFileName;
         this.appVersion = appVersion;
-        this.radiomapFile = radiomapFile;
-        this.recordedByPhone = recordedByPhone;
+        this.radioMap = radioMap;
+        this.generatedFromProject = project;
+    }
+
+    public LogFile(String sourceFileName, String customFileName, int appVersion, Building recordedInBuilding,
+                   Phone recordedByPhone, RadioMap radioMap, Project project) {
+
+        this.sourceFileName = sourceFileName;
+        this.customFileName = customFileName;
+        this.appVersion = appVersion;
         this.recordedInBuilding = recordedInBuilding;
-    }
+        this.recordedByPhone = recordedByPhone;
+        this.radioMap = radioMap;
+        this.generatedFromProject = project;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getCustomName() {
-        return customName;
-    }
-
-    public void setCustomName(String customName) {
-        this.customName = customName;
     }
 
     public String getSourceFileName() {
@@ -58,12 +56,12 @@ public class LogFile {
         this.sourceFileName = sourceFileName;
     }
 
-    public Long getCreationDate() {
-        return creationDate;
+    public String getCustomFileName() {
+        return customFileName;
     }
 
-    public void setCreationDate(Long creationDate) {
-        this.creationDate = creationDate;
+    public void setCustomFileName(String customFileName) {
+        this.customFileName = customFileName;
     }
 
     public int getAppVersion() {
@@ -74,12 +72,12 @@ public class LogFile {
         this.appVersion = appVersion;
     }
 
-    public boolean isRadiomapFile() {
-        return radiomapFile;
+    public Building getRecordedInBuilding() {
+        return recordedInBuilding;
     }
 
-    public void setRadiomapFile(boolean radiomapFile) {
-        this.radiomapFile = radiomapFile;
+    public void setRecordedInBuilding(Building recordedInBuilding) {
+        this.recordedInBuilding = recordedInBuilding;
     }
 
     public Phone getRecordedByPhone() {
@@ -90,19 +88,19 @@ public class LogFile {
         this.recordedByPhone = recordedByPhone;
     }
 
-    public Set<SignalVector> getSignalVectors() {
-        return signalVectors;
+    public RadioMap getRadioMap() {
+        return radioMap;
     }
 
-    public void setSignalVectors(Set<SignalVector> signalVectors) {
-        this.signalVectors = signalVectors;
+    public void setRadioMap(RadioMap radioMap) {
+        this.radioMap = radioMap;
     }
 
-    public Building getRecordedInBuilding() {
-        return recordedInBuilding;
+    public Project getGeneratedFromProject() {
+        return generatedFromProject;
     }
 
-    public void setRecordedInBuilding(Building recordedInBuilding) {
-        this.recordedInBuilding = recordedInBuilding;
+    public void setGeneratedFromProject(Project generatedFromProject) {
+        this.generatedFromProject = generatedFromProject;
     }
 }

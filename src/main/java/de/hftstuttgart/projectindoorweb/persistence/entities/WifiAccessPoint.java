@@ -1,10 +1,9 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
-public class AccessPoint {
+public class WifiAccessPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,17 +11,19 @@ public class AccessPoint {
 
     private String macAddress;
 
-
-    @ManyToOne
-    @JoinColumn(name = "positionId")
+    @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position position;
 
-    @OneToMany(mappedBy = "wifiAccessPoint", cascade = CascadeType.ALL)
-    private Set<RssiSignal> rssiSignals;
+    protected WifiAccessPoint(){}
 
-    public AccessPoint(String macAddress, Position position) {
+    public WifiAccessPoint(String macAddress, Position position) {
         this.macAddress = macAddress;
         this.position = position;
+    }
+
+    public WifiAccessPoint(String macAddress) {
+        this.macAddress = macAddress;
+        this.position = null;
     }
 
     public Long getId() {
@@ -43,13 +44,5 @@ public class AccessPoint {
 
     public void setPosition(Position position) {
         this.position = position;
-    }
-
-    public Set<RssiSignal> getRssiSignals() {
-        return rssiSignals;
-    }
-
-    public void setRssiSignals(Set<RssiSignal> rssiSignals) {
-        this.rssiSignals = rssiSignals;
     }
 }

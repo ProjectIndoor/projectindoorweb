@@ -1,32 +1,27 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
-
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class PositionResult {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
 
     private double x;
     private double y;
     private double z;
-    private boolean transformedPosition;
+    private boolean wgs84;
 
-    protected PositionResult(){}
+    private Project generatingProject;
 
-    public PositionResult(double x, double y, double z, boolean transformedPosition) {
+    public PositionResult(double x, double y, double z, boolean wgs84, Project generatingProject) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.transformedPosition = transformedPosition;
+        this.wgs84 = wgs84;
+        this.generatingProject = generatingProject;
     }
 
-
-    public long getId() {
-        return id;
+    public PositionResult(double x, double y, double z, boolean wgs84) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.wgs84 = wgs84;
     }
 
     public double getX() {
@@ -53,11 +48,19 @@ public class PositionResult {
         this.z = z;
     }
 
-    public boolean isTransformedPosition() {
-        return transformedPosition;
+    public boolean isWgs84() {
+        return wgs84;
     }
 
-    public void setTransformedPosition(boolean transformedPosition) {
-        this.transformedPosition = transformedPosition;
+    public void setWgs84(boolean wgs84) {
+        this.wgs84 = wgs84;
+    }
+
+    public Project getGeneratingProject() {
+        return generatingProject;
+    }
+
+    public void setGeneratingProject(Project generatingProject) {
+        this.generatingProject = generatingProject;
     }
 }

@@ -1,35 +1,75 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-/*
-* Our final product will have a possibility for the customer to define a set of parameters as well as a certain
-* algorithm as a "Project". We could even include the source files to be part of the project -- the files used to
-* generate a result, that is -- so we can link an object of class {@link WifiPositionResult} back to the project.
-* This would enable us to not only skip the entire pre-processing, but also the calculation of a result if it
- * is detected that a particular project was already pre-processed and calculated before.
-*
-* This class then serves as a container for the projects because we currently don't know yet how exactly it will look
-* like, but only that we will need it in the near future.
-*
-* NOTE: It is probably not very reasonable to send the entire project information along with each result object (an object
-* of class {@link WifiPositionResult}), but only along with a list of these objects. Therefore, objects of class
-* {@link WifiPositionResult} do not hold a reference to an object of class {@link Project} themselves.
-* */
+import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
+import sun.rmi.runtime.Log;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
-    public long getId() {
+    private String projectName;
+    private CalculationAlgorithm calculationAlgorithm;
+
+    @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
+    private List<Parameter> projectParameters;
+
+    @OneToMany(targetEntity = LogFile.class, mappedBy = "generatedFromProject")
+    private List<LogFile> logFiles;
+
+    protected Project(){}
+
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<LogFile> logFiles) {
+        this.projectName = projectName;
+        this.calculationAlgorithm = calculationAlgorithm;
+        this.projectParameters = projectParameters;
+        this.logFiles = logFiles;
+    }
+
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
+        this.projectName = projectName;
+        this.calculationAlgorithm = calculationAlgorithm;
+        this.projectParameters = projectParameters;
+    }
+
+    public Long getId() {
         return id;
     }
 
+    public String getProjectName() {
+        return projectName;
+    }
 
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public CalculationAlgorithm getCalculationAlgorithm() {
+        return calculationAlgorithm;
+    }
+
+    public void setCalculationAlgorithm(CalculationAlgorithm calculationAlgorithm) {
+        this.calculationAlgorithm = calculationAlgorithm;
+    }
+
+    public List<Parameter> getProjectParameters() {
+        return projectParameters;
+    }
+
+    public void setProjectParameters(List<Parameter> projectParameters) {
+        this.projectParameters = projectParameters;
+    }
+
+    public List<LogFile> getLogFiles() {
+        return logFiles;
+    }
+
+    public void setLogFiles(List<LogFile> logFiles) {
+        this.logFiles = logFiles;
+    }
 }
