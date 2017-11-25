@@ -5,6 +5,9 @@ import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
 import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
+@Api(value = "Position", description = "Operations for positions", tags = "Position")
 @RequestMapping("/position")
 public class PositioningController {
 
@@ -30,7 +34,8 @@ public class PositioningController {
             = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
 
-    @RequestMapping(path = "/generateRadioMaps", method = GET)
+    @ApiOperation(value = "Generate radio maps", nickname = "position/generateRadioMaps",  notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
+    @RequestMapping(path = "/generateRadioMaps", method = POST)
     public boolean generateRadioMaps(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                              String projectIdentifier,
@@ -44,7 +49,8 @@ public class PositioningController {
         return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
     }
 
-    @RequestMapping(path = "/generatePositionResults", method = GET)
+    @ApiOperation(value = "Generate position results", nickname = "position/generatePositionResults", notes= TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
+    @RequestMapping(path = "/generatePositionResults", method = POST)
     public ResponseEntity<List<CalculatedPosition>> generatePositionResults(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -62,14 +68,17 @@ public class PositioningController {
 
     }
 
+    @ApiOperation(value = "Get all buildings", nickname = "position/getAllBuildings", notes= TransmissionConstants.GET_ALL_BUILDINGS_NOTE)
     @RequestMapping(path = "/getAllBuildings", method = GET)
     public ResponseEntity<List<BuildingElement>> getAllBuildings() {
         List<BuildingElement> result = restTransmissionService.getAllBuildings();
         return new ResponseEntity<List<BuildingElement>>(result, HttpStatus.OK);
     }
 
+
+    @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/calculatePositionWithWifiReading", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
-    public ResponseEntity<CalculatedPosition> getPositionForWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
+    public ResponseEntity<CalculatedPosition> calculatePositionWithWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading,
                                                                         @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
                                                                                 defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
@@ -78,6 +87,7 @@ public class PositioningController {
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get position results for project identifier", nickname = "position/getPositionResultsForProjectIdentifier", notes = TransmissionConstants.GET_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/getPositionResultsForProjectIdentifier", method = GET)
     public ResponseEntity<List<CalculatedPosition>> getPositionResultsForProjectIdentifier(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
@@ -86,6 +96,7 @@ public class PositioningController {
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get evaluation entries for building identifier", nickname = "position/getEvaluationEntriesForBuildingId", notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
     @RequestMapping(path = "/getEvaluationEntriesForBuildingId", method = GET)
     public ResponseEntity<List<EvaluationEntry>> getEvaluationEntriesForBuildingId(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingIdentifier) {
@@ -94,7 +105,8 @@ public class PositioningController {
 
     }
 
-    @RequestMapping(path = "/addNewBuilding", method = GET)
+    @ApiOperation(value = "Add a new building", nickname = "position/addNewBuilding", notes= TransmissionConstants.ADD_NEW_BUILDING_NOTE)
+    @RequestMapping(path = "/addNewBuilding", method = POST)
     public long addNewBuilding(@RequestParam(value = TransmissionConstants.BUILDING_NAME_PARAM,
                                   defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingName,
                                @RequestParam(value = TransmissionConstants.NUMBER_OF_FLOORS_PARAM,
