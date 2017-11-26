@@ -37,3 +37,13 @@
     background-color: #a11657;
     opacity: 0.5;
 }
+
+.uploadFileSuccess {
+    color: green;
+    text-align: center;
+}
+
+.uploadFileError {
+    color: red;
+    text-align: center;
+}

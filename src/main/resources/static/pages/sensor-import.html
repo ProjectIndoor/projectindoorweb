@@ -11,6 +11,10 @@
                 <i class="material-icons">insert_drive_file</i>
             </md-card-title-media>
         </md-card-title>
+
+        <!--Display Success/Error message-->
+        <div ng-show="uploadStatus" class="{{fileUpload}}">{{logMessage}}</div>
+
         <md-card-content layout="column">
 
             <md-input-container flex="100">

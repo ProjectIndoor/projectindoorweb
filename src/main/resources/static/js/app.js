@@ -309,6 +309,9 @@ function LogImportController($scope, $http) {
         $scope.fileUploaded = $files[0].name;
     };
 
+    //The success or error message
+    $scope.uploadStatus = false;
+
     //Post the file and parameters
     $scope.uploadFiles = function () {
         var request = $http({
@@ -320,9 +323,13 @@ function LogImportController($scope, $http) {
                 'Content-Type': undefined
             }
         }).success(function (data, status, headers, config) {
-            //alert("success!");
+            $scope.uploadStatus = true;
+            $scope.fileUpload = "uploadFileSuccess";
+            $scope.logMessage = "File uploaded successfully!";
         }).error(function (data, status, headers, config) {
-            //alert("failed!");
+            $scope.uploadStatus = true;
+            $scope.fileUpload = "uploadFileError";
+            $scope.logMessage = "Error while uploading File";
         });
     }
 };
