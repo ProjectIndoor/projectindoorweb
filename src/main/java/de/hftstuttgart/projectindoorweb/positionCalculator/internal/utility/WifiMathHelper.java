@@ -8,6 +8,8 @@ import java.util.List;
 
 public class WifiMathHelper {
 
+
+
     public static double calculateEuclidianRssiDistance(List<RssiSignal> radioMapSignals, List<RssiSignal> evaluationSignals) {
 
         double squareTotalSum = 0.0;

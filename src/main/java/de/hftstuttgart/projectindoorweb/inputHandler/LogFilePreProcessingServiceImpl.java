@@ -59,15 +59,6 @@ public class LogFilePreProcessingServiceImpl implements PreProcessingService {
             }
         }
 
-        //TODO Move merging to position calculation
-        /*
-        if(ConfigContainer.MERGE_RADIOMAP_ELEMENTS){
-            RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(processedLogFiles);
-            processedLogFiles.clear();
-            processedLogFiles.add(tmp);
-        }
-        */
-
 
         return processedLogFiles;
 

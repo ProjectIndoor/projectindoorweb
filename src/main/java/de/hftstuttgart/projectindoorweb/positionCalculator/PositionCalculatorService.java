@@ -12,4 +12,6 @@ public interface PositionCalculatorService {
 
     List<? extends PositionResult> calculatePositions(File evalFile, Project project);
 
+    <T extends PositionResult> T calculateSinglePosition(String wifiReading, Project project);
+
 }

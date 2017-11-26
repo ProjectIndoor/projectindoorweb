@@ -24,8 +24,8 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     private PreProcessingService preProcessingService;
     private PositionCalculatorService positionCalculatorService;
 
-    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService
-            , PositionCalculatorService positionCalculatorService) {
+    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService,
+                                       PositionCalculatorService positionCalculatorService) {
         this.persistencyService = persistencyService;
         this.preProcessingService = preProcessingService;
         this.positionCalculatorService = positionCalculatorService;
@@ -82,24 +82,38 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
             List<WifiPositionResult> retrievedWifiResults =
                     (List<WifiPositionResult>) this.positionCalculatorService.calculatePositions(convertedEvaluationFile, project);
-            result = convertToCalculatedPositions(retrievedWifiResults);
-            return result;
+            result = TransmissionHelper.convertToCalculatedPositions(retrievedWifiResults);
 
         } catch (NumberFormatException | IOException ex) {
             ex.printStackTrace();
+
+        }finally {
             return result;
         }
 
     }
 
     @Override
-    public CalculatedPosition getPositionForWifiReading(String wifiReading) {
+    public CalculatedPosition getPositionForWifiReading(String projectIdentifier, String wifiReading) {
 
-        if (AssertParam.isNullOrEmpty(wifiReading)) {
+        if (AssertParam.isNullOrEmpty(projectIdentifier) || AssertParam.isNullOrEmpty(wifiReading)) {
             return createEmptyCalculatedPosition();
         }
 
-        return new CalculatedPosition(0, 0, 0, false, ""); //TODO implement when ready
+        CalculatedPosition result = null;
+        try{
+            long projectId = Long.parseLong(projectIdentifier);
+            Project project = this.persistencyService.getProjectById(projectId);
+            if(project != null){
+                WifiPositionResult retrievedWifiResult = (WifiPositionResult) this.positionCalculatorService.calculateSinglePosition(wifiReading, project);
+                result = TransmissionHelper.convertToCalculatedPosition(retrievedWifiResult);
+            }
+        }catch(NumberFormatException ex){
+            ex.printStackTrace();
+        }finally {
+            return result;
+        }
+
     }
 
     @Override
@@ -199,7 +213,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     public List<BuildingElement> getAllBuildings() {
         List<Building> buildings = this.persistencyService.getAllBuildings();
 
-        return convertToBuildingElements(buildings);
+        return TransmissionHelper.convertToBuildingElements(buildings);
     }
 
     @Override
@@ -286,30 +300,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     }
 
-    private List<CalculatedPosition> convertToCalculatedPositions(List<? extends PositionResult> positionResults) {
 
-
-        List<CalculatedPosition> result = new ArrayList<>(positionResults.size());
-
-        for (PositionResult positionResult :
-                positionResults) {
-            result.add(new CalculatedPosition(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
-        }
-
-        return result;
-
-    }
-
-    private List<BuildingElement> convertToBuildingElements(List<Building> buildings) {
-        List<BuildingElement> result = new ArrayList<>(buildings.size());
-
-        for (Building building :
-                buildings) {
-            result.add(new BuildingElement(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
-        }
-
-        return result;
-    }
 
 
 }
