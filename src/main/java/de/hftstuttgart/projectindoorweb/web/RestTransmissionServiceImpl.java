@@ -5,6 +5,7 @@ import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
+import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
@@ -54,9 +55,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         try {
             long projectId = Long.parseLong(projectIdentifier);
             Project project = this.persistencyService.getProjectById(projectId);
-            List<LogFile> processedLogFiles = this.preProcessingService.processIntoLogFiles(project, radioMapFileArray);
 
-            return this.persistencyService.saveLogFiles(processedLogFiles);
+            if (project.getLogFiles() == null || project.getLogFiles().isEmpty()) {
+                List<LogFile> processedLogFiles = this.preProcessingService.processIntoLogFiles(project, radioMapFileArray);
+                project.setLogFiles(processedLogFiles);
+
+                return this.persistencyService.updateProject(project);
+            }else{
+                return true;
+            }
+
+
         } catch (NumberFormatException ex) {
             return false;
         }
@@ -82,12 +91,13 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
             List<WifiPositionResult> retrievedWifiResults =
                     (List<WifiPositionResult>) this.positionCalculatorService.calculatePositions(convertedEvaluationFile, project);
+
             result = TransmissionHelper.convertToCalculatedPositions(retrievedWifiResults);
 
         } catch (NumberFormatException | IOException ex) {
             ex.printStackTrace();
 
-        }finally {
+        } finally {
             return result;
         }
 
@@ -101,16 +111,16 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         CalculatedPosition result = null;
-        try{
+        try {
             long projectId = Long.parseLong(projectIdentifier);
             Project project = this.persistencyService.getProjectById(projectId);
-            if(project != null){
+            if (project != null) {
                 WifiPositionResult retrievedWifiResult = (WifiPositionResult) this.positionCalculatorService.calculateSinglePosition(wifiReading, project);
                 result = TransmissionHelper.convertToCalculatedPosition(retrievedWifiResult);
             }
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             return result;
         }
 
@@ -218,9 +228,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     @Override
     public List<AlgorithmType> getAllAlgorithmTypes() {//TODO use reflection instead if viable
-        List<AlgorithmType> result= new ArrayList<>();
+        List<AlgorithmType> result = new ArrayList<>();
 
-        AlgorithmType wifiAlgorithm= new AlgorithmType("WifiPositionCalculatorServiceImpl", "Wifi");
+        AlgorithmType wifiAlgorithm = new AlgorithmType("WifiPositionCalculatorServiceImpl", "Wifi");
 
         result.add(wifiAlgorithm);
 
@@ -248,16 +258,16 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
         if (AssertParam.isNullOrEmpty(buildingName)
-            || AssertParam.isNullOrEmpty(numberOfFloors)
-            || southEastAnchor==null
-            || southWestAnchor==null
-            || northEastAnchor==null
-            || northWestAnchor==null) {
+                || AssertParam.isNullOrEmpty(numberOfFloors)
+                || southEastAnchor == null
+                || southWestAnchor == null
+                || northEastAnchor == null
+                || northWestAnchor == null) {
             return -1;
         }
         try {
             long actualNumberOfFloors = Long.parseLong(numberOfFloors);
-            return this.persistencyService.addNewBuilding( buildingName, actualNumberOfFloors, southEastAnchor,  southWestAnchor,  northEastAnchor, northWestAnchor);
+            return this.persistencyService.addNewBuilding(buildingName, actualNumberOfFloors, southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
         } catch (NumberFormatException ex) {
             return -1;
         }
@@ -299,8 +309,6 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
 
     }
-
-
 
 
 }

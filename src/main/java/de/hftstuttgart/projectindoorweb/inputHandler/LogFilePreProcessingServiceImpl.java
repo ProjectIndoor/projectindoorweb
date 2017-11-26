@@ -54,7 +54,7 @@ public class LogFilePreProcessingServiceImpl implements PreProcessingService {
                 fileName = parser.getSourceFile().getName();
                 radiomapElements = parser.getRadiomapElements();
                 generatedRadioMap = new RadioMap(radiomapElements);
-                processedLogFiles.add(new LogFile(fileName, fileName, 0, generatedRadioMap, project));
+                processedLogFiles.add(new LogFile(fileName, fileName, 0, generatedRadioMap));
 
             }
         }

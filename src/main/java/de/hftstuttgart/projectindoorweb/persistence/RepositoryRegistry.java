@@ -25,10 +25,10 @@ public class RepositoryRegistry {
         repositoryMap=null;
     }
 
-    public static CrudRepository getRepositoryByEntityName(String repositoryName){
+    public static CrudRepository getRepositoryByEntityName(String entitiyName){
         if(repositoryMap==null){
             throw new IllegalStateException("Repository registry was not initialized." );
         }
-        return repositoryMap.get(repositoryName);
+        return repositoryMap.get(entitiyName);
     }
 }
