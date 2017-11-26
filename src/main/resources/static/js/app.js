@@ -126,20 +126,96 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
     });
 }]);
 
+// ------------- Services
+
+// Map service
+function MapService() {
+    // map service properties
+    var referencePoints = [];
+    var staticMap = {};
+    var mDefaults = {
+        interactions: {
+            mouseWheelZoom: true
+        }
+    };
+    var mCenter = {
+        zoom: 2
+    };
+
+    // styles
+    var ref_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0, 5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 0.90,
+                src: '/icons/ref-marker.png'
+            }
+        }
+    };
+
+    // map service access functions
+    return {
+        // Reference points
+        refPoints: function () {
+            // return copy of list
+            return [].concat(referencePoints);
+        },
+        addRefPoint: function (x, y) {
+            // create a new reference point
+            var newRef = {
+                coord: [x, y],
+                projection: 'pixel',
+                style: ref_marker_style
+            };
+            referencePoints.push(newRef)
+        },
+        // Access map, defaults and center
+        map: function () {
+            return staticMap;
+        },
+        mapDefaults: function () {
+            return mDefaults;
+        },
+        mapCenter: function () {
+            return mCenter;
+        },
+        setMap: function (mapUrl, width, height) {
+            // set map image
+            staticMap.source = {
+                type: "ImageStatic",
+                url: mapUrl,
+                imageSize: [width, height]
+            };
+            // set view size
+            mDefaults.view = {
+                projection: 'pixel',
+                extent: [0, 0, width, height]
+            };
+            // set view center
+            mCenter.coord = [Math.floor(width / 2), Math.floor(height / 2)];
+        }
+    };
+}
+
+app.factory('mapService', MapService);
+
+
 // ------------- Controllers
 // controller which handels page navigation
 app.controller('NavToolbarCtrl', function ($scope, $timeout) {
-    $scope.currentTitle = 'Map View'
+    $scope.currentTitle = 'Map View';
 
     // change Toolbar title when route changes
     $scope.$on('$routeChangeSuccess', function (event, current) {
         $scope.currentTitle = current.title;
     });
 
-})
+});
 
 // controller which handles map configuration
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
@@ -150,55 +226,27 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
     }
 
     $scope.calculatePos = function () {
-        angular.element($('#map')).scope().addRefPoint(430, 554)
-        angular.element($('#map')).scope().addRefPoint(440, 744)
-        angular.element($('#map')).scope().addRefPoint(445, 864)
-        angular.element($('#map')).scope().addRefPoint(450, 974)
-
+        //example reference points
+        mapService.addRefPoint(430, 554);
+        mapService.addRefPoint(440, 754);
+        mapService.addRefPoint(445, 854);
+        mapService.addRefPoint(450, 954);
     }
 });
 
 // controller which handles the map
-function MapController($scope, $http, olData) {
+function MapController($scope, $http, olData, mapService) {
 
-    var refPoints = [];
+    // example map service setup
+    mapService.setMap("/maps/building_2_floor_3.png", 2560, 1536);
 
+    // setup usage of map service
     angular.extend($scope, {
-        center: {
-            coord: [1280, 768],
-            zoom: 2
-        },
-        defaults: {
-            view: {
-                projection: 'pixel',
-                extent: [0, 0, 2560, 1536],
-            },
-            interactions: {
-                mouseWheelZoom: true
-            }
-        },
-        static: {
-            source: {
-                type: "ImageStatic",
-                url: "/maps/building_2_floor_3.png",
-                imageSize: [2560, 1536]
-            }
-        },
-        refPoints: refPoints
+        mapCenter: mapService.mapCenter,
+        mapDefaults: mapService.mapDefaults,
+        map: mapService.map,
+        refPoints: mapService.refPoints
     });
-
-    $scope.addRefPoint = function (x, y) {
-        var newRef = {
-            coord: [x, y],
-            projection: 'pixel'//,
-            //"label": {
-            //    "message": "Point 3",
-            //    "show": false,
-            //    "showOnMouseOver": true
-            //}
-        };
-        refPoints.push(newRef)
-    }
 }
 
 app.controller('MapCtrl', MapController);

@@ -22,7 +22,7 @@
 
 </md-sidenav>
 <!-- Actual map -->
-<openlayers id="map" class="mapview" ol-center="center" ol-defaults="defaults" custom-layers="true">
-    <ol-layer ol-layer-properties="static"></ol-layer>
-    <ol-marker ng-repeat="refPoint in refPoints" ol-marker-properties="refPoint"></ol-marker>
+<openlayers id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()" custom-layers="true">
+    <ol-layer ol-layer-properties="map()"></ol-layer>
+    <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
 </openlayers>
