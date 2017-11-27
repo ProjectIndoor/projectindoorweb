@@ -19,7 +19,7 @@ public class Project {
     @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
     private List<Parameter> projectParameters;
 
-    @OneToMany(targetEntity = LogFile.class, mappedBy = "generatedFromProject")
+    @OneToMany(targetEntity = LogFile.class, cascade = CascadeType.ALL)
     private List<LogFile> logFiles;
 
     protected Project(){}
@@ -72,4 +72,5 @@ public class Project {
     public void setLogFiles(List<LogFile> logFiles) {
         this.logFiles = logFiles;
     }
+
 }

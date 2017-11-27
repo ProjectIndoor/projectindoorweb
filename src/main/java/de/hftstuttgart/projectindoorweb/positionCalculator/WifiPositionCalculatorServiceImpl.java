@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.positionCalculator;
 
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.LogFileHelper;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.EvalFileParser;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.WifiMathHelper;
@@ -19,8 +20,8 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     @Override
     public List<WifiPositionResult> calculatePositions(File evalFile, Project project) {
 
-        AssertParam.throwIfNull(evalFile,"evalFile");
-        AssertParam.throwIfNull(project,"project");
+        AssertParam.throwIfNull(evalFile, "evalFile");
+        AssertParam.throwIfNull(project, "project");
 
         EvalFileParser parser = new EvalFileParser(evalFile);
 
@@ -32,16 +33,18 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         WifiPositionResult previousResult;
         WifiPositionResult result;
 
-        List<LogFile> logFiles = project.getLogFiles();
-        List<RadioMap> radioMaps = new ArrayList<>(logFiles.size());
 
-        for (LogFile logFile:
-             logFiles) {
-            radioMaps.add(logFile.getRadioMap());
+        List<RadioMap> radioMaps = collectProjectRadioMaps(project);
+
+
+        if (ConfigContainer.MERGE_RADIOMAP_ELEMENTS) {
+            RadioMap tmp = LogFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
+            radioMaps.clear();
+            radioMaps.add(tmp);
         }
 
-        for (RadioMap radioMap:
-             radioMaps) {
+        for (RadioMap radioMap :
+                radioMaps) {
             rssiSignals = parser.retrieveAveragedRssiSignalsForWifiBlock(0);
             previousResult = calculateSinglePosition(rssiSignals, radioMap);
 
@@ -55,6 +58,19 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         }
 
         return wifiPositionResults;
+
+    }
+
+    @Override
+    public WifiPositionResult calculateSinglePosition(String wifiReading, Project project) {
+
+        List<RssiSignal> rssiSignals = new ArrayList<>();
+        rssiSignals.add(parseRssiSignal(wifiReading));
+
+        List<RadioMap> radioMaps = collectProjectRadioMaps(project);
+        RadioMap mergedRadioMap = LogFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
+
+        return calculateSinglePosition(rssiSignals, mergedRadioMap);
 
     }
 
@@ -108,6 +124,36 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         return result;
 
+
+    }
+
+    private List<RadioMap> collectProjectRadioMaps(Project project){
+
+        List<LogFile> logFiles = project.getLogFiles();
+
+
+        List<RadioMap> radioMaps = new ArrayList<>(logFiles.size());
+
+        for (LogFile logFile :
+                logFiles) {
+            radioMaps.add(logFile.getRadioMap());
+        }
+
+        return radioMaps;
+
+    }
+
+    private RssiSignal parseRssiSignal(String wifiReading){
+
+        String[] elements = wifiReading.split(";");
+
+        double appTimestamp = Double.valueOf(elements[1]);
+        String mac = elements[4];
+        double rssiSignalStrength = Double.valueOf(elements[5]);
+
+        WifiAccessPoint accessPoint = new WifiAccessPoint(mac, null);
+
+        return new RssiSignal(appTimestamp, rssiSignalStrength, false, accessPoint);
 
     }
 

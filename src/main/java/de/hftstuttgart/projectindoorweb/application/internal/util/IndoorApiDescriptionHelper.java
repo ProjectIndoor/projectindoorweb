@@ -53,7 +53,7 @@ public class IndoorApiDescriptionHelper {
                                 typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
                                 typeResolver.resolve(WildcardType.class)))
                 .useDefaultResponseMessages(false)
-                .enableUrlTemplating(true)
+                .enableUrlTemplating(false)
                 .tags(new Tag(TAG_NAME, TAG_DESCRIPTION)).apiInfo(apiInfo());
     }
 

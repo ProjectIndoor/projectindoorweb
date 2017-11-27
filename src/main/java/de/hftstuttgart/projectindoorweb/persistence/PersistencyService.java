@@ -15,6 +15,8 @@ public interface PersistencyService {
 
     boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<ProjectParameter> newProjectParameters);
 
+    boolean updateProject(Project project);
+
     boolean deleteProject(long projectId);
 
     long addNewBuilding(String buildingName, long actualNumberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);

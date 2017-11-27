@@ -34,7 +34,7 @@ public class PositioningController {
             = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
 
-    @ApiOperation(value = "Generate radio maps", nickname = "position/generateRadioMaps",  notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
+    @ApiOperation(value = "Generate radio maps", nickname = "position/generateRadioMaps", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/generateRadioMaps", method = POST)
     public boolean generateRadioMaps(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -49,7 +49,7 @@ public class PositioningController {
         return restTransmissionService.generateRadioMap(projectIdentifier, buildingIdentifier, radioMapFiles);
     }
 
-    @ApiOperation(value = "Generate position results", nickname = "position/generatePositionResults", notes= TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
+    @ApiOperation(value = "Generate position results", nickname = "position/generatePositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/generatePositionResults", method = POST)
     public ResponseEntity<List<CalculatedPosition>> generatePositionResults(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
@@ -64,11 +64,16 @@ public class PositioningController {
                     boolean withPixelPosition) {
 
         List<CalculatedPosition> result = restTransmissionService.generatePositionResults(projectIdentifier, buildingIdentifier, evaluationFile);
-        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+        if (result.isEmpty()) {
+            return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+        }
+
 
     }
 
-    @ApiOperation(value = "Get all buildings", nickname = "position/getAllBuildings", notes= TransmissionConstants.GET_ALL_BUILDINGS_NOTE)
+    @ApiOperation(value = "Get all buildings", nickname = "position/getAllBuildings", notes = TransmissionConstants.GET_ALL_BUILDINGS_NOTE)
     @RequestMapping(path = "/getAllBuildings", method = GET)
     public ResponseEntity<List<BuildingElement>> getAllBuildings() {
         List<BuildingElement> result = restTransmissionService.getAllBuildings();
@@ -78,12 +83,17 @@ public class PositioningController {
 
     @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/calculatePositionWithWifiReading", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
-    public ResponseEntity<CalculatedPosition> calculatePositionWithWifiReading(@RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String wifiReading,
-                                                                        @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
-                                                                                defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
-                                                                                boolean withPixelPosition) {
-        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(wifiReading);
+    public ResponseEntity<CalculatedPosition> calculatePositionWithWifiReading(
+            @RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String wifiReading,
+            @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
+                    defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
+                    boolean withPixelPosition,
+            @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String projectIdentifier) {
+        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(projectIdentifier, wifiReading);
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
     }
 
@@ -99,24 +109,24 @@ public class PositioningController {
     @ApiOperation(value = "Get evaluation entries for building identifier", nickname = "position/getEvaluationEntriesForBuildingId", notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
     @RequestMapping(path = "/getEvaluationEntriesForBuildingId", method = GET)
     public ResponseEntity<List<EvaluationEntry>> getEvaluationEntriesForBuildingId(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingIdentifier) {
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier) {
         List<EvaluationEntry> result = restTransmissionService.getEvaluationEntriesForBuildingId(buildingIdentifier);
         return new ResponseEntity<List<EvaluationEntry>>(result, HttpStatus.OK);
 
     }
 
-    @ApiOperation(value = "Add a new building", nickname = "position/addNewBuilding", notes= TransmissionConstants.ADD_NEW_BUILDING_NOTE)
+    @ApiOperation(value = "Add a new building", nickname = "position/addNewBuilding", notes = TransmissionConstants.ADD_NEW_BUILDING_NOTE)
     @RequestMapping(path = "/addNewBuilding", method = POST)
     public long addNewBuilding(@RequestParam(value = TransmissionConstants.BUILDING_NAME_PARAM,
-                                  defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String buildingName,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingName,
                                @RequestParam(value = TransmissionConstants.NUMBER_OF_FLOORS_PARAM,
-                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String numberOfFloors,
+                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String numberOfFloors,
                                @RequestBody PositionAnchor southEastAnchor,
                                @RequestBody PositionAnchor southWestAnchor,
                                @RequestBody PositionAnchor northEastAnchor,
                                @RequestBody PositionAnchor northWestAnchor) {
 
-        return restTransmissionService.addNewBuilding(buildingName,numberOfFloors,southEastAnchor,southWestAnchor,northEastAnchor,northWestAnchor);
+        return restTransmissionService.addNewBuilding(buildingName, numberOfFloors, southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
 
     }
 

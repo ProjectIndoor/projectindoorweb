@@ -1,27 +1,32 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
+import javax.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class PositionResult {
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private double x;
     private double y;
     private double z;
     private boolean wgs84;
 
-    private Project generatingProject;
-
-    public PositionResult(double x, double y, double z, boolean wgs84, Project generatingProject) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.wgs84 = wgs84;
-        this.generatingProject = generatingProject;
-    }
+    protected PositionResult(){}
 
     public PositionResult(double x, double y, double z, boolean wgs84) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.wgs84 = wgs84;
+    }
+
+
+    public Long getId() {
+        return id;
     }
 
     public double getX() {
@@ -56,11 +61,4 @@ public class PositionResult {
         this.wgs84 = wgs84;
     }
 
-    public Project getGeneratingProject() {
-        return generatingProject;
-    }
-
-    public void setGeneratingProject(Project generatingProject) {
-        this.generatingProject = generatingProject;
-    }
 }

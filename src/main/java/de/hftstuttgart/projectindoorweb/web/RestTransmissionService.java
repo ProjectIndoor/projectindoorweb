@@ -14,7 +14,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<CalculatedPosition> generatePositionResults(String projectId, String buildingId, MultipartFile evaluationFile);
 
-    CalculatedPosition getPositionForWifiReading(String wifiReading);
+    CalculatedPosition getPositionForWifiReading(String projectId, String wifiReading);
 
     List<CalculatedPosition> getPositionResultsForProjectIdentifier(String positionIdentifier);
 

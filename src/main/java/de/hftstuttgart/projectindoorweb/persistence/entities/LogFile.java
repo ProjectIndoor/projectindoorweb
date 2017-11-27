@@ -22,21 +22,17 @@ public class LogFile {
     @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
     private RadioMap radioMap;
 
-    @ManyToOne(targetEntity = Project.class, cascade = CascadeType.ALL)
-    private Project generatedFromProject;
-
     protected LogFile(){}
 
-    public LogFile(String sourceFileName, String customFileName, int appVersion, RadioMap radioMap, Project project) {
+    public LogFile(String sourceFileName, String customFileName, int appVersion, RadioMap radioMap) {
         this.sourceFileName = sourceFileName;
         this.customFileName = customFileName;
         this.appVersion = appVersion;
         this.radioMap = radioMap;
-        this.generatedFromProject = project;
     }
 
     public LogFile(String sourceFileName, String customFileName, int appVersion, Building recordedInBuilding,
-                   Phone recordedByPhone, RadioMap radioMap, Project project) {
+                   Phone recordedByPhone, RadioMap radioMap) {
 
         this.sourceFileName = sourceFileName;
         this.customFileName = customFileName;
@@ -44,7 +40,6 @@ public class LogFile {
         this.recordedInBuilding = recordedInBuilding;
         this.recordedByPhone = recordedByPhone;
         this.radioMap = radioMap;
-        this.generatedFromProject = project;
 
     }
 
@@ -96,11 +91,4 @@ public class LogFile {
         this.radioMap = radioMap;
     }
 
-    public Project getGeneratedFromProject() {
-        return generatedFromProject;
-    }
-
-    public void setGeneratedFromProject(Project generatedFromProject) {
-        this.generatedFromProject = generatedFromProject;
-    }
 }

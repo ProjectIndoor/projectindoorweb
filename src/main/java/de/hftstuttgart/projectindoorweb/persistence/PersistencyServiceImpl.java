@@ -67,6 +67,28 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
+    public boolean updateProject(Project project) {
+
+        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
+
+        Project fromDatabase = projectRepository.findOne(project.getId());
+
+        if(project != null){
+            fromDatabase.setProjectName(project.getProjectName());
+            fromDatabase.setProjectParameters(project.getProjectParameters());
+            fromDatabase.setCalculationAlgorithm(project.getCalculationAlgorithm());
+            fromDatabase.setLogFiles(project.getLogFiles());
+            projectRepository.save(fromDatabase);
+            return true;
+        }
+
+        return false;
+
+    }
+
+
+
+    @Override
     public boolean deleteProject(long projectId) {
 
         AssertParam.throwIfNull(projectId,"projectId");

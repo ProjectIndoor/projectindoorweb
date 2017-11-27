@@ -12,13 +12,14 @@ import java.util.Map;
 
 public class LogFileHelper {
 
+    //TODO This method is now accessed from a completely different package -- is there a more elegant way?
     public static RadioMap mergeRadioMapsBySimilarPositions(List<RadioMap> radioMaps){
 
         List<RadioMapElement> result = new ArrayList<>();
         List<RadioMapElement> unmergedElements = new ArrayList<>();
 
         for (RadioMap radioMap:
-             radioMaps) {
+                radioMaps) {
             unmergedElements.addAll(radioMap.getRadioMapElements());
         }
         boolean unique;

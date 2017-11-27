@@ -2,15 +2,14 @@ package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 
+import javax.persistence.Entity;
+
+@Entity
 public class WifiPositionResult extends PositionResult implements Comparable<WifiPositionResult> {
 
     private double weight;
 
-    public WifiPositionResult(double x, double y, double z, boolean wgs84, Project generatingProject, double weight) {
-        super(x, y, z, wgs84, generatingProject);
-        this.weight = weight;
-    }
-
+    protected WifiPositionResult(){}
 
     public WifiPositionResult(double x, double y, double z, boolean wgs84, double weight) {
         super(x, y, z, wgs84);
