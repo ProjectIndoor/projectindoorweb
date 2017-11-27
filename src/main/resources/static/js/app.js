@@ -128,6 +128,51 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 
 // ------------- Services
 
+// Project service
+
+function ProjectService($http) {
+    //api endpoints
+    var newProjUrl = '/project/saveNewProject';
+    // project properties
+    var projectId;
+    var projectName = 'DemoRun';
+    var algorithmType = 'WIFI';
+    var projectParameter = {
+        "name": "string",
+        "value": "string"
+    };
+
+
+    // project access function
+    return {
+        // access methods
+        currentProjectId: function () {
+            return projectId;
+        },
+        // working methods
+        createNewProject: function () {
+            //service init - create Project
+            var requestParameters = {
+                projectName: projectName,
+                algorithmType: algorithmType
+            };
+            $http({
+                method: 'POST',
+                url: newProjUrl,
+                params: requestParameters,
+                data: [projectParameter]
+            }).then(function successCallback(response) {
+                // success
+                projectId = response.data;
+            }, function errorCallback(response) {
+                // failure
+            });
+        }
+    }
+}
+
+app.factory("projectService", ProjectService);
+
 // Map service
 function MapService() {
     // map service properties
@@ -215,7 +260,7 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 });
 
 // controller which handles map configuration
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
@@ -231,7 +276,10 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
         mapService.addRefPoint(440, 754);
         mapService.addRefPoint(445, 854);
         mapService.addRefPoint(450, 954);
-    }
+    };
+
+    projectService.createNewProject();
+    $scope.t = projectService.currentProjectId();
 });
 
 // controller which handles the map
