@@ -429,11 +429,32 @@ function LogImportController($scope, $http, projectService) {
         $scope.fileUploaded = "Uploaded: " + $files[0].name;
     };
 
+    //The success or error message
+    $scope.uploadStatus = false;
+
     //Post the file and parameters
     $scope.uploadFiles = function () {
         projectService.generateRadiomap($scope.files)
+
+        var request = $http({
+            method: 'POST',
+            url: '/fileupload',
+            data: formData,
+            transformRequest: angular.identity,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (data, status, headers, config) {
+            $scope.uploadStatus = true;
+            $scope.fileUpload = "uploadFileSuccess";
+            $scope.logMessage = "File uploaded successfully!";
+        }).error(function (data, status, headers, config) {
+            $scope.uploadStatus = true;
+            $scope.fileUpload = "uploadFileError";
+            $scope.logMessage = "Error while uploading File";
+        });
     }
-}
+};
 
 app.controller('LogImportCtrl', LogImportController);
 
