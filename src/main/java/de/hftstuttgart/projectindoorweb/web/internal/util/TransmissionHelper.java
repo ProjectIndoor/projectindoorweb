@@ -2,7 +2,7 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.BuildingElement;
+import de.hftstuttgart.projectindoorweb.web.internal.BuildingJsonWrapperSmall;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,12 +47,12 @@ public class TransmissionHelper {
 
     }
 
-    public static List<BuildingElement> convertToBuildingElements(List<Building> buildings) {
-        List<BuildingElement> result = new ArrayList<>(buildings.size());
+    public static List<BuildingJsonWrapperSmall> convertToBuildingSmallJsonWrapper(List<Building> buildings) {
+        List<BuildingJsonWrapperSmall> result = new ArrayList<>(buildings.size());
 
         for (Building building :
                 buildings) {
-            result.add(new BuildingElement(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
+            result.add(new BuildingJsonWrapperSmall(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
         }
 
         return result;

@@ -28,7 +28,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<ProjectElement> getAllProjects();
 
-    List<BuildingElement>getAllBuildings();
+    List<BuildingJsonWrapperSmall>getAllBuildings();
 
     List<AlgorithmType> getAllAlgorithmTypes();
 
@@ -36,5 +36,5 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<ParameterElement> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
 
-    long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
+    boolean addNewBuilding(BuildingJsonWrapperLarge buildingJsonWrapper);
 }

@@ -1,12 +1,9 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.BuildingElement;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
-import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -73,14 +66,6 @@ public class PositioningController {
 
     }
 
-    @ApiOperation(value = "Get all buildings", nickname = "position/getAllBuildings", notes = TransmissionConstants.GET_ALL_BUILDINGS_NOTE)
-    @RequestMapping(path = "/getAllBuildings", method = GET)
-    public ResponseEntity<List<BuildingElement>> getAllBuildings() {
-        List<BuildingElement> result = restTransmissionService.getAllBuildings();
-        return new ResponseEntity<List<BuildingElement>>(result, HttpStatus.OK);
-    }
-
-
     @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/calculatePositionWithWifiReading", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/calculatePositionWithWifiReading", method = GET)
     public ResponseEntity<CalculatedPosition> calculatePositionWithWifiReading(
@@ -115,19 +100,6 @@ public class PositioningController {
 
     }
 
-    @ApiOperation(value = "Add a new building", nickname = "position/addNewBuilding", notes = TransmissionConstants.ADD_NEW_BUILDING_NOTE)
-    @RequestMapping(path = "/addNewBuilding", method = POST)
-    public long addNewBuilding(@RequestParam(value = TransmissionConstants.BUILDING_NAME_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingName,
-                               @RequestParam(value = TransmissionConstants.NUMBER_OF_FLOORS_PARAM,
-                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String numberOfFloors,
-                               @RequestBody PositionAnchor southEastAnchor,
-                               @RequestBody PositionAnchor southWestAnchor,
-                               @RequestBody PositionAnchor northEastAnchor,
-                               @RequestBody PositionAnchor northWestAnchor) {
 
-        return restTransmissionService.addNewBuilding(buildingName, numberOfFloors, southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
-
-    }
 
 }

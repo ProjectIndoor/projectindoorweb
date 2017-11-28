@@ -7,14 +7,17 @@ import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+import de.hftstuttgart.projectindoorweb.web.BuildingController;
 import de.hftstuttgart.projectindoorweb.web.PositioningController;
 import de.hftstuttgart.projectindoorweb.web.ProjectController;
 import de.hftstuttgart.projectindoorweb.web.RestTransmissionServiceComponent;
@@ -36,6 +39,7 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule;
 @EnableSwagger2
 @ComponentScan(basePackageClasses = PositioningController.class)
 @ComponentScan(basePackageClasses = ProjectController.class)
+@ComponentScan(basePackageClasses = BuildingController.class)
 @EntityScan("de.hftstuttgart.projectindoorweb.persistence.entities")
 @EnableJpaRepositories("de.hftstuttgart.projectindoorweb.persistence.repositories")
 public class Application {
@@ -65,11 +69,13 @@ public class Application {
 
     @Bean
     public CommandLineRunner initApplication(ProjectRepository projectRepository,
-                                             LogFileRepository logFileRepository) {
+                                             LogFileRepository logFileRepository,
+                                             BuildingRepository buildingRepository) {
 
         return (args) -> {
             RepositoryRegistry.registerRepository(Project.class.getName(), projectRepository);
             RepositoryRegistry.registerRepository(LogFile.class.getName(), logFileRepository);
+            RepositoryRegistry.registerRepository(Building.class.getName(), buildingRepository);
         };
     }
 

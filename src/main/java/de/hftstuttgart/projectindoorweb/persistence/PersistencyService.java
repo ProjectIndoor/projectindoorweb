@@ -19,7 +19,9 @@ public interface PersistencyService {
 
     boolean deleteProject(long projectId);
 
-    long addNewBuilding(String buildingName, long actualNumberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
+    boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+                           PositionAnchor southEastAnchor, PositionAnchor southWestAnchor,
+                           PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
 
     Project getProjectById(long projectId);
 

@@ -3,18 +3,21 @@ package de.hftstuttgart.projectindoorweb.web.internal;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BuildingElement {
+public class BuildingJsonWrapperSmall {
+
     private Long id;
 
     private String buildingName;
 
-    private long floorCount;
+    private int numberOfFloors;
 
     @JsonCreator
-    public BuildingElement(@JsonProperty("id")Long id, @JsonProperty("buildingName")String buildingName, @JsonProperty("floorCount")long floorCount){
+    public BuildingJsonWrapperSmall(@JsonProperty("id")Long id,
+                                    @JsonProperty("buildingName")String buildingName,
+                                    @JsonProperty("numberOfFloors")int numberOfFloors){
         this.id = id;
         this.buildingName = buildingName;
-        this.floorCount = floorCount;
+        this.numberOfFloors = numberOfFloors;
     }
 
     public Long getId() {
@@ -25,7 +28,7 @@ public class BuildingElement {
         return buildingName;
     }
 
-    public long getFloorCount() {
-        return floorCount;
+    public int getFloorCount() {
+        return numberOfFloors;
     }
 }

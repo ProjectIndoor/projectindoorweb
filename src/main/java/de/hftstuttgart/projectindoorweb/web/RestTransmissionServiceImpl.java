@@ -2,13 +2,8 @@ package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
-import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
-import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
-import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
-import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.web.internal.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
@@ -62,7 +57,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                 project.setLogFiles(processedLogFiles);
 
                 return this.persistencyService.updateProject(project);
-            }else{
+            } else {
                 return true;
             }
 
@@ -232,10 +227,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<BuildingElement> getAllBuildings() {
+    public List<BuildingJsonWrapperSmall> getAllBuildings() {
         List<Building> buildings = this.persistencyService.getAllBuildings();
 
-        return TransmissionHelper.convertToBuildingElements(buildings);
+        return TransmissionHelper.convertToBuildingSmallJsonWrapper(buildings);
     }
 
     @Override
@@ -268,20 +263,24 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
-        if (AssertParam.isNullOrEmpty(buildingName)
-                || AssertParam.isNullOrEmpty(numberOfFloors)
-                || southEastAnchor == null
-                || southWestAnchor == null
-                || northEastAnchor == null
-                || northWestAnchor == null) {
-            return -1;
+    public boolean addNewBuilding(BuildingJsonWrapperLarge buildingJsonWrapper) {
+
+        if (buildingJsonWrapper == null) {
+            return false;
         }
         try {
-            long actualNumberOfFloors = Long.parseLong(numberOfFloors);
-            return this.persistencyService.addNewBuilding(buildingName, actualNumberOfFloors, southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
+            String buildingName = buildingJsonWrapper.getBuildingName();
+            int numberOfFloors = buildingJsonWrapper.getNumberOfFloors();
+            int imagePixelWidth = buildingJsonWrapper.getImagePixelWidth();
+            int imagePixelHeight = buildingJsonWrapper.getImagePixelHeight();
+            PositionAnchor southEastAnchor = buildingJsonWrapper.getSouthEast();
+            PositionAnchor southWestAnchor = buildingJsonWrapper.getSouthWest();
+            PositionAnchor northEastAnchor = buildingJsonWrapper.getNorthEast();
+            PositionAnchor northWestAnchor = buildingJsonWrapper.getNorthWest();
+            return this.persistencyService.addNewBuilding(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight,
+                    southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
         } catch (NumberFormatException ex) {
-            return -1;
+            return false;
         }
     }
 
