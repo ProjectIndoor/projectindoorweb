@@ -6,6 +6,7 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'findbugs'
+    id 'com.palantir.docker' version '0.13.0'
 }
 
 group 'de.hft-stuttgart'
@@ -67,6 +68,12 @@ clientDependencies {
         'openlayers'('4.5.0', transitive: false)
         'angular-openlayers-directive'('1.20.1', transitive: false)
     }
+}
+
+docker {
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
 
 dependencies {
