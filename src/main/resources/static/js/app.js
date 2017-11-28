@@ -133,6 +133,8 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 function ProjectService($http) {
     //api endpoints
     var newProjUrl = '/project/saveNewProject';
+    var generateRadiomapUrl = '/position/generateRadioMaps';
+    var generatePositionsUrl = '/position/generatePositionResults';
     // project properties
     var projectId;
     var projectName = 'DemoRun';
@@ -141,6 +143,9 @@ function ProjectService($http) {
         "name": "string",
         "value": "string"
     };
+    var calcFile;
+
+    var positionResults;
 
 
     // project access function
@@ -148,6 +153,9 @@ function ProjectService($http) {
         // access methods
         currentProjectId: function () {
             return projectId;
+        },
+        calcPositions: function () {
+            return positionResults;
         },
         // working methods
         createNewProject: function () {
@@ -164,6 +172,60 @@ function ProjectService($http) {
             }).then(function successCallback(response) {
                 // success
                 projectId = response.data;
+            }, function errorCallback(response) {
+                // failure
+            });
+        },
+        generateRadiomap: function (files) {
+            calcFile = files[0];
+            var formData = new FormData();
+            formData.append('radioMapFiles', calcFile);
+
+            var requestParameters = {
+                projectIdentifier: projectId,
+                buildingIdentifier: 1,
+                withPixelPosition: false
+            };
+            $http({
+                method: 'POST',
+                url: generateRadiomapUrl,
+                params: requestParameters,
+                data: formData,
+                transformRequest: function (data, headersGetterFunction) {
+                    return data;
+                },
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).then(function successCallback(response) {
+                // success
+            }, function errorCallback(response) {
+                // failure
+            });
+        },
+        retreivePositions: function () {
+            var formData = new FormData();
+            formData.append('evaluationFile', calcFile);
+
+            var requestParameters = {
+                projectIdentifier: projectId,
+                buildingIdentifier: 1,
+                withPixelPosition: false
+            };
+            $http({
+                method: 'POST',
+                url: generatePositionsUrl,
+                params: requestParameters,
+                data: formData,
+                transformRequest: function (data, headersGetterFunction) {
+                    return data;
+                },
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).then(function successCallback(response) {
+                // success
+                positionResults = response.data;
             }, function errorCallback(response) {
                 // failure
             });
@@ -276,17 +338,21 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
         mapService.addRefPoint(440, 754);
         mapService.addRefPoint(445, 854);
         mapService.addRefPoint(450, 954);
-    };
+        projectService.retreivePositions();
+        var posis = projectService.calcPositions();
+        for (var i = 0; i < posis.length; i++) {
+            var p = posis[i];
+            mapService.addRefPoint(p.x * 18 + p.x * 18, p.y * 12 + p.y * 12)
+        }
 
-    projectService.createNewProject();
-    $scope.t = projectService.currentProjectId();
+    };
 });
 
 // controller which handles the map
 function MapController($scope, $http, olData, mapService) {
 
     // example map service setup
-    mapService.setMap("/maps/building_2_floor_3.png", 2560, 1536);
+    mapService.setMap("/maps/car.png", 1282, 818);
 
     // setup usage of map service
     angular.extend($scope, {
@@ -342,38 +408,32 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 }]);
 
 // controller which handles the log import view
-function LogImportController($scope, $http) {
+function LogImportController($scope, $http, projectService) {
+
+    projectService.createNewProject();
+    //$scope.currentProject = projectService.currentProjectId();
+
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
+
     };
 
     var formData = new FormData();
 
     $scope.getTheFiles = function ($files) {
-        formData.append('fileName', $scope.fileName);
-        formData.append('isTrainData', $scope.trainData ? $scope.trainData : false);
-        formData.append('logFile', $files[0]);
+        //formData.append('fileName', $scope.fileName);
+        //formData.append('isTrainData', $scope.trainData ? $scope.trainData : false);
+        //formData.append('logFile', $files[0]);
         //console.log($files[0].name);
-        $scope.fileUploaded = $files[0].name;
+        $scope.files = $files;
+        $scope.fileUploaded = "Uploaded: " + $files[0].name;
     };
 
     //Post the file and parameters
     $scope.uploadFiles = function () {
-        var request = $http({
-            method: 'POST',
-            url: '/fileupload',
-            data: formData,
-            transformRequest: angular.identity,
-            headers: {
-                'Content-Type': undefined
-            }
-        }).success(function (data, status, headers, config) {
-            //alert("success!");
-        }).error(function (data, status, headers, config) {
-            //alert("failed!");
-        });
+        projectService.generateRadiomap($scope.files)
     }
-};
+}
 
 app.controller('LogImportCtrl', LogImportController);
 
