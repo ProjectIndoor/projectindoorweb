@@ -140,7 +140,7 @@ function DataService($http) {
 
 }
 
-app.factory("dataService", dataService);
+app.factory("dataService", DataService);
 
 // Calculation service (setup and call position calculations)
 function CalculationService($http) {
