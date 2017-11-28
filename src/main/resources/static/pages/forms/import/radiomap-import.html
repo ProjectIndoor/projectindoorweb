@@ -11,6 +11,9 @@
     </md-card-title>
     <md-card-content layout="column">
 
+        <!--Display Success/Error message-->
+        <div ng-show="uploadStatus" class="{{fileUpload}}">{{logMessage}}</div>
+
         <md-input-container flex="100">
             <label>Name</label>
             <input ng-model="fileName"/>
