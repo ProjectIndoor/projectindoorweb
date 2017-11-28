@@ -229,7 +229,8 @@ public class LogFileHelper {
             floorId = Integer.parseInt(currentLineElements[5]);
             floor = new Floor(floorId);
             buildingId = Integer.parseInt(currentLineElements[6]);
-            referencePosition = retrieveTransformedReferencePosition(latitude, longitude, floorId);
+            //referencePosition = retrieveTransformedReferencePosition(latitude, longitude, floorId);
+            referencePosition = new Position(latitude, longitude, floorId, true);
             result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd, floor));
             intervalStart = intervalEnd;
         }
@@ -293,6 +294,7 @@ public class LogFileHelper {
     public static Position retrieveTransformedReferencePosition(double latitude, double longitude, int floor) {
 
         LatLongCoord untransformedPosition = new LatLongCoord(latitude, longitude);
+        //TODO: Substitute by Gerald's algorithm
         LocXYZ transformedPosition = new LocXYZ(MyGeoMath.ll2xy(untransformedPosition, ConfigContainer.BASE_POSITION,
                 ConfigContainer.ANGLE_RAD), floor * ConfigContainer.FLOOR_HEIGHT);
         return new Position(transformedPosition.x, transformedPosition.y, transformedPosition.z, false);

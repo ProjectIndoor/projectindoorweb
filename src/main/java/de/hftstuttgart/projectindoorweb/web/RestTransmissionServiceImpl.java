@@ -58,6 +58,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
             if (project.getLogFiles() == null || project.getLogFiles().isEmpty()) {
                 List<LogFile> processedLogFiles = this.preProcessingService.processIntoLogFiles(project, radioMapFileArray);
+                //TODO: Do linking at a later place
                 project.setLogFiles(processedLogFiles);
 
                 return this.persistencyService.updateProject(project);
@@ -135,7 +136,18 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return result;
         }
 
-        return result;//TODO implement when ready
+        /*
+
+        TODO Clarify feasability of this method! Reason:
+
+        The calculated results not only depend on the project, but also on the eval file or wifi lines
+        that were passed in for their calculations. As a result, the project ID cannot uniquely identify a set of
+        calculated positions.
+
+        */
+        return result;
+
+
     }
 
     @Override

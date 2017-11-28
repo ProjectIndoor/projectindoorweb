@@ -12,6 +12,7 @@ public class Floor {
 
     private int level;
 
+
     @OneToOne(targetEntity = FloorMap.class, cascade = CascadeType.ALL)
     private FloorMap floorMap;
 

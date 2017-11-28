@@ -12,6 +12,9 @@ public class Building {
 
     private String buildingName;
 
+    private int imagePixelWidth;
+    private int imagePixelHeight;
+
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position northWest;
 
@@ -30,11 +33,14 @@ public class Building {
     @OneToMany(targetEntity = Floor.class)
     private List<Floor> buildingFloors;
 
-    public Building(){}
+    protected Building(){}
 
-    public Building(String buildingName, Position northWest, Position northEast, Position southEast, Position southWest,
-                    List<RadioMap> belongingMaps, List<Floor> buildingFloors) {
+    public Building(String buildingName, int imagePixelWidth, int imagePixelHeight, Position northWest, Position northEast,
+                    Position southEast, Position southWest, List<RadioMap> belongingMaps, List<Floor> buildingFloors) {
+
         this.buildingName = buildingName;
+        this.imagePixelWidth = imagePixelWidth;
+        this.imagePixelHeight = imagePixelHeight;
         this.northWest = northWest;
         this.northEast = northEast;
         this.southEast = southEast;
@@ -47,12 +53,29 @@ public class Building {
         return id;
     }
 
+
     public String getBuildingName() {
         return buildingName;
     }
 
     public void setBuildingName(String buildingName) {
         this.buildingName = buildingName;
+    }
+
+    public int getImagePixelWidth() {
+        return imagePixelWidth;
+    }
+
+    public void setImagePixelWidth(int imagePixelWidth) {
+        this.imagePixelWidth = imagePixelWidth;
+    }
+
+    public int getImagePixelHeight() {
+        return imagePixelHeight;
+    }
+
+    public void setImagePixelHeight(int imagePixelHeight) {
+        this.imagePixelHeight = imagePixelHeight;
     }
 
     public Position getNorthWest() {
