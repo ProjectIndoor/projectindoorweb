@@ -128,8 +128,28 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 
 // ------------- Services
 
-// Project service
+// Upload service (send data to the server e.g. log files)
+function UploadService($http) {
 
+}
+
+app.factory("uploadService", UploadService);
+
+// Data service (retrieve data from server e.g. get Buildings)
+function DataService($http) {
+
+}
+
+app.factory("dataService", dataService);
+
+// Calculation service (setup and call position calculations)
+function CalculationService($http) {
+
+}
+
+app.factory("calculationService", CalculationService);
+
+// Project service (create, persist and load projects)
 function ProjectService($http) {
     //api endpoints
     var newProjUrl = '/project/saveNewProject';
