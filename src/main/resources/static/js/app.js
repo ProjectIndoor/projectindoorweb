@@ -129,8 +129,44 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 // ------------- Services
 
 // Upload service (send data to the server e.g. log files)
-function UploadService($http) {
+function UploadService($http, $mdToast) {
+    //api endpoints
+    var buildingUploadUrl = '/position/addNewBuilding';
 
+    return {
+        uploadBuilding: function ($scope) {
+            var postData = {
+                "buildingName": $scope.buildingName,
+                "floor": $scope.floor,
+            };
+
+            $http({
+                method: 'POST',
+                url: buildingUploadUrl,
+                data: postData,
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).success(function (data, status, headers, config) {
+                logMessage = "Building Data uploaded successfully!";
+                showToast(logMessage);
+            }).error(function (data, status, headers, config) {
+                logMessage = "Error while uploading Building Data";
+                showToast(logMessage);
+            });
+        }
+    }
+
+    function showToast(logMessage) {
+        var pinTo = "top right";
+
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(logMessage)
+                .position(pinTo )
+                .hideDelay(3000)
+        );
+    }
 }
 
 app.factory("uploadService", UploadService);
@@ -416,10 +452,15 @@ function MapController($scope, $http, olData, mapService) {
 app.controller('MapCtrl', MapController);
 
 // controller which handles the building import view
-function BuildingImportController($scope) {
+function BuildingImportController($scope, uploadService) {
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
+
+    $scope.uploadBuildingData = function () {
+        uploadService.uploadBuilding($scope);
+    }
+
 }
 
 app.controller('BuildingImportCtrl', BuildingImportController);
@@ -492,24 +533,6 @@ function LogImportController($scope, $http, projectService) {
     //Post the file and parameters
     $scope.uploadFiles = function () {
         projectService.generateRadiomap($scope.files)
-
-        var request = $http({
-            method: 'POST',
-            url: '/fileupload',
-            data: formData,
-            transformRequest: angular.identity,
-            headers: {
-                'Content-Type': undefined
-            }
-        }).success(function (data, status, headers, config) {
-            $scope.uploadStatus = true;
-            $scope.fileUpload = "uploadFileSuccess";
-            $scope.logMessage = "File uploaded successfully!";
-        }).error(function (data, status, headers, config) {
-            $scope.uploadStatus = true;
-            $scope.fileUpload = "uploadFileError";
-            $scope.logMessage = "Error while uploading File";
-        });
     }
 };
 

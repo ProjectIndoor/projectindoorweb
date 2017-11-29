@@ -13,17 +13,17 @@
 
         <md-input-container flex="100">
             <label>Name of building</label>
-            <input/>
+            <input ng-model="buildingName"/>
         </md-input-container>
 
         <md-input-container flex="100">
             <label>Number of floors</label>
-            <input type="number"/>
+            <input type="number" ng-model="floor"/>
         </md-input-container>
 
     </md-card-content>
 
     <md-card-actions layout="row" layout-align="end center">
-        <md-button>Add</md-button>
+        <md-button ng-click="uploadBuildingData()">Add</md-button>
     </md-card-actions>
 </md-card>
