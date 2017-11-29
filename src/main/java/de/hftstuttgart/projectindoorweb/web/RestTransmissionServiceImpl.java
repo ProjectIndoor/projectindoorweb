@@ -2,17 +2,13 @@ package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
-import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
-import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
-import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
-import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.web.internal.*;
-import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
+import de.hftstuttgart.projectindoorweb.web.internal.EvaluationEntry;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -33,10 +29,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean generateRadioMap(String projectIdentifier, String buildingIdentifier, MultipartFile[] radioMapFiles) {
+    public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles) {
 
-        if (projectIdentifier == null || projectIdentifier.isEmpty()
-                || buildingIdentifier == null || buildingIdentifier.isEmpty()
+        if (buildingIdentifier == null || buildingIdentifier.isEmpty()
                 || radioMapFiles == null || radioMapFiles.length == 0) {
             return false;
         }
@@ -53,16 +48,14 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         try {
-            long projectId = Long.parseLong(projectIdentifier);
-            Project project = this.persistencyService.getProjectById(projectId);
+            long buildingId = Long.valueOf(buildingIdentifier);
+            Building building = this.persistencyService.getBuildingById(buildingId);
 
-            if (project.getLogFiles() == null || project.getLogFiles().isEmpty()) {
-                List<LogFile> processedLogFiles = this.preProcessingService.processIntoLogFiles(project, radioMapFileArray);
-                project.setLogFiles(processedLogFiles);
-
-                return this.persistencyService.updateProject(project);
-            }else{
-                return true;
+            if (building != null) {
+                List<EvaalFile> processedEvaalFiles = this.preProcessingService.processIntoLogFiles(building, evaluationFiles, radioMapFileArray);
+                return this.persistencyService.saveEvaalFiles(processedEvaalFiles);
+            } else {
+                return false;
             }
 
 
@@ -74,27 +67,48 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<CalculatedPosition> generatePositionResults(String projectIdentifier, String buildingIdentifier, MultipartFile evaluationFile) {
+    public List<CalculatedPosition> generatePositionResults(boolean withPixelPosition,
+                                                            GeneratePositionJsonWrapper generatePositionJsonWrapper) {
 
         List<CalculatedPosition> result = new ArrayList<>();
-        if (AssertParam.isNullOrEmpty(projectIdentifier) || AssertParam.isNullOrEmpty(buildingIdentifier)
-                || evaluationFile == null) {
+        if (generatePositionJsonWrapper == null) {
             return result;
         }
 
         try {
+            long buildingId = generatePositionJsonWrapper.getBuildingIdentifier();
+            Building building = this.persistencyService.getBuildingById(buildingId);
 
-            long projectId = Long.parseLong(projectIdentifier);
-            Project project = this.persistencyService.getProjectById(projectId);
+            EvaalFile evaluationFile = this.persistencyService.getEvaalFileForId(generatePositionJsonWrapper.getEvalFileIdentifier());
 
-            File convertedEvaluationFile = TransmissionHelper.convertMultipartFileToLocalFile(evaluationFile);
+            Long[] radioMapFileIds = generatePositionJsonWrapper.getRadioMapFileIdentifiers();
+            EvaalFile[] radioMapFiles = new EvaalFile[radioMapFileIds.length];
 
-            List<WifiPositionResult> retrievedWifiResults =
-                    (List<WifiPositionResult>) this.positionCalculatorService.calculatePositions(convertedEvaluationFile, project);
 
-            result = TransmissionHelper.convertToCalculatedPositions(retrievedWifiResults);
+            for (int i = 0; i < radioMapFileIds.length; i++) {
+                radioMapFiles[i] = this.persistencyService.getEvaalFileForId(radioMapFileIds[i]);
+            }
 
-        } catch (NumberFormatException | IOException ex) {
+            if (evaluationFile != null && TransmissionHelper.areRequestedFilesPresent(radioMapFiles)) {
+                String projectName = String.format("AutoGenerated_%d", System.currentTimeMillis());
+                String algorithmType = generatePositionJsonWrapper.getAlgorithmType();
+                Set<ProjectParameter> projectParameters = generatePositionJsonWrapper.getProjectParameters();
+
+                long projectId = this.persistencyService.createNewProject(projectName, algorithmType, projectParameters);
+                Project autoGeneratedProject = this.persistencyService.getProjectById(projectId);
+
+                if (autoGeneratedProject != null) {
+                    List<WifiPositionResult> retrievedWifiResults =
+                            (List<WifiPositionResult>) this.positionCalculatorService.calculatePositions(evaluationFile, radioMapFiles, building);
+
+                    result = TransmissionHelper.convertToCalculatedPositions(retrievedWifiResults);
+                }
+
+
+            }
+
+
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
 
         } finally {
@@ -104,25 +118,34 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public CalculatedPosition getPositionForWifiReading(String projectIdentifier, String wifiReading) {
+    public CalculatedPosition getPositionForWifiReading(String wifiReading, boolean withPixelPosition, GeneratePositionJsonWrapper generatePositionJsonWrapper) {
 
-        if (AssertParam.isNullOrEmpty(projectIdentifier) || AssertParam.isNullOrEmpty(wifiReading)) {
+        if (AssertParam.isNullOrEmpty(wifiReading) || generatePositionJsonWrapper == null) {
+
             return createEmptyCalculatedPosition();
         }
 
         CalculatedPosition result = null;
-        try {
-            long projectId = Long.parseLong(projectIdentifier);
-            Project project = this.persistencyService.getProjectById(projectId);
-            if (project != null) {
-                WifiPositionResult retrievedWifiResult = (WifiPositionResult) this.positionCalculatorService.calculateSinglePosition(wifiReading, project);
+
+            long buildingId = generatePositionJsonWrapper.getBuildingIdentifier();
+            Building building = this.persistencyService.getBuildingById(buildingId);
+
+            Long[] radioMapFileIds = generatePositionJsonWrapper.getRadioMapFileIdentifiers();
+            EvaalFile[] radioMapFiles = new EvaalFile[radioMapFileIds.length];
+
+
+            for (int i = 0; i < radioMapFileIds.length; i++) {
+                radioMapFiles[i] = this.persistencyService.getEvaalFileForId(radioMapFileIds[i]);
+            }
+
+            if (TransmissionHelper.areRequestedFilesPresent(radioMapFiles)) {
+                WifiPositionResult retrievedWifiResult = (WifiPositionResult) this.positionCalculatorService
+                        .calculateSinglePosition(wifiReading, radioMapFiles);
                 result = TransmissionHelper.convertToCalculatedPosition(retrievedWifiResult);
             }
-        } catch (NumberFormatException ex) {
-            ex.printStackTrace();
-        } finally {
+
             return result;
-        }
+
 
     }
 
@@ -135,7 +158,18 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return result;
         }
 
-        return result;//TODO implement when ready
+        /*
+
+        TODO Clarify feasability of this method! Reason:
+
+        The calculated results not only depend on the project, but also on the eval file or wifi lines
+        that were passed in for their calculations. As a result, the project ID cannot uniquely identify a set of
+        calculated positions.
+
+        */
+        return result;
+
+
     }
 
     @Override
@@ -220,17 +254,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<BuildingElement> getAllBuildings() {
+    public List<BuildingJsonWrapperSmall> getAllBuildings() {
         List<Building> buildings = this.persistencyService.getAllBuildings();
 
-        return TransmissionHelper.convertToBuildingElements(buildings);
+        return TransmissionHelper.convertToBuildingSmallJsonWrapper(buildings);
     }
 
     @Override
     public List<AlgorithmType> getAllAlgorithmTypes() {//TODO use reflection instead if viable
         List<AlgorithmType> result = new ArrayList<>();
 
-        AlgorithmType wifiAlgorithm = new AlgorithmType("WifiPositionCalculatorServiceImpl", "Wifi");
+        AlgorithmType wifiAlgorithm = new AlgorithmType("WifiPositionCalculatorServiceImpl", "WIFI");
 
         result.add(wifiAlgorithm);
 
@@ -238,12 +272,56 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<EvaluationEntry> getEvaluationEntriesForBuildingId(String buildingIdentifier) {
+    public List<EvaluationEntry> getEvaluationFilesForBuilding(String buildingIdentifier) {
+
         List<EvaluationEntry> result = new ArrayList<>();
         if (AssertParam.isNullOrEmpty(buildingIdentifier)) {
             return result;
         }
-        return result;//TODO implement when ready
+
+        try {
+
+            long buildingId = Long.valueOf(buildingIdentifier);
+            Building building = this.persistencyService.getBuildingById(buildingId);
+            if (building != null) {
+                List<EvaalFile> evaalFiles = this.persistencyService.getEvaluationFilesForBuilding(building);
+                result = TransmissionHelper.convertToEvaluationEntries(evaalFiles);
+            }
+
+
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            return result;
+        }
+
+
+    }
+
+    @Override
+    public List<RadioMapEntry> getRadioMapFilesForBuilding(String buildingIdentifier) {
+
+        List<RadioMapEntry> result = new ArrayList<>();
+        if (AssertParam.isNullOrEmpty(buildingIdentifier)) {
+            return result;
+        }
+
+        try {
+
+            long buildingId = Long.valueOf(buildingIdentifier);
+            Building building = this.persistencyService.getBuildingById(buildingId);
+            if (building != null) {
+                List<EvaalFile> evaalFiles = this.persistencyService.getRadioMapFilesForBuiling(building);
+                result = TransmissionHelper.convertToRadioMapEntry(evaalFiles);
+            }
+
+
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            return result;
+        }
+
     }
 
     @Override
@@ -256,20 +334,24 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public long addNewBuilding(String buildingName, String numberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
-        if (AssertParam.isNullOrEmpty(buildingName)
-                || AssertParam.isNullOrEmpty(numberOfFloors)
-                || southEastAnchor == null
-                || southWestAnchor == null
-                || northEastAnchor == null
-                || northWestAnchor == null) {
-            return -1;
+    public boolean addNewBuilding(BuildingJsonWrapperLarge buildingJsonWrapper) {
+
+        if (buildingJsonWrapper == null) {
+            return false;
         }
         try {
-            long actualNumberOfFloors = Long.parseLong(numberOfFloors);
-            return this.persistencyService.addNewBuilding(buildingName, actualNumberOfFloors, southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
+            String buildingName = buildingJsonWrapper.getBuildingName();
+            int numberOfFloors = buildingJsonWrapper.getNumberOfFloors();
+            int imagePixelWidth = buildingJsonWrapper.getImagePixelWidth();
+            int imagePixelHeight = buildingJsonWrapper.getImagePixelHeight();
+            PositionAnchor southEastAnchor = buildingJsonWrapper.getSouthEast();
+            PositionAnchor southWestAnchor = buildingJsonWrapper.getSouthWest();
+            PositionAnchor northEastAnchor = buildingJsonWrapper.getNorthEast();
+            PositionAnchor northWestAnchor = buildingJsonWrapper.getNorthWest();
+            return this.persistencyService.addNewBuilding(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight,
+                    southEastAnchor, southWestAnchor, northEastAnchor, northWestAnchor);
         } catch (NumberFormatException ex) {
-            return -1;
+            return false;
         }
     }
 

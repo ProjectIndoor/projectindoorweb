@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProjectParameter {
 
-    private  String name;
-    private  String value;
+    private String name;
+    private String value;
 
     @JsonCreator
-    public ProjectParameter(@JsonProperty("name")String name, @JsonProperty("value")String value) {
+    public ProjectParameter(@JsonProperty("name") String name, @JsonProperty("value") String value) {
         this.name = name;
         this.value = value;
     }

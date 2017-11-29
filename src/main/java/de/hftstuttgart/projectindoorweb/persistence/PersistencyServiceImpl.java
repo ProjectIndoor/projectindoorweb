@@ -1,11 +1,9 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
@@ -77,7 +75,7 @@ public class PersistencyServiceImpl implements PersistencyService {
             fromDatabase.setProjectName(project.getProjectName());
             fromDatabase.setProjectParameters(project.getProjectParameters());
             fromDatabase.setCalculationAlgorithm(project.getCalculationAlgorithm());
-            fromDatabase.setLogFiles(project.getLogFiles());
+            fromDatabase.setEvaalFiles(project.getEvaalFiles());
             projectRepository.save(fromDatabase);
             return true;
         }
@@ -103,16 +101,30 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public long addNewBuilding(String buildingName, long actualNumberOfFloors, PositionAnchor southEastAnchor, PositionAnchor southWestAnchor, PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
+    public boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+                                  PositionAnchor southEastAnchor, PositionAnchor southWestAnchor,
+                                  PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
 
         AssertParam.throwIfNullOrEmpty(buildingName,"buildingName");
-        AssertParam.throwIfNull(actualNumberOfFloors,"actualNumberOfFloors");
+        AssertParam.throwIfNull(numberOfFloors,"numberOfFloors");
+        AssertParam.throwIfNull(imagePixelWidth, "imagePixelWidth");
+        AssertParam.throwIfNull(imagePixelHeight, "imagePixelHeigth");
         AssertParam.throwIfNull(southEastAnchor,"southEastAnchor");
         AssertParam.throwIfNull(southWestAnchor,"southWestAnchor");
         AssertParam.throwIfNull(northEastAnchor,"northEastAnchor");
         AssertParam.throwIfNull(northWestAnchor,"northWestAnchor");
 
-        return 0;//TODO implement when ready
+        Position northWestPosition = new Position(northWestAnchor.getLatitude(), northWestAnchor.getLongitude(), 0.0, true);
+        Position northEastPosition = new Position(northEastAnchor.getLatitude(), northEastAnchor.getLongitude(), 0.0, true);
+        Position southEastPosition = new Position(southEastAnchor.getLatitude(), southEastAnchor.getLongitude(), 0.0, true);
+        Position southWestPosition = new Position(southWestAnchor.getLatitude(), southWestAnchor.getLongitude(), 0.0, true);
+
+        Building buildingToBeSaved = new Building(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight, northWestPosition,
+                northEastPosition, southEastPosition, southWestPosition);
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
+        return buildingToBeSaved != null;
+
     }
 
     @Override
@@ -137,20 +149,61 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public List<Building> getAllBuildings() {
-        //TODO implement when ready
-        return new ArrayList<>();
+
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+
+        return (List<Building>) buildingRepository.findAll();
+
+
     }
 
     @Override
-    public boolean saveLogFiles(List<LogFile> logFiles) {
+    public Building getBuildingById(long buildingId) {
 
-        AssertParam.throwIfNull(logFiles,"logFiles");
+        BuildingRepository buildingRepository = (BuildingRepository)RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
 
-        LogFileRepository logFileRepository = (LogFileRepository) RepositoryRegistry.getRepositoryByEntityName(LogFile.class.getName());
+        return buildingRepository.findOne(buildingId);
 
-        Iterable<LogFile> saved = logFileRepository.save(logFiles);
+    }
+
+    @Override
+    public boolean saveEvaalFiles(List<EvaalFile> evaalFiles) {
+
+        AssertParam.throwIfNull(evaalFiles,"evaalFiles");
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        Iterable<EvaalFile> saved = evaalFileRepository.save(evaalFiles);
 
         return saved != null;
+
+    }
+
+    @Override
+    public EvaalFile getEvaalFileForId(long evaalFileId) {
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        return evaalFileRepository.findOne(evaalFileId);
+    }
+
+
+    @Override
+    public List<EvaalFile> getEvaluationFilesForBuilding(Building building) {
+
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        return evaalFileRepository.findByRecordedInBuildingAndAndEvaluationFileTrue(building);
+
+    }
+
+    @Override
+    public List<EvaalFile> getRadioMapFilesForBuiling(Building building) {
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        return evaalFileRepository.findByRecordedInBuildingAndEvaluationFileFalse(building);
 
     }
 

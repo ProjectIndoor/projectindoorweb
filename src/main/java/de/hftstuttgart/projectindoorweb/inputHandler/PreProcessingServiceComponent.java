@@ -1,10 +1,8 @@
 package de.hftstuttgart.projectindoorweb.inputHandler;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  *  Input handler component class to initialize and dispose of the Eva File input handler.
- *  Do not use the <class>{@link LogFilePreProcessingServiceImpl}</class> class implementation directly. Only initialize
+ *  Do not use the <class>{@link EvaalFilePreProcessingServiceImpl}</class> class implementation directly. Only initialize
  *  this class once through @initComponent on startup and access the object through the @getPreProcessingService method.
  */
 public class PreProcessingServiceComponent {
@@ -13,7 +11,7 @@ public class PreProcessingServiceComponent {
 
     public static void initComponent()
     {
-        instance = new LogFilePreProcessingServiceImpl();
+        instance = new EvaalFilePreProcessingServiceImpl();
     }
 
     public static void disposeComponent()
