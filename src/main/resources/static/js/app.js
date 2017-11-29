@@ -137,6 +137,36 @@ app.factory("uploadService", UploadService);
 
 // Data service (retrieve data from server e.g. get Buildings)
 function DataService($http) {
+    // API endpoints
+    var getBuildingsUrl = '/building/getAllBuildings';
+    var getEvalFilesUrl = '/position/getEvalFilesForBuilding';
+    var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
+
+    // Cache
+    var buildings;
+
+    // Service functions
+    return {
+        // api to get all buildings
+        getAllBuildings: function () {
+            // $http returns a promise, which has a then function, which also returns a promise
+            var promise = $http.get(getBuildingsUrl).then(function (response) {
+                // The then function here is an opportunity to modify the response
+                console.log("Retrieved buildings:");
+                console.log(response);
+                // The return value gets picked up by the then in the controller.
+                return response.data;
+            });
+            // Return the promise to the controller
+            return promise;
+        },
+        getEvalFilesForBuilding: function (buildingId) {
+
+        },
+        getAllAlgorithmTypes: function () {
+
+        }
+    }
 
 }
 
@@ -395,16 +425,23 @@ function BuildingImportController($scope) {
 app.controller('BuildingImportCtrl', BuildingImportController);
 
 //Controller to fetch the building and floor data using GET method
-function BuildingController($scope, $http) {
-    $http({
-        method: "GET",
-        url: "config/config.json"
-    }).then(function success(response) {
-        $scope.buildings = response.data.buildings;
-        $scope.floors = response.data.floors;
-    }, function error(response) {
-        $scope.buildings = response.statusText;
-        $scope.floors = response.statusText;
+function BuildingController($scope, $http, dataService) {
+    // properties
+    $scope.selectedBuilding = {
+        floorCount: 2
+    };
+    // enumeration function
+    $scope.getNumber = function (num) {
+        return new Array(num);
+    };
+
+    // load data from backend with service
+    dataService.getAllBuildings().then(function (data) {
+        // set building
+        $scope.buildings = data;
+        $scope.selectedBuilding = data[0];
+        $scope.selectedFloor = 0;
+        console.log(data)
     });
 }
 
