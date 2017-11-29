@@ -12,8 +12,7 @@ public class Floor {
 
     private int level;
 
-    @OneToOne(targetEntity = FloorMap.class, cascade = CascadeType.ALL)
-    private FloorMap floorMap;
+    private String floorMapUrl;
 
     @OneToMany(targetEntity = PosiReference.class, mappedBy = "floor")
     private List<PosiReference> posiReferences;
@@ -21,14 +20,14 @@ public class Floor {
     protected Floor(){}
 
 
-    public Floor(int level, FloorMap floorMap) {
+    public Floor(int level, String floorMapUrl) {
         this.level = level;
-        this.floorMap = floorMap;
+        this.floorMapUrl = floorMapUrl;
     }
 
     public Floor(int level) {
         this.level = level;
-        this.floorMap = null;
+        this.floorMapUrl = null;
     }
 
     public Long getId() {
@@ -43,12 +42,12 @@ public class Floor {
         this.level = level;
     }
 
-    public FloorMap getFloorMap() {
-        return floorMap;
+    public String getFloorMapUrl() {
+        return floorMapUrl;
     }
 
-    public void setFloorMap(FloorMap floorMap) {
-        this.floorMap = floorMap;
+    public void setFloorMapUrl(String floorMapUrl) {
+        this.floorMapUrl = floorMapUrl;
     }
 
     public List<PosiReference> getPosiReferences() {

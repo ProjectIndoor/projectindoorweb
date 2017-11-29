@@ -1,17 +1,14 @@
 package de.hftstuttgart.projectindoorweb.positionCalculator;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 
 import java.io.File;
 import java.util.List;
 
 public interface PositionCalculatorService {
 
-    List<? extends PositionResult> calculatePositions(File evalFile, Project project);
+    List<? extends PositionResult> calculatePositions(EvaalFile evaluationFile, EvaalFile[] radioMapFiles, Building building);
 
-    <T extends PositionResult> T calculateSinglePosition(String wifiReading, Project project);
+    <T extends PositionResult> T calculateSinglePosition(String wifiReading, EvaalFile[] radioMapFiles);
 
 }

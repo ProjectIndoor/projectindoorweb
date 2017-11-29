@@ -1,7 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
-import sun.rmi.runtime.Log;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,16 +18,16 @@ public class Project {
     @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
     private List<Parameter> projectParameters;
 
-    @OneToMany(targetEntity = LogFile.class, cascade = CascadeType.ALL)
-    private List<LogFile> logFiles;
+    @OneToMany(targetEntity = EvaalFile.class, cascade = CascadeType.ALL)
+    private List<EvaalFile> evaalFiles;
 
     protected Project(){}
 
-    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<LogFile> logFiles) {
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<EvaalFile> evaalFiles) {
         this.projectName = projectName;
         this.calculationAlgorithm = calculationAlgorithm;
         this.projectParameters = projectParameters;
-        this.logFiles = logFiles;
+        this.evaalFiles = evaalFiles;
     }
 
     public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
@@ -65,12 +64,12 @@ public class Project {
         this.projectParameters = projectParameters;
     }
 
-    public List<LogFile> getLogFiles() {
-        return logFiles;
+    public List<EvaalFile> getEvaalFiles() {
+        return evaalFiles;
     }
 
-    public void setLogFiles(List<LogFile> logFiles) {
-        this.logFiles = logFiles;
+    public void setEvaalFiles(List<EvaalFile> evaalFiles) {
+        this.evaalFiles = evaalFiles;
     }
 
 }

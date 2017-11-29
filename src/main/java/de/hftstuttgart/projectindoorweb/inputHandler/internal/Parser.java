@@ -2,13 +2,13 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal;
 
 import java.io.File;
 
-public abstract class Parser implements Runnable {
+public abstract class Parser {
 
     protected File sourceFile;
-    protected boolean fileForRadiomap;
+    protected boolean evaluationFile;
 
-    public Parser(boolean fileForRadiomap, File sourceFile) {
-        this.fileForRadiomap = fileForRadiomap;
+    public Parser(boolean evaluationFile, File sourceFile) {
+        this.evaluationFile = evaluationFile;
         this.sourceFile = sourceFile;
     }
 
