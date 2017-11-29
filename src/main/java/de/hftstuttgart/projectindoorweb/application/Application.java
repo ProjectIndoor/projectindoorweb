@@ -8,11 +8,10 @@ import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.LogFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.LogFileRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
@@ -69,12 +68,12 @@ public class Application {
 
     @Bean
     public CommandLineRunner initApplication(ProjectRepository projectRepository,
-                                             LogFileRepository logFileRepository,
+                                             EvaalFileRepository evaalFileRepository,
                                              BuildingRepository buildingRepository) {
 
         return (args) -> {
             RepositoryRegistry.registerRepository(Project.class.getName(), projectRepository);
-            RepositoryRegistry.registerRepository(LogFile.class.getName(), logFileRepository);
+            RepositoryRegistry.registerRepository(EvaalFile.class.getName(), evaalFileRepository);
             RepositoryRegistry.registerRepository(Building.class.getName(), buildingRepository);
         };
     }

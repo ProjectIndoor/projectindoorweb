@@ -1,17 +1,24 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Map;
 
 @Entity
-public class LogFile {
+public class EvaalFile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private boolean evaluationFile;
+
     private String sourceFileName;
     private String customFileName;
     private int appVersion;
+
+    @OneToMany(targetEntity = WifiBlock.class, cascade = CascadeType.ALL)
+    private Map<Integer, WifiBlock> wifiBlocks;
 
     @ManyToOne(targetEntity = Building.class, cascade = CascadeType.ALL)
     private Building recordedInBuilding;
@@ -22,25 +29,32 @@ public class LogFile {
     @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
     private RadioMap radioMap;
 
-    protected LogFile(){}
+    protected EvaalFile(){}
 
-    public LogFile(String sourceFileName, String customFileName, int appVersion, RadioMap radioMap) {
+    public EvaalFile(boolean evaluationFile, String sourceFileName, String customFileName, int appVersion, Map<Integer, WifiBlock> wifiBlocks,
+                     Building recordedInBuilding, Phone recordedByPhone, RadioMap radioMap) {
+
+        this.evaluationFile = evaluationFile;
         this.sourceFileName = sourceFileName;
         this.customFileName = customFileName;
         this.appVersion = appVersion;
-        this.radioMap = radioMap;
-    }
-
-    public LogFile(String sourceFileName, String customFileName, int appVersion, Building recordedInBuilding,
-                   Phone recordedByPhone, RadioMap radioMap) {
-
-        this.sourceFileName = sourceFileName;
-        this.customFileName = customFileName;
-        this.appVersion = appVersion;
+        this.wifiBlocks = wifiBlocks;
         this.recordedInBuilding = recordedInBuilding;
         this.recordedByPhone = recordedByPhone;
         this.radioMap = radioMap;
 
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public boolean isEvaluationFile() {
+        return evaluationFile;
+    }
+
+    public void setEvaluationFile(boolean evaluationFile) {
+        this.evaluationFile = evaluationFile;
     }
 
     public String getSourceFileName() {
@@ -65,6 +79,14 @@ public class LogFile {
 
     public void setAppVersion(int appVersion) {
         this.appVersion = appVersion;
+    }
+
+    public Map<Integer, WifiBlock> getWifiBlocks() {
+        return wifiBlocks;
+    }
+
+    public void setWifiBlocks(Map<Integer, WifiBlock> wifiBlocks) {
+        this.wifiBlocks = wifiBlocks;
     }
 
     public Building getRecordedInBuilding() {

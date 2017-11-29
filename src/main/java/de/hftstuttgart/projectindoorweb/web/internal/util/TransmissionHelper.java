@@ -1,9 +1,14 @@
 package de.hftstuttgart.projectindoorweb.web.internal.util;
 
+import com.sun.imageio.spi.RAFImageOutputStreamSpi;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
 import de.hftstuttgart.projectindoorweb.web.internal.BuildingJsonWrapperSmall;
 import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
+import de.hftstuttgart.projectindoorweb.web.internal.EvaluationEntry;
+import de.hftstuttgart.projectindoorweb.web.internal.RadioMapEntry;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -56,5 +61,47 @@ public class TransmissionHelper {
         }
 
         return result;
+    }
+
+    public static List<EvaluationEntry> convertToEvaluationEntries(List<EvaalFile> evaalFiles){
+
+        List<EvaluationEntry> evaluationEntries = new ArrayList<>(evaalFiles.size());
+
+        for (EvaalFile evaalFile:
+             evaalFiles) {
+            evaluationEntries.add(new EvaluationEntry(evaalFile.getId(), evaalFile.getSourceFileName(), "To be clarified"));
+        }
+
+        return evaluationEntries;
+
+    }
+
+    public static List<RadioMapEntry> convertToRadioMapEntry(List<EvaalFile> evaalFiles){
+
+        List<RadioMapEntry> radioMapEntries = new ArrayList<>(evaalFiles.size());
+
+        for (EvaalFile evaalFile:
+             evaalFiles) {
+
+            radioMapEntries.add(new RadioMapEntry(evaalFile.getId(), evaalFile.getSourceFileName()));
+
+        }
+
+        return radioMapEntries;
+
+    }
+
+    public static boolean areRequestedFilesPresent(EvaalFile[] evaalFiles){
+
+        for(int i = 0; i < evaalFiles.length; i++){
+            if(evaalFiles[i] == null){
+                return false;
+            }
+
+
+        }
+
+        return true;
+
     }
 }

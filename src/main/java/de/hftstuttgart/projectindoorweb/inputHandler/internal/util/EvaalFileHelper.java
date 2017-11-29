@@ -3,6 +3,7 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 
 import java.util.ArrayList;
@@ -10,18 +11,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LogFileHelper {
+public class EvaalFileHelper {
 
     //TODO This method is now accessed from a completely different package -- is there a more elegant way?
     public static RadioMap mergeRadioMapsBySimilarPositions(List<RadioMap> radioMaps){
+
+
 
         List<RadioMapElement> result = new ArrayList<>();
         List<RadioMapElement> unmergedElements = new ArrayList<>();
 
         for (RadioMap radioMap:
                 radioMaps) {
+            radioMap = transFormRadioMapToLocalCoordinateSystem(radioMap);
             unmergedElements.addAll(radioMap.getRadioMapElements());
         }
+
+
         boolean unique;
         Position a;
         Position b;
@@ -40,6 +46,12 @@ public class LogFileHelper {
             if(unique){
                 result.add(outerElement);
             }
+        }
+
+        for (RadioMapElement radioMapElement:
+             result) {
+            radioMapElement.getPosiReference().setReferencePosition(
+                    transformLocalToLatLong(radioMapElement.getPosiReference().getReferencePosition()));
         }
 
         return new RadioMap(result);
@@ -79,6 +91,24 @@ public class LogFileHelper {
         PosiReference mergedPosiReference = mergePosiReferences(a.getPosiReference(), b.getPosiReference());
 
         return new RadioMapElement(mergedPosiReference, mergedRadioMapElements);
+
+    }
+
+    private static RadioMap transFormRadioMapToLocalCoordinateSystem(RadioMap latLongRadioMap){
+
+        List<RadioMapElement> radioMapElements = latLongRadioMap.getRadioMapElements();
+        Position transformedPosition;
+        Position untransformedPosition;
+        for (RadioMapElement radioMapElement:
+             radioMapElements) {
+            untransformedPosition = radioMapElement.getPosiReference().getReferencePosition();
+            transformedPosition = transformLatLongToLocal(untransformedPosition.getX(),
+                    untransformedPosition.getY(), untransformedPosition.getZ());
+            radioMapElement.getPosiReference().setReferencePosition(transformedPosition);
+        }
+
+        latLongRadioMap.setRadioMapElements(radioMapElements);
+        return latLongRadioMap;
 
     }
 
@@ -229,7 +259,7 @@ public class LogFileHelper {
             floorId = Integer.parseInt(currentLineElements[5]);
             floor = new Floor(floorId);
             buildingId = Integer.parseInt(currentLineElements[6]);
-            //referencePosition = retrieveTransformedReferencePosition(latitude, longitude, floorId);
+            //referencePosition = transformLatLongToLocal(latitude, longitude, floorId);
             referencePosition = new Position(latitude, longitude, floorId, true);
             result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd, floor));
             intervalStart = intervalEnd;
@@ -291,13 +321,83 @@ public class LogFileHelper {
 
     }
 
-    public static Position retrieveTransformedReferencePosition(double latitude, double longitude, int floor) {
+    public static Position transformLatLongToLocal(double latitude, double longitude, double floor) {
 
         LatLongCoord untransformedPosition = new LatLongCoord(latitude, longitude);
         //TODO: Substitute by Gerald's algorithm
         LocXYZ transformedPosition = new LocXYZ(MyGeoMath.ll2xy(untransformedPosition, ConfigContainer.BASE_POSITION,
                 ConfigContainer.ANGLE_RAD), floor * ConfigContainer.FLOOR_HEIGHT);
         return new Position(transformedPosition.x, transformedPosition.y, transformedPosition.z, false);
+
+    }
+
+    public static Position transformLocalToLatLong(Position position){
+
+        LocalXYCoord localXYCoord = new LocalXYCoord(position.getX(), position.getY());
+        LatLongCoord transformedPosition = MyGeoMath.xy2ll(localXYCoord, ConfigContainer.BASE_POSITION, ConfigContainer.ANGLE_RAD);
+
+        return new Position(transformedPosition.latitude, transformedPosition.longitude, position.getZ(), true);
+
+    }
+
+    public static List<RssiSignal> retrieveAveragedRssiSignalsForWifiBlock(Map<Integer, WifiBlock> wifiBlocks, int block) {
+
+        List<String> wifiBlock = wifiBlocks.get(block).getWifiLines();
+        Map<String, Double> rssiSignalsForMacs = retrieveRssiSignalsForWifiBlock(wifiBlock);
+        Map<String, Integer> numberOfMacs = retrieveNumMacsForWifiBlock(wifiBlock);
+
+        List<RssiSignal> result = new ArrayList<>();
+        int numMacs;
+        double rssiSignalStrength;
+        boolean averaged;
+        for (String currentMac:
+                rssiSignalsForMacs.keySet()) {
+            numMacs = numberOfMacs.get(currentMac);
+            rssiSignalStrength = rssiSignalsForMacs.get(currentMac) / Double.valueOf(numMacs);
+            averaged = numMacs > 1;
+            result.add(new RssiSignal(0.0, rssiSignalStrength, averaged, new WifiAccessPoint(currentMac)));
+        }
+
+        return result;
+    }
+
+    private static Map<String, Double> retrieveRssiSignalsForWifiBlock(List<String> wifiBlock){
+
+        Map<String, Double> result = new HashMap<>();
+
+        String mac;
+        double rssiSignalStrength;
+        for (String currentWifiLine :
+                wifiBlock) {
+            mac = currentWifiLine.split(";")[4];
+            rssiSignalStrength = Double.parseDouble(currentWifiLine.split(";")[5]);
+            if(!result.containsKey(mac)){
+                result.put(mac, rssiSignalStrength);
+            }else{
+                result.put(mac, result.get(mac) + rssiSignalStrength);
+            }
+        }
+
+        return result;
+
+    }
+
+    private static Map<String, Integer> retrieveNumMacsForWifiBlock(List<String> wifiBlock) {
+
+        Map<String, Integer> result = new HashMap<>();
+
+        String mac;
+        for (String currentWifiLine :
+                wifiBlock) {
+            mac = currentWifiLine.split(";")[4];
+            if(!result.containsKey(mac)){
+                result.put(mac, 1);
+            }else{
+                result.put(mac, result.get(mac) + 1);
+            }
+        }
+
+        return result;
 
     }
 

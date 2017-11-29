@@ -28,8 +28,8 @@ public class Building {
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position southWest;
 
-    @OneToMany(targetEntity = RadioMap.class)
-    private List<RadioMap> belongingMaps;
+    @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedInBuilding")
+    private List<EvaalFile> evaalFiles;
 
     @OneToMany(targetEntity = Floor.class, cascade = CascadeType.ALL)
     private List<Floor> buildingFloors;
@@ -49,7 +49,7 @@ public class Building {
     }
 
     public Building(String buildingName, int imagePixelWidth, int imagePixelHeight, Position northWest, Position northEast,
-                    Position southEast, Position southWest, List<RadioMap> belongingMaps, List<Floor> buildingFloors) {
+                    Position southEast, Position southWest, List<EvaalFile> evaalFiles, List<Floor> buildingFloors) {
 
         this.buildingName = buildingName;
         this.imagePixelWidth = imagePixelWidth;
@@ -58,7 +58,7 @@ public class Building {
         this.northEast = northEast;
         this.southEast = southEast;
         this.southWest = southWest;
-        this.belongingMaps = belongingMaps;
+        this.evaalFiles = evaalFiles;
         this.buildingFloors = buildingFloors;
     }
 
@@ -125,12 +125,12 @@ public class Building {
         this.southWest = southWest;
     }
 
-    public List<RadioMap> getBelongingMaps() {
-        return belongingMaps;
+    public List<EvaalFile> getEvaalFiles() {
+        return evaalFiles;
     }
 
-    public void setBelongingMaps(List<RadioMap> belongingMaps) {
-        this.belongingMaps = belongingMaps;
+    public void setEvaalFiles(List<EvaalFile> evaalFiles) {
+        this.evaalFiles = evaalFiles;
     }
 
     public List<Floor> getBuildingFloors() {

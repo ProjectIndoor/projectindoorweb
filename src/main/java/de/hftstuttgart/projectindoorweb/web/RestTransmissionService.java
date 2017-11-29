@@ -2,7 +2,7 @@ package de.hftstuttgart.projectindoorweb.web;
 
 
 import de.hftstuttgart.projectindoorweb.web.internal.*;
-import de.hftstuttgart.projectindoorweb.web.internal.util.EvaluationEntry;
+import de.hftstuttgart.projectindoorweb.web.internal.EvaluationEntry;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.Set;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
-    boolean generateRadioMap(String projectId, String buildingId, MultipartFile[] radioMapFiles);
+    boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles);
 
-    List<CalculatedPosition> generatePositionResults(String projectId, String buildingId, MultipartFile evaluationFile);
+    List<CalculatedPosition> generatePositionResults(boolean withPixelPosition, GeneratePositionJsonWrapper generatePositionJsonWrapper);
 
-    CalculatedPosition getPositionForWifiReading(String projectId, String wifiReading);
+    CalculatedPosition getPositionForWifiReading(String wifiReading, boolean withPixelPosition, GeneratePositionJsonWrapper generatePositionJsonWrapper);
 
     List<CalculatedPosition> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
@@ -32,7 +32,9 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<AlgorithmType> getAllAlgorithmTypes();
 
-    List<EvaluationEntry> getEvaluationEntriesForBuildingId(String buildingIdentifier);
+    List<EvaluationEntry> getEvaluationFilesForBuilding(String buildingIdentifier);
+
+    List<RadioMapEntry> getRadioMapFilesForBuilding(String buildingIdentifier);
 
     List<ParameterElement> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
 

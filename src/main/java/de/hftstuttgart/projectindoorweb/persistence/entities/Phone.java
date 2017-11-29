@@ -14,12 +14,12 @@ public class Phone {
     private String model;
     private int apiVersion;
 
-    @OneToMany(targetEntity = LogFile.class, mappedBy = "recordedByPhone")
-    private List<LogFile> recordedFiles;
+    @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedByPhone")
+    private List<EvaalFile> recordedFiles;
 
     protected Phone(){}
 
-    public Phone(String manufacturer, String model, int apiVersion, List<LogFile> recordedFiles) {
+    public Phone(String manufacturer, String model, int apiVersion, List<EvaalFile> recordedFiles) {
         this.manufacturer = manufacturer;
         this.model = model;
         this.apiVersion = apiVersion;
@@ -54,11 +54,11 @@ public class Phone {
         this.apiVersion = apiVersion;
     }
 
-    public List<LogFile> getRecordedFiles() {
+    public List<EvaalFile> getRecordedFiles() {
         return recordedFiles;
     }
 
-    public void setRecordedFiles(List<LogFile> recordedFiles) {
+    public void setRecordedFiles(List<EvaalFile> recordedFiles) {
         this.recordedFiles = recordedFiles;
     }
 }
