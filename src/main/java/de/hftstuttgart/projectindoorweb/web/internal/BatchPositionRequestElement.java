@@ -5,27 +5,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
 
-public class GeneratePositionJsonWrapper {
+public class BatchPositionRequestElement {
 
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
     private Long[] radioMapFileIdentifiers;
     private String algorithmType;
     private Set<ProjectParameter> projectParameters;
+    private boolean withPixelPosition;
 
 
     @JsonCreator
-    public GeneratePositionJsonWrapper(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
+    public BatchPositionRequestElement(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                        @JsonProperty("evaluationFile") Long evalFileIdentifier,
                                        @JsonProperty("radioMapFiles") Long[] radioMapFileIdentifiers,
                                        @JsonProperty("algorithmType") String algorithmType,
-                                       @JsonProperty("projectParameters") Set<ProjectParameter> projectParameters) {
+                                       @JsonProperty("projectParameters") Set<ProjectParameter> projectParameters,
+                                       @JsonProperty("withPixelPosition") boolean withPixelPosition) {
 
         this.buildingIdentifier = buildingIdentifier;
         this.evalFileIdentifier = evalFileIdentifier;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
         this.algorithmType = algorithmType;
         this.projectParameters = projectParameters;
+        this.withPixelPosition = withPixelPosition;
     }
 
     public Long getBuildingIdentifier() {
@@ -66,5 +69,13 @@ public class GeneratePositionJsonWrapper {
 
     public void setProjectParameters(Set<ProjectParameter> projectParameters) {
         this.projectParameters = projectParameters;
+    }
+
+    public boolean isWithPixelPosition() {
+        return withPixelPosition;
+    }
+
+    public void setWithPixelPosition(boolean withPixelPosition) {
+        this.withPixelPosition = withPixelPosition;
     }
 }
