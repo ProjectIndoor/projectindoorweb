@@ -132,7 +132,9 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 function UploadService($http, $mdToast) {
     //api endpoints
     var buildingUploadUrl = '/building/addNewBuilding';
+    var logFileUploadUrl = '/position/processRadioMapFiles';
 
+    // service functions
     return {
         uploadBuilding: function (newBuilding) {
             var postData = newBuilding
@@ -151,9 +153,41 @@ function UploadService($http, $mdToast) {
                 logMessage = "Error while uploading Building Data";
                 showToast(logMessage);
             });
+        },
+        uploadRadioMap: function (radioMapSet) {
+            // request parameters
+            var requestParameters = {
+                buildingIdentifier: radioMapSet.buildingIdentifier
+            };
+
+            // body content
+            var formData = new FormData();
+            formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
+
+            $http({
+                method: 'POST',
+                url: logFileUploadUrl,
+                params: requestParameters,
+                data: formData,
+                transformRequest: function (data, headersGetterFunction) {
+                    return data;
+                },
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).then(function successCallback(response) {
+                // success
+                logMessage = "Radio map uploaded successfully!";
+                showToast(logMessage);
+            }, function errorCallback(response) {
+                // failure
+                logMessage = "Error while uploading Radio Map Data";
+                showToast(logMessage);
+            });
         }
     };
 
+    // private functions
     function showToast(logMessage) {
         var pinTo = "top right";
 
@@ -493,10 +527,6 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
     }
 
     $scope.calculatePos = function () {
-        //example reference points
-        //mapService.addRefPoint(0, 0);
-        //mapService.addRefPoint(1280, 800);
-
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
@@ -632,7 +662,11 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 }]);
 
 // controller which handles the log import view
-function LogImportController($scope, $http, projectService) {
+function LogImportController($scope, $http, uploadService) {
+    // show file chooser on button click
+    $scope.upload = function () {
+        angular.element(document.querySelector('#inputFile')).click();
+    };
 
     $scope.buildings = [
         {
@@ -643,28 +677,17 @@ function LogImportController($scope, $http, projectService) {
     ];
 
     $scope.logFileParameters = {
-        buildingIdentifier: 1,
+        buildingIdentifier: 0,
         radioMapFiles: []
-    };
-
-    projectService.createNewProject();
-    //$scope.currentProject = projectService.currentProjectId();
-
-    // show file chooser on button click
-    $scope.upload = function () {
-        angular.element(document.querySelector('#inputFile')).click();
-
     };
 
     var formData = new FormData();
 
     $scope.getTheFiles = function ($files) {
-        //formData.append('fileName', $scope.fileName);
-        //formData.append('isTrainData', $scope.trainData ? $scope.trainData : false);
-        //formData.append('logFile', $files[0]);
-        //console.log($files[0].name);
-        $scope.files = $files;
-        $scope.fileUploaded = "Uploaded: " + $files[0].name;
+        $scope.logFileParameters.radioMapFiles = $files;
+        $scope.fileUploaded = "File: " + $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
     };
 
     //The success or error message
@@ -672,7 +695,8 @@ function LogImportController($scope, $http, projectService) {
 
     //Post the file and parameters
     $scope.uploadFiles = function () {
-        projectService.generateRadiomap($scope.files)
+        console.log($scope.logFileParameters);
+        uploadService.uploadRadioMap($scope.logFileParameters)
     }
 }
 
