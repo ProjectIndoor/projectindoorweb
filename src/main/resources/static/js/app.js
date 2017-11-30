@@ -138,7 +138,7 @@ function UploadService($http, $mdToast) {
     // service functions
     return {
         uploadBuilding: function (newBuilding) {
-            var postData = newBuilding
+            var postData = newBuilding;
 
             $http({
                 method: 'POST',
@@ -307,12 +307,25 @@ function CalculationService($http) {
     ];
     var asPixel = true;
 
+    // workflow progress
+    var workflowProgress = 0;
+
     function updateCalculationData() {
         // update broadcast
         $rootScope.$broadcast('updatedCalculationData');
     }
 
     return {
+        // set and get progress
+        flowProgress: function () {
+            return workflowProgress;
+        },
+        increaseProgress: function () {
+            workflowProgress++;
+        },
+        decreaseProgress: function () {
+            workflowProgress--;
+        },
         // set and get building
         getCurrentBuilding: function () {
             return buildingId;
@@ -558,6 +571,10 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
         };
     }
 
+    $scope.algoHide = function () {
+        return calculationService.flowProgress() < 2;
+    };
+
     $scope.calculatePos = function () {
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
@@ -631,8 +648,7 @@ function BuildingController($scope, dataService, calculationService) {
         selectedBuilding: {},
         selectedFloor: 0
     };
-    // watches
-    $scope.$watch("buildingData", updateBuilding);
+
     // enumeration function
     $scope.getNumber = function (num) {
         return new Array(num);
@@ -647,13 +663,10 @@ function BuildingController($scope, dataService, calculationService) {
         console.log(data)
     });
 
-    function updateBuilding() {
-        //dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.id);
-    }
-
     $scope.setBuilding = function () {
-        //calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
         calculationService.setCalculationBuilding(1);
+        calculationService.increaseProgress();
+
     };
 }
 
@@ -661,15 +674,19 @@ app.controller('BuildingCtrl', BuildingController);
 
 // Track chooser controller
 function TrackController($scope, dataService, calculationService) {
-    //$scope.selectedBuilding = calculationService.getCurrentBuilding;
+
+    // hide if not needed yet
+    $scope.trackHide = function () {
+        return calculationService.flowProgress() < 1;
+    };
 
     dataService.loadEvalFilesForBuilding(1).then(function (data) {
         $scope.evalFiles = data;
     });
 
     $scope.setEvaluationFile = function () {
-        //calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
         calculationService.setEvalFile(1);
+        calculationService.increaseProgress();
     };
 }
 
