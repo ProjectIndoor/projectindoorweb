@@ -32,7 +32,8 @@
         </md-input-container>
 
         <md-input-container flex="100">
-            <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"/>
+            <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
+                   aria-label="logFileUpload"/>
             <md-button class="md-button" ng-click="upload()">
                 Choose File
             </md-button>

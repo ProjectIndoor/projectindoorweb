@@ -12,13 +12,13 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Track</label>
             <md-select ng-model="selectedTrack">
-                <md-option ng-repeat="track in tracks" value="{{track.id}}">{{track.name}}
+                <md-option ng-repeat="evalFile in evalFiles" value="{{evalFile.id}}">{{evalFile.evaluationEntryName}}
                 </md-option>
             </md-select>
         </md-input-container>
     </md-card-content>
 
     <md-card-actions layout="row" layout-align="end center">
-        <md-button>Choose</md-button>
+        <md-button ng-click="setEvaluationFile()">Choose</md-button>
     </md-card-actions>
 </md-card>

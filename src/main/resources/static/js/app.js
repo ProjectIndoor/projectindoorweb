@@ -175,11 +175,12 @@ app.factory("uploadService", UploadService);
 function DataService($http) {
     // API endpoints
     var getBuildingsUrl = '/building/getAllBuildings';
-    var getEvalFilesUrl = '/position/getEvalFilesForBuilding';
+    var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
     var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
 
     // Cache
-    var buildings;
+    var buildings = [];
+    var evalFiles = [];
 
     // Service functions
     return {
@@ -190,14 +191,34 @@ function DataService($http) {
                 // The then function here is an opportunity to modify the response
                 console.log("Retrieved buildings:");
                 console.log(response);
+                // save response in cache
+                angular.copy(response.data, buildings);
                 // The return value gets picked up by the then in the controller.
                 return response.data;
             });
             // Return the promise to the controller
             return promise;
         },
-        getEvalFilesForBuilding: function (buildingId) {
+        loadEvalFilesForBuilding: function (buildingId) {
+            var config = {
+                params: {
+                    buildingIdentifier: buildingId
+                }
+            };
+            var promise = $http.get(getEvalFilesUrl, config).then(function (response) {
+                console.log("Retrieved eval files:");
+                console.log(response);
 
+                // save response in cache
+                angular.copy(response.data, evalFiles);
+
+                return response.data;
+            });
+            return promise;
+        },
+        getEvalFilesForBuilding: function () {
+            // return a copy of evalFiles
+            return [].concat(evalFiles);
         },
         getAllAlgorithmTypes: function () {
 
@@ -210,12 +231,18 @@ app.factory("dataService", DataService);
 
 // Calculation service (setup and call position calculations)
 function CalculationService($http) {
+    //api endpoints
+    var generatePositionsUrl = '/position/generateBatchPositionResults';
     // properties
-    var building;
-    var evalFile;
-    var radioMapFiles = [];
-    var algorithmType;
-    var projectParameters;
+    var buildingId;
+    var evalFileId;
+    var radioMapFileIds = [1];
+    var algorithmType = "WIFI";
+    var projectParameters = [
+        {name: "Param1", value: "Value1"},
+        {name: "Param2", value: "Value2"}
+    ];
+    var asPixel = true;
 
     function updateCalculationData() {
         // update broadcast
@@ -225,11 +252,41 @@ function CalculationService($http) {
     return {
         // set and get building
         getCurrentBuilding: function () {
-            return building;
+            return buildingId;
         },
-        setCalculationBuilding: function (buildingId) {
-            building = buildingId;
-            updateCalculationData();
+        setCalculationBuilding: function (bId) {
+            buildingId = bId;
+            console.log("Building Changed: " + buildingId);
+        },
+        // set and get eval file
+        getEvalFile: function () {
+            return evalFileId;
+        },
+        setEvalFile: function (evId) {
+            evalFileId = evId;
+            console.log("Eval File Changed: " + evalFileId);
+        },
+        generatePositions: function () {
+            var data = {
+                buildingIdentifier: buildingId,
+                evaluationFile: evalFileId,
+                radioMapFiles: radioMapFileIds,
+                algorithmType: algorithmType,
+                projectParameters: projectParameters,
+                withPixelPosition: asPixel
+            };
+            var config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            var promise = $http.post(generatePositionsUrl, data, config).then(function (response) {
+                console.log("Retrieved positions:");
+                console.log(response);
+
+                return response.data;
+            });
+            return promise;
         }
     }
 }
@@ -363,7 +420,7 @@ function MapService() {
                 anchor: [0.5, 0, 5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
-                opacity: 0.90,
+                opacity: 1.0,
                 src: '/icons/ref-marker.png'
             }
         }
@@ -415,7 +472,6 @@ function MapService() {
 
 app.factory('mapService', MapService);
 
-
 // ------------- Controllers
 // controller which handels page navigation
 app.controller('NavToolbarCtrl', function ($scope, $timeout) {
@@ -429,7 +485,7 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 });
 
 // controller which handles map configuration
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService, calculationService) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
@@ -441,17 +497,18 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
 
     $scope.calculatePos = function () {
         //example reference points
-        mapService.addRefPoint(430, 554);
-        mapService.addRefPoint(440, 754);
-        mapService.addRefPoint(445, 854);
-        mapService.addRefPoint(450, 954);
-        projectService.retreivePositions();
-        var posis = projectService.calcPositions();
-        for (var i = 0; i < posis.length; i++) {
-            var p = posis[i];
-            mapService.addRefPoint(p.x * 18 + p.x * 18, p.y * 12 + p.y * 12)
-        }
+        //mapService.addRefPoint(0, 0);
+        //mapService.addRefPoint(1280, 800);
 
+        // run calculation and show results
+        calculationService.generatePositions().then(function (data) {
+            var posis = data;
+            for (var i = 0; i < posis.length; i++) {
+                var p = posis[i];
+                // api returns picture coordinates move them by height to match image
+                mapService.addRefPoint(1282 - p.x, p.y - 818);
+            }
+        });
     };
 });
 
@@ -489,9 +546,13 @@ app.controller('BuildingImportCtrl', BuildingImportController);
 //Controller to fetch the building using the data service
 function BuildingController($scope, dataService, calculationService) {
     // properties
-    $scope.selectedBuilding = {
-        floorCount: 2
+    $scope.buildingData = {
+        buildings: [],
+        selectedBuilding: {},
+        selectedFloor: 0
     };
+    // watches
+    $scope.$watch("buildingData", updateBuilding);
     // enumeration function
     $scope.getNumber = function (num) {
         return new Array(num);
@@ -500,33 +561,36 @@ function BuildingController($scope, dataService, calculationService) {
     // load data from backend with service
     dataService.getAllBuildings().then(function (data) {
         // set building
-        $scope.buildings = data;
-        $scope.selectedBuilding = data[0];
-        $scope.selectedFloor = 0;
+        $scope.buildingData.buildings = data;
+        $scope.buildingData.selectedBuilding = data[0];
+        $scope.buildingData.selectedFloor = 0;
         console.log(data)
     });
 
-    function buildingChanged() {
-        console.log("Building Changed");
-        calculationService.setCalculationBuilding($scope.selectedBuilding.id);
+    function updateBuilding() {
+        //dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.id);
     }
+
+    $scope.setBuilding = function () {
+        //calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
+        calculationService.setCalculationBuilding(1);
+    };
 }
 
 app.controller('BuildingCtrl', BuildingController);
 
 // Track chooser controller
 function TrackController($scope, dataService, calculationService) {
-    $scope.tracks = [
-        {
-            name: "testfile.txt",
-            id: 1
-        },
-        {
-            name: "testfile2.txt",
-            id: 2
-        }
-    ]
+    //$scope.selectedBuilding = calculationService.getCurrentBuilding;
 
+    dataService.loadEvalFilesForBuilding(1).then(function (data) {
+        $scope.evalFiles = data;
+    });
+
+    $scope.setEvaluationFile = function () {
+        //calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
+        calculationService.setEvalFile(1);
+    };
 }
 
 app.controller('TrackCtrl', TrackController);
@@ -542,7 +606,7 @@ app.directive('ngFiles', ['$parse', function ($parse) {
         element.on('change', function (event) {
             onChange(scope, {$files: event.target.files});
         });
-    };
+    }
 
     return {
         link: filelink
