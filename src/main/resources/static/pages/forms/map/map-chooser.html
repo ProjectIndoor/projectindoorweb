@@ -11,7 +11,7 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Building</label>
-            <md-select ng-model="selectedBuilding">
+            <md-select ng-model="selectedBuilding" ng-change="buildingChanged()">
                 <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
                 </md-option>
             </md-select>

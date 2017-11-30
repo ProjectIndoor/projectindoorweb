@@ -137,7 +137,7 @@ function UploadService($http, $mdToast) {
         uploadBuilding: function ($scope) {
             var postData = {
                 "buildingName": $scope.buildingName,
-                "floor": $scope.floor,
+                "floor": $scope.floor
             };
 
             $http({
@@ -155,7 +155,7 @@ function UploadService($http, $mdToast) {
                 showToast(logMessage);
             });
         }
-    }
+    };
 
     function showToast(logMessage) {
         var pinTo = "top right";
@@ -210,7 +210,28 @@ app.factory("dataService", DataService);
 
 // Calculation service (setup and call position calculations)
 function CalculationService($http) {
+    // properties
+    var building;
+    var evalFile;
+    var radioMapFiles = [];
+    var algorithmType;
+    var projectParameters;
 
+    function updateCalculationData() {
+        // update broadcast
+        $rootScope.$broadcast('updatedCalculationData');
+    }
+
+    return {
+        // set and get building
+        getCurrentBuilding: function () {
+            return building;
+        },
+        setCalculationBuilding: function (buildingId) {
+            building = buildingId;
+            updateCalculationData();
+        }
+    }
 }
 
 app.factory("calculationService", CalculationService);
@@ -465,8 +486,8 @@ function BuildingImportController($scope, uploadService) {
 
 app.controller('BuildingImportCtrl', BuildingImportController);
 
-//Controller to fetch the building and floor data using GET method
-function BuildingController($scope, $http, dataService) {
+//Controller to fetch the building using the data service
+function BuildingController($scope, dataService, calculationService) {
     // properties
     $scope.selectedBuilding = {
         floorCount: 2
@@ -484,9 +505,32 @@ function BuildingController($scope, $http, dataService) {
         $scope.selectedFloor = 0;
         console.log(data)
     });
+
+    function buildingChanged() {
+        console.log("Building Changed");
+        calculationService.setCalculationBuilding($scope.selectedBuilding.id);
+    }
 }
 
 app.controller('BuildingCtrl', BuildingController);
+
+// Track chooser controller
+function TrackController($scope, dataService, calculationService) {
+    $scope.tracks = [
+        {
+            name: "testfile.txt",
+            id: 1
+        },
+        {
+            name: "testfile2.txt",
+            id: 2
+        }
+    ]
+
+}
+
+app.controller('TrackCtrl', TrackController);
+
 
 /**
  * POST the uploaded log file

@@ -1,4 +1,4 @@
-<md-card class="md-whiteframe-3dp" md-theme="default">
+<md-card class="md-whiteframe-3dp" md-theme="default" ng-controller="TrackCtrl">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">Track</span>
@@ -11,15 +11,8 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Track</label>
-            <md-select ng-model="track.track">
-                <md-option value="t1">
-                    2017-10-22 12:39
-                </md-option>
-                <md-option value="t2">
-                    2017-10-24 14:28
-                </md-option>
-                <md-option value="t3">
-                    2017-10-26 10:43
+            <md-select ng-model="selectedTrack">
+                <md-option ng-repeat="track in tracks" value="{{track.id}}">{{track.name}}
                 </md-option>
             </md-select>
         </md-input-container>
