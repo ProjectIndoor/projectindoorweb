@@ -1,17 +1,18 @@
 package de.hftstuttgart.projectindoorweb.web.internal;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EvaluationEntry {
 
     private Long id;
 
     private String evaluationEntryName;
 
-    private String evaluationEntryContent;
-
-    public EvaluationEntry(long id, String evaluationEntryName, String evaluationEntryContent) {
+    @JsonCreator
+    public EvaluationEntry(@JsonProperty("id")long id, @JsonProperty("evaluationEntryName")String evaluationEntryName) {
         this.id = id;
         this.evaluationEntryName = evaluationEntryName;
-        this.evaluationEntryContent = evaluationEntryContent;
     }
 
     public Long getId() {
@@ -20,9 +21,5 @@ public class EvaluationEntry {
 
     public String getEvaluationEntryName() {
         return evaluationEntryName;
-    }
-
-    public String getEvaluationEntryContent() {
-        return evaluationEntryContent;
     }
 }

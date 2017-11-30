@@ -69,7 +69,7 @@ public class TransmissionHelper {
 
         for (EvaalFile evaalFile:
              evaalFiles) {
-            evaluationEntries.add(new EvaluationEntry(evaalFile.getId(), evaalFile.getSourceFileName(), "To be clarified"));
+            evaluationEntries.add(new EvaluationEntry(evaalFile.getId(), evaalFile.getSourceFileName()));
         }
 
         return evaluationEntries;

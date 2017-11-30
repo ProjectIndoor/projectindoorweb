@@ -27,13 +27,13 @@ public class PositioningController {
     @ApiOperation(value = "Processes Radio Map files.", nickname = "position/processEvaalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
     public boolean processRadioMapFiles(@RequestBody FileRequestEntry fileRequestEntry) {
-        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), fileRequestEntry.isWithPixelPosition(), fileRequestEntry.getFiles());
+        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), false, fileRequestEntry.getFiles());
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processEvalFiles", method = POST)
     public boolean processEvalFiles(@RequestBody FileRequestEntry fileRequestEntry) {
-        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), fileRequestEntry.isWithPixelPosition(), fileRequestEntry.getFiles());
+        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), true, fileRequestEntry.getFiles());
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
@@ -90,6 +90,5 @@ public class PositioningController {
         return new ResponseEntity<List<RadioMapEntry>>(result, HttpStatus.OK);
 
     }
-
 
 }
