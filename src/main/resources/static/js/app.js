@@ -460,7 +460,6 @@ function BuildingImportController($scope, uploadService) {
     $scope.uploadBuildingData = function () {
         uploadService.uploadBuilding($scope);
     }
-
 }
 
 app.controller('BuildingImportCtrl', BuildingImportController);
