@@ -78,9 +78,9 @@ public class PositioningController {
 
     }
 
-    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuilding",
+    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuildingId",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
-    @RequestMapping(path = "/getRadioMapsForBuilding", method = GET)
+    @RequestMapping(path = "/getRadioMapsForBuildingId", method = GET)
     public ResponseEntity<List<RadioMapEntry>> getRadioMapsForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
