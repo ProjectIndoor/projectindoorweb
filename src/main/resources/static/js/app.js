@@ -131,21 +131,18 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 // Upload service (send data to the server e.g. log files)
 function UploadService($http, $mdToast) {
     //api endpoints
-    var buildingUploadUrl = '/position/addNewBuilding';
+    var buildingUploadUrl = '/building/addNewBuilding';
 
     return {
-        uploadBuilding: function ($scope) {
-            var postData = {
-                "buildingName": $scope.buildingName,
-                "floor": $scope.floor
-            };
+        uploadBuilding: function (newBuilding) {
+            var postData = newBuilding
 
             $http({
                 method: 'POST',
                 url: buildingUploadUrl,
                 data: postData,
                 headers: {
-                    'Content-Type': undefined
+                    'Content-Type': 'application/json'
                 }
             }).success(function (data, status, headers, config) {
                 logMessage = "Building Data uploaded successfully!";
@@ -531,12 +528,33 @@ app.controller('MapCtrl', MapController);
 
 // controller which handles the building import view
 function BuildingImportController($scope, uploadService) {
-    $scope.upload = function () {
-        angular.element(document.querySelector('#inputFile')).click();
+
+    $scope.building = {
+        buildingName: "",
+        numberOfFloors: 0,
+        imagePixelWidth: 1282,
+        imagePixelHeight: 818,
+        northWestAnchor: {
+            latitude: 40.313342,
+            longitude: -3.484113
+        },
+        northEastAnchor: {
+            latitude: 40.313438,
+            longitude: -3.483299
+        },
+        southEastAnchor: {
+            latitude: 40.313041,
+            longitude: -3.483226
+        },
+        southWestAnchor: {
+            latitude: 40.312959,
+            longitude: -3.484038
+        }
     };
 
     $scope.uploadBuildingData = function () {
-        uploadService.uploadBuilding($scope);
+        uploadService.uploadBuilding($scope.building);
+        console.log($scope.building)
     }
 
 }
@@ -616,9 +634,23 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 // controller which handles the log import view
 function LogImportController($scope, $http, projectService) {
 
+    $scope.buildings = [
+        {
+            id: 1,
+            buildingName: "CAR2",
+            floorCount: 1
+        }
+    ];
+
+    $scope.logFileParameters = {
+        buildingIdentifier: 1,
+        radioMapFiles: []
+    };
+
     projectService.createNewProject();
     //$scope.currentProject = projectService.currentProjectId();
 
+    // show file chooser on button click
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
 
@@ -642,7 +674,7 @@ function LogImportController($scope, $http, projectService) {
     $scope.uploadFiles = function () {
         projectService.generateRadiomap($scope.files)
     }
-};
+}
 
 app.controller('LogImportCtrl', LogImportController);
 
