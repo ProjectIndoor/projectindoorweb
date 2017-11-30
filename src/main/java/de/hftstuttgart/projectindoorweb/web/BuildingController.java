@@ -39,7 +39,4 @@ public class BuildingController {
         List<BuildingJsonWrapperSmall> result = restTransmissionService.getAllBuildings();
         return new ResponseEntity<List<BuildingJsonWrapperSmall>>(result, HttpStatus.OK);
     }
-
-
-
 }

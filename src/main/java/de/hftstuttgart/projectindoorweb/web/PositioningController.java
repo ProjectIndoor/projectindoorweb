@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,14 +27,18 @@ public class PositioningController {
 
     @ApiOperation(value = "Processes Radio Map files.", nickname = "position/processEvaalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
-    public boolean processRadioMapFiles(@RequestBody FileRequestEntry fileRequestEntry) {
-        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), false, fileRequestEntry.getFiles());
+    public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
+                                        @RequestBody MultipartFile[] radioMapFiles) {
+        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles);
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processEvalFiles", method = POST)
-    public boolean processEvalFiles(@RequestBody FileRequestEntry fileRequestEntry) {
-        return restTransmissionService.processEvaalFiles(fileRequestEntry.getBuildingIdentifier(), true, fileRequestEntry.getFiles());
+    public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
+                                    @RequestBody MultipartFile[] evalFiles) {
+        return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles);
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
@@ -51,7 +56,7 @@ public class PositioningController {
     public ResponseEntity<CalculatedPosition> generateSinglePositionResult(
             @RequestBody SinglePositionRequestEntry singlePositionRequestEntry) {
 
-        CalculatedPosition result = restTransmissionService.getPositionForWifiReading( singlePositionRequestEntry);
+        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(singlePositionRequestEntry);
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
 
     }
@@ -78,9 +83,9 @@ public class PositioningController {
 
     }
 
-    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuilding",
+    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuildingId",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
-    @RequestMapping(path = "/getRadioMapsForBuilding", method = GET)
+    @RequestMapping(path = "/getRadioMapsForBuildingId", method = GET)
     public ResponseEntity<List<RadioMapEntry>> getRadioMapsForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
