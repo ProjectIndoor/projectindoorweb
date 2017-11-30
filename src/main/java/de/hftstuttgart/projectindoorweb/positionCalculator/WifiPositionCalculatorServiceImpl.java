@@ -60,6 +60,9 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     @Override
     public WifiPositionResult calculateSinglePosition(String wifiReading, EvaalFile[] radioMapFiles) {
 
+        AssertParam.throwIfNullOrEmpty(wifiReading,"wifiReading");
+        AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
+
         List<RssiSignal> rssiSignals = new ArrayList<>();
         rssiSignals.add(parseRssiSignal(wifiReading));
 

@@ -12,15 +12,15 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles);
 
-    List<CalculatedPosition> generatePositionResults(boolean withPixelPosition, GeneratePositionJsonWrapper generatePositionJsonWrapper);
+    List<CalculatedPosition> generatePositionResults(BatchPositionRequestElement batchPositionRequestElement);
 
-    CalculatedPosition getPositionForWifiReading(String wifiReading, boolean withPixelPosition, GeneratePositionJsonWrapper generatePositionJsonWrapper);
+    CalculatedPosition getPositionForWifiReading(SinglePositionRequestEntry singlePositionRequestEntry);
 
     List<CalculatedPosition> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
-    long saveNewProject(Set<ProjectParameter> projectParameterSet, String projectName, String algorithmType);
+    long saveNewProject(NewProjectRequestElement newProjectRequestElement);
 
-    boolean saveCurrentProject(String projectName, Set<ProjectParameter> projectParameterSet, String projectIdentifier, String algorithmType);
+    boolean saveCurrentProject(CurrentProjectRequestElement currentProjectRequestElement);
 
     boolean deleteSelectedProject(String projectIdentifier);
 
