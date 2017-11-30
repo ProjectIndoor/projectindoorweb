@@ -133,6 +133,7 @@ function UploadService($http, $mdToast) {
     //api endpoints
     var buildingUploadUrl = '/building/addNewBuilding';
     var logFileUploadUrl = '/position/processRadioMapFiles';
+    var evalFileUploadUrl = '/position/processEvalFiles';
 
     // service functions
     return {
@@ -160,7 +161,7 @@ function UploadService($http, $mdToast) {
                 buildingIdentifier: radioMapSet.buildingIdentifier
             };
 
-            // body content
+            // body content (log files)
             var formData = new FormData();
             formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
 
@@ -181,7 +182,38 @@ function UploadService($http, $mdToast) {
                 showToast(logMessage);
             }, function errorCallback(response) {
                 // failure
-                logMessage = "Error while uploading Radio Map Data";
+                logMessage = "Error while uploading radio map data";
+                showToast(logMessage);
+            });
+        },
+        uploadEvaluationFile: function (evaluationSet) {
+            // request parameters
+            var requestParameters = {
+                buildingIdentifier: evaluationSet.buildingIdentifier
+            };
+
+            // body content (eval files)
+            var formData = new FormData();
+            formData.append('evalFiles', evaluationSet.evalFiles[0]);
+
+            $http({
+                method: 'POST',
+                url: evalFileUploadUrl,
+                params: requestParameters,
+                data: formData,
+                transformRequest: function (data, headersGetterFunction) {
+                    return data;
+                },
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).then(function successCallback(response) {
+                // success
+                logMessage = "Evaluation file uploaded successfully!";
+                showToast(logMessage);
+            }, function errorCallback(response) {
+                // failure
+                logMessage = "Error while uploading evaluation data";
                 showToast(logMessage);
             });
         }
@@ -662,12 +694,13 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 }]);
 
 // controller which handles the log import view
-function LogImportController($scope, $http, uploadService) {
+function LogImportController($scope, uploadService) {
     // show file chooser on button click
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
 
+    // buildings to show for chooser
     $scope.buildings = [
         {
             id: 1,
@@ -676,6 +709,7 @@ function LogImportController($scope, $http, uploadService) {
         }
     ];
 
+    // parameters needed to upload log file
     $scope.logFileParameters = {
         buildingIdentifier: 0,
         radioMapFiles: []
@@ -696,11 +730,52 @@ function LogImportController($scope, $http, uploadService) {
     //Post the file and parameters
     $scope.uploadFiles = function () {
         console.log($scope.logFileParameters);
-        uploadService.uploadRadioMap($scope.logFileParameters)
+        uploadService.uploadRadioMap($scope.logFileParameters);
     }
 }
 
 app.controller('LogImportCtrl', LogImportController);
+
+// controller which handles the eval import view
+function EvaluationImportController($scope, uploadService) {
+    // show file chooser on button click
+    $scope.evalUpload = function () {
+        angular.element(document.querySelector('#evalInputFile')).click();
+    };
+
+    // buildings to show for chooser
+    $scope.buildings = [
+        {
+            id: 1,
+            buildingName: "CAR2",
+            floorCount: 1
+        }
+    ];
+
+    // parameters needed to upload eval file
+    $scope.evalFileParameters = {
+        buildingIdentifier: 0,
+        evalFiles: []
+    };
+
+    $scope.getEvalFiles = function ($files) {
+        $scope.evalFileParameters.evalFiles = $files;
+        $scope.fileUploaded = "File: " + $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    //The success or error message
+    $scope.uploadStatus = false;
+
+    //Post the file and parameters
+    $scope.uploadEvaluation = function () {
+        console.log($scope.evalFileParameters);
+        uploadService.uploadEvaluationFile($scope.evalFileParameters);
+    }
+}
+
+app.controller('EvalImportCtrl', EvaluationImportController);
 
 /**
  * ----------------------------------------------
