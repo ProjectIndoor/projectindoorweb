@@ -565,6 +565,13 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
+    $scope.radiomaps = [
+        {
+            id: 1,
+            radioMapSourceFileName: "radiomap.txt"
+        }
+    ];
+
     function buildToggler(componentId) {
         return function () {
             $mdSidenav(componentId).toggle();
@@ -582,7 +589,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
             for (var i = 0; i < posis.length; i++) {
                 var p = posis[i];
                 // api returns picture coordinates move them by height to match image
-                mapService.addRefPoint(1282 - p.x, p.y - 818);
+                mapService.addRefPoint(p.x, p.y - 818);
             }
         });
     };
