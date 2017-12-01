@@ -3,10 +3,8 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
-import de.hftstuttgart.projectindoorweb.persistence.pojo.PosiReference;
-import de.hftstuttgart.projectindoorweb.persistence.pojo.Position;
-import de.hftstuttgart.projectindoorweb.persistence.pojo.RadiomapElement;
-import de.hftstuttgart.projectindoorweb.persistence.pojo.RssiReading;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,19 +13,28 @@ import java.util.Map;
 
 public class EvaalFileHelper {
 
+    //TODO This method is now accessed from a completely different package -- is there a more elegant way?
+    public static RadioMap mergeRadioMapsBySimilarPositions(List<RadioMap> radioMaps){
 
 
-    public static List<RadiomapElement> mergeSimilarPositions(List<RadiomapElement> unmergedElements){
 
-        List<RadiomapElement> result = new ArrayList<>();
+        List<RadioMapElement> result = new ArrayList<>();
+        List<RadioMapElement> unmergedElements = new ArrayList<>();
+
+        for (RadioMap radioMap:
+                radioMaps) {
+            radioMap = transFormRadioMapToLocalCoordinateSystem(radioMap);
+            unmergedElements.addAll(radioMap.getRadioMapElements());
+        }
+
 
         boolean unique;
         Position a;
         Position b;
-        for (RadiomapElement outerElement: unmergedElements) {
+        for (RadioMapElement outerElement: unmergedElements) {
             unique = true;
             for(int i = 0; i < result.size(); i++){
-                RadiomapElement innerElement = result.get(i);
+                RadioMapElement innerElement = result.get(i);
                 a = innerElement.getPosiReference().getReferencePosition();
                 b = outerElement.getPosiReference().getReferencePosition();
                 if(MathHelper.retrievePositionDistance(a, b) <= ConfigContainer.SIMILAR_POSITION_THRESHOLD_METERS){
@@ -41,31 +48,32 @@ public class EvaalFileHelper {
             }
         }
 
-        return result;
+        for (RadioMapElement radioMapElement:
+             result) {
+            radioMapElement.getPosiReference().setReferencePosition(
+                    transformLocalToLatLong(radioMapElement.getPosiReference().getReferencePosition()));
+        }
+
+        return new RadioMap(result);
 
     }
 
-    public static RadiomapElement mergeRadioMapElements(RadiomapElement a, RadiomapElement b){
+    public static RadioMapElement mergeRadioMapElements(RadioMapElement a, RadioMapElement b){
 
-
-        /*
-        * "SomeAverage" is not a joke (well, sort of): It is not apparent in the prototype what the "average" saved with
-        * every Posi reference is supposed to mean, so their sum is, quite literally, just "some average".
-        * */
         int someAverage = a.getPosiReference().getAvgNumber() + b.getPosiReference().getAvgNumber();
         Map<String, Double[]> averagedMacSignalStrength = new HashMap<>();
 
-        RadiomapElement result;
+        RadioMapElement result;
         String macAddress;
-        for(RssiReading reading : a.getRssiReadings()){
-            macAddress = reading.getMacAddress();
+        for(RssiSignal signal : a.getRssiSignals()){
+            macAddress = signal.getWifiAccessPoint().getMacAddress();
             if(!averagedMacSignalStrength.containsKey(macAddress)){
                 averagedMacSignalStrength.put(macAddress, null);
             }
         }
 
-        for(RssiReading reading : b.getRssiReadings()){
-            macAddress = reading.getMacAddress();
+        for(RssiSignal signal : b.getRssiSignals()){
+            macAddress = signal.getWifiAccessPoint().getMacAddress();
             if(!averagedMacSignalStrength.containsKey(macAddress)){
                 averagedMacSignalStrength.put(macAddress, null);
             }
@@ -74,15 +82,33 @@ public class EvaalFileHelper {
         double readingA;
         double readingB;
         for(String someOtherMacAddress : averagedMacSignalStrength.keySet()){
-            readingA = retrieveSignalStrengthByMacAddress(a.getRssiReadings(), someOtherMacAddress);
-            readingB = retrieveSignalStrengthByMacAddress(b.getRssiReadings(), someOtherMacAddress);
+            readingA = retrieveSignalStrengthByMacAddress(a.getRssiSignals(), someOtherMacAddress);
+            readingB = retrieveSignalStrengthByMacAddress(b.getRssiSignals(), someOtherMacAddress);
             averagedMacSignalStrength.put(someOtherMacAddress, new Double[]{readingA, readingB});
         }
 
-        List<RssiReading> mergedRadioMapElements = mergeRssiReadings(averagedMacSignalStrength, a, b);
+        List<RssiSignal> mergedRadioMapElements = mergeRssiSignals(averagedMacSignalStrength, a, b);
         PosiReference mergedPosiReference = mergePosiReferences(a.getPosiReference(), b.getPosiReference());
 
-        return new RadiomapElement(null, mergedPosiReference, mergedRadioMapElements);
+        return new RadioMapElement(mergedPosiReference, mergedRadioMapElements);
+
+    }
+
+    private static RadioMap transFormRadioMapToLocalCoordinateSystem(RadioMap latLongRadioMap){
+
+        List<RadioMapElement> radioMapElements = latLongRadioMap.getRadioMapElements();
+        Position transformedPosition;
+        Position untransformedPosition;
+        for (RadioMapElement radioMapElement:
+             radioMapElements) {
+            untransformedPosition = radioMapElement.getPosiReference().getReferencePosition();
+            transformedPosition = transformLatLongToLocal(untransformedPosition.getX(),
+                    untransformedPosition.getY(), untransformedPosition.getZ());
+            radioMapElement.getPosiReference().setReferencePosition(transformedPosition);
+        }
+
+        latLongRadioMap.setRadioMapElements(radioMapElements);
+        return latLongRadioMap;
 
     }
 
@@ -91,8 +117,8 @@ public class EvaalFileHelper {
 
         Position positionA = a.getReferencePosition();
         Position positionB = b.getReferencePosition();
-        LocXYZ wrapperA = new LocXYZ(positionA.getLatitude(), positionA.getLongitude(), positionA.getHeight());
-        LocXYZ wrapperB = new LocXYZ(positionB.getLatitude(), positionB.getLongitude(), positionB.getHeight());
+        LocXYZ wrapperA = new LocXYZ(positionA.getX(), positionA.getY(), positionA.getZ());
+        LocXYZ wrapperB = new LocXYZ(positionB.getX(), positionB.getY(), positionB.getZ());
 
         wrapperA = wrapperA.mul(a.getAvgNumber());
         wrapperB = wrapperB.mul(b.getAvgNumber());
@@ -101,19 +127,22 @@ public class EvaalFileHelper {
         wrapperMerged = wrapperMerged.mul(1.0d / (a.getAvgNumber() + b.getAvgNumber()));
 
         return new PosiReference(-1, a.getAvgNumber() + b.getAvgNumber(),
-                new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z), -1, -1);
+                new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z, false),
+                -1, -1, null);
 
     }
 
-    private static List<RssiReading> mergeRssiReadings(Map<String, Double[]> averagedMacSignalStrenghts, RadiomapElement a, RadiomapElement b){
+    private static List<RssiSignal> mergeRssiSignals(Map<String, Double[]> averagedMacSignalStrenghts,
+                                                      RadioMapElement a, RadioMapElement b){
 
-        List<RssiReading> result = new ArrayList<>(averagedMacSignalStrenghts.size());
+        List<RssiSignal> result = new ArrayList<>(averagedMacSignalStrenghts.size());
 
         double readingA;
         double readingB;
         double merged;
         int avgA = a.getPosiReference().getAvgNumber();
         int avgB = b.getPosiReference().getAvgNumber();
+        WifiAccessPoint accessPoint;
         for(String macAddress : averagedMacSignalStrenghts.keySet()){
             readingA = averagedMacSignalStrenghts.get(macAddress)[0];
             readingB = averagedMacSignalStrenghts.get(macAddress)[1];
@@ -124,8 +153,8 @@ public class EvaalFileHelper {
             }else{
                 merged = readingA;
             }
-            result.add(new RssiReading(0.0, null, macAddress,
-                    merged, true));
+            accessPoint = new WifiAccessPoint(macAddress);
+            result.add(new RssiSignal(0.0, merged, true, accessPoint));
         }
 
         return result;
@@ -134,12 +163,12 @@ public class EvaalFileHelper {
 
 
 
-    private static double retrieveSignalStrengthByMacAddress(List<RssiReading> rssiReadings, String macAddress){
+    private static double retrieveSignalStrengthByMacAddress(List<RssiSignal> rssiSignals, String macAddress){
 
         double result = 0.0;
-        for (RssiReading reading: rssiReadings) {
-            if(macAddress.equals(reading.getMacAddress())){
-                result = reading.getRssiSignalStrength();
+        for (RssiSignal signal: rssiSignals) {
+            if(macAddress.equals(signal.getWifiAccessPoint().getMacAddress())){
+                result = signal.getRssiSignalStrength();
                 break;
             }
         }
@@ -150,35 +179,34 @@ public class EvaalFileHelper {
 
 
 
-    public static List<RssiReading> retrieveAveragedReadings(List<RssiReading> relevantReadings){
+    public static List<RssiSignal> retrieveAveragedReadings(List<RssiSignal> relevantReadings){
 
 
-        Map<String, List<RssiReading>> rawReadingsForMacs = new HashMap<>();
-        Map<String, RssiReading> averagedReadingForMac = new HashMap<>();
+        Map<String, List<RssiSignal>> rawReadingsForMacs = new HashMap<>();
+        Map<String, RssiSignal> averagedReadingForMac = new HashMap<>();
 
-        for(RssiReading reading : relevantReadings){
-            String macAddress = reading.getMacAddress();
+        for(RssiSignal signal : relevantReadings){
+            String macAddress = signal.getWifiAccessPoint().getMacAddress();
             if(rawReadingsForMacs.containsKey(macAddress)){
-                rawReadingsForMacs.get(macAddress).add(reading);
+                rawReadingsForMacs.get(macAddress).add(signal);
             }else{
-                List<RssiReading> values = new ArrayList<>();
-                values.add(reading);
+                List<RssiSignal> values = new ArrayList<>();
+                values.add(signal);
                 rawReadingsForMacs.put(macAddress, values);
             }
         }
 
         int numOccurences;
         double sumSignalStrengths;
-        List<RssiReading> readingsForMac;
+        List<RssiSignal> readingsForMac;
         for(String macAddress : rawReadingsForMacs.keySet()){
             readingsForMac = rawReadingsForMacs.get(macAddress);
             numOccurences = readingsForMac.size();
             sumSignalStrengths = 0;
-            for(RssiReading reading : readingsForMac){
-                sumSignalStrengths += reading.getRssiSignalStrength();
+            for(RssiSignal signal : readingsForMac){
+                sumSignalStrengths += signal.getRssiSignalStrength();
             }
-            averagedReadingForMac.put(macAddress, new RssiReading(0.0, null, macAddress,
-                    (sumSignalStrengths / numOccurences), true));
+            averagedReadingForMac.put(macAddress, new RssiSignal(0.0, (sumSignalStrengths / numOccurences), true, new WifiAccessPoint(macAddress)));
         }
 
         return new ArrayList<>(averagedReadingForMac.values());
@@ -186,14 +214,14 @@ public class EvaalFileHelper {
 
     }
 
-    public static List<RssiReading> retrieveRssiReadingsForPosiReference(PosiReference posiReference, List<RssiReading> rssiReadings){
+    public static List<RssiSignal> retrieveRssiReadingsForPosiReference(PosiReference posiReference, List<RssiSignal> rssiReadings){
 
-        List<RssiReading> result = new ArrayList<>();
+        List<RssiSignal> result = new ArrayList<>();
 
         double intervalStart = posiReference.getIntervalStart();
         double intervalEnd = posiReference.getIntervalEnd();
 
-        for (RssiReading rssiReading: rssiReadings) {
+        for (RssiSignal rssiReading: rssiReadings) {
             if(rssiReading.getAppTimestamp() >= intervalStart && rssiReading.getAppTimestamp() < intervalEnd){
                 result.add(rssiReading);
             }else if(rssiReading.getAppTimestamp() >= intervalEnd){
@@ -220,6 +248,7 @@ public class EvaalFileHelper {
         int floorId;
         int buildingId;
         Position referencePosition;
+        Floor floor;
 
         for (int i = 0; i < posiLines.size(); i++) {
             currentLineElements = posiLines.get(i).split(";");
@@ -228,9 +257,11 @@ public class EvaalFileHelper {
             latitude = Double.parseDouble(currentLineElements[3]);
             longitude = Double.parseDouble(currentLineElements[4]);
             floorId = Integer.parseInt(currentLineElements[5]);
+            floor = new Floor(floorId);
             buildingId = Integer.parseInt(currentLineElements[6]);
-            referencePosition = retrieveTransformedReferencePosition(latitude, longitude, floorId);
-            result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd));
+            //referencePosition = transformLatLongToLocal(latitude, longitude, floorId);
+            referencePosition = new Position(latitude, longitude, floorId, true);
+            result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd, floor));
             intervalStart = intervalEnd;
         }
 
@@ -266,9 +297,9 @@ public class EvaalFileHelper {
 
     }
 
-    public static List<RssiReading> assembleRssiReadings(List<String> rssiLines) {
+    public static List<RssiSignal> assembleRssiSignals(List<String> rssiLines) {
 
-        List<RssiReading> result = new ArrayList<>(rssiLines.size());
+        List<RssiSignal> result = new ArrayList<>(rssiLines.size());
 
         String[] lineElements;
         double appTimestamp;
@@ -281,7 +312,8 @@ public class EvaalFileHelper {
             networkName = lineElements[3];
             macAddress = lineElements[4];
             rssiSignalStrength = Double.parseDouble(lineElements[5]);
-            result.add(new RssiReading(appTimestamp, networkName, macAddress, rssiSignalStrength, false));
+            result.add(new RssiSignal(appTimestamp, rssiSignalStrength, false, new WifiAccessPoint(macAddress)));
+
         }
 
 
@@ -289,12 +321,83 @@ public class EvaalFileHelper {
 
     }
 
-    public static Position retrieveTransformedReferencePosition(double latitude, double longitude, int floor) {
+    public static Position transformLatLongToLocal(double latitude, double longitude, double floor) {
 
         LatLongCoord untransformedPosition = new LatLongCoord(latitude, longitude);
+        //TODO: Substitute by Gerald's algorithm
         LocXYZ transformedPosition = new LocXYZ(MyGeoMath.ll2xy(untransformedPosition, ConfigContainer.BASE_POSITION,
                 ConfigContainer.ANGLE_RAD), floor * ConfigContainer.FLOOR_HEIGHT);
-        return new Position(transformedPosition.x, transformedPosition.y, transformedPosition.z);
+        return new Position(transformedPosition.x, transformedPosition.y, transformedPosition.z, false);
+
+    }
+
+    public static Position transformLocalToLatLong(Position position){
+
+        LocalXYCoord localXYCoord = new LocalXYCoord(position.getX(), position.getY());
+        LatLongCoord transformedPosition = MyGeoMath.xy2ll(localXYCoord, ConfigContainer.BASE_POSITION, ConfigContainer.ANGLE_RAD);
+
+        return new Position(transformedPosition.latitude, transformedPosition.longitude, position.getZ(), true);
+
+    }
+
+    public static List<RssiSignal> retrieveAveragedRssiSignalsForWifiBlock(Map<Integer, WifiBlock> wifiBlocks, int block) {
+
+        List<String> wifiBlock = wifiBlocks.get(block).getWifiLines();
+        Map<String, Double> rssiSignalsForMacs = retrieveRssiSignalsForWifiBlock(wifiBlock);
+        Map<String, Integer> numberOfMacs = retrieveNumMacsForWifiBlock(wifiBlock);
+
+        List<RssiSignal> result = new ArrayList<>();
+        int numMacs;
+        double rssiSignalStrength;
+        boolean averaged;
+        for (String currentMac:
+                rssiSignalsForMacs.keySet()) {
+            numMacs = numberOfMacs.get(currentMac);
+            rssiSignalStrength = rssiSignalsForMacs.get(currentMac) / Double.valueOf(numMacs);
+            averaged = numMacs > 1;
+            result.add(new RssiSignal(0.0, rssiSignalStrength, averaged, new WifiAccessPoint(currentMac)));
+        }
+
+        return result;
+    }
+
+    private static Map<String, Double> retrieveRssiSignalsForWifiBlock(List<String> wifiBlock){
+
+        Map<String, Double> result = new HashMap<>();
+
+        String mac;
+        double rssiSignalStrength;
+        for (String currentWifiLine :
+                wifiBlock) {
+            mac = currentWifiLine.split(";")[4];
+            rssiSignalStrength = Double.parseDouble(currentWifiLine.split(";")[5]);
+            if(!result.containsKey(mac)){
+                result.put(mac, rssiSignalStrength);
+            }else{
+                result.put(mac, result.get(mac) + rssiSignalStrength);
+            }
+        }
+
+        return result;
+
+    }
+
+    private static Map<String, Integer> retrieveNumMacsForWifiBlock(List<String> wifiBlock) {
+
+        Map<String, Integer> result = new HashMap<>();
+
+        String mac;
+        for (String currentWifiLine :
+                wifiBlock) {
+            mac = currentWifiLine.split(";")[4];
+            if(!result.containsKey(mac)){
+                result.put(mac, 1);
+            }else{
+                result.put(mac, result.get(mac) + 1);
+            }
+        }
+
+        return result;
 
     }
 

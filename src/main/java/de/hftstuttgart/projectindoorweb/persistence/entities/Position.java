@@ -1,7 +1,9 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Position {
@@ -10,67 +12,53 @@ public class Position {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private float latitude;
-    private float longitude;
-    private int floor;
+    private double x;
+    private double y;
+    private double z;
+    private boolean wgs84;
 
-    @ManyToOne
-    @JoinColumn(name = "buildingId")
-    private Building building;
+    public Position(){ }
 
-    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL)
-    private Set<AccessPoint> accessPoints;
-
-    @OneToMany(mappedBy = "referencePosition")
-    private Set<SignalVector> signalVectors;
-
-    public Position(float latitude, float longitude, int floor) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.floor = floor;
+    public Position(double x, double y, double z, boolean wgs84) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.wgs84 = wgs84;
     }
 
     public Long getId() {
         return id;
     }
 
-    public float getLatitude() {
-        return latitude;
+    public double getX() {
+        return x;
     }
 
-    public float getLongitude() {
-        return longitude;
+    public void setX(double x) {
+        this.x = x;
     }
 
-    public int getFloor() {
-        return floor;
+    public double getY() {
+        return y;
     }
 
-    public Set<AccessPoint> getAccessPoints() {
-        return accessPoints;
+    public void setY(double y) {
+        this.y = y;
     }
 
-    public Set<SignalVector> getSignalVectors() {
-        return signalVectors;
+    public double getZ() {
+        return z;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
+    public void setZ(double z) {
+        this.z = z;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public boolean isWgs84() {
+        return wgs84;
     }
 
-    public void setFloor(int floor) {
-        this.floor = floor;
-    }
-
-    public void setAccessPoints(Set<AccessPoint> accessPoints) {
-        this.accessPoints = accessPoints;
-    }
-
-    public void setSignalVectors(Set<SignalVector> signalVectors) {
-        this.signalVectors = signalVectors;
+    public void setWgs84(boolean wgs84) {
+        this.wgs84 = wgs84;
     }
 }

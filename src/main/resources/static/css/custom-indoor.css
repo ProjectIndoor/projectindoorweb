@@ -1,0 +1,49 @@
+.md-sidenav-left.indoor-nav {
+    width: 30%;
+    max-width: 100%;
+}
+
+.mapview {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 0;
+}
+
+.indoorFooter {
+    height:100%;
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    height:50px;
+    margin-bottom:0px;
+}
+
+.file-input-hide {
+    position: relative;
+    left: -6em;
+}
+
+.bring-forward {
+    z-index:10;
+}
+
+.bmarker {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #a11657;
+    border-radius: 10px;
+    background-color: #a11657;
+    opacity: 0.5;
+}
+
+.uploadFileSuccess {
+    color: green;
+    text-align: center;
+}
+
+.uploadFileError {
+    color: red;
+    text-align: center;
+}

@@ -1,5 +1,9 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+
 /**
  *  Rest Transmission component class to initialize and dispose of the Rest Transmission service.
  *  Do not use the <class>{@link RestTransmissionServiceImpl}</class> class implementation directly. Only initialize
@@ -8,9 +12,10 @@ package de.hftstuttgart.projectindoorweb.web;
 public class RestTransmissionServiceComponent {
     private static RestTransmissionService instance;
 
-    public static void initComponent()
+    public static void initComponent(PersistencyService persistencyService, PreProcessingService preProcessingService
+            , PositionCalculatorService positionCalculatorService)
     {
-        instance = new RestTransmissionServiceImpl();
+        instance = new RestTransmissionServiceImpl(persistencyService, preProcessingService, positionCalculatorService);
     }
 
     public static void disposeComponent()

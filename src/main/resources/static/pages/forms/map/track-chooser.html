@@ -1,0 +1,24 @@
+<md-card ng-hide="trackHide()" class="md-whiteframe-3dp" md-theme="default" ng-controller="TrackCtrl">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Evaluation file</span>
+            <span class="md-subhead">Select a recorded track you want to evaluate</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">pin_drop</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Track</label>
+            <md-select ng-model="selectedTrack">
+                <md-option ng-repeat="evalFile in evalFiles" value="{{evalFile.id}}">{{evalFile.evaluationEntryName}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button ng-click="setEvaluationFile()">Choose</md-button>
+    </md-card-actions>
+</md-card>

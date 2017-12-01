@@ -1,44 +1,90 @@
 package de.hftstuttgart.projectindoorweb.application;
 
 
-import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
-import de.hftstuttgart.projectindoorweb.inputHandler.InputHandler;
-import de.hftstuttgart.projectindoorweb.inputHandler.InputHandlerComponent;
-import de.hftstuttgart.projectindoorweb.web.RestTransmissionController;
+import com.fasterxml.classmate.TypeResolver;
+import de.hftstuttgart.projectindoorweb.application.internal.util.IndoorApiDescriptionHelper;
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
+import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
+import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
+import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+import de.hftstuttgart.projectindoorweb.web.BuildingController;
+import de.hftstuttgart.projectindoorweb.web.PositioningController;
+import de.hftstuttgart.projectindoorweb.web.ProjectController;
 import de.hftstuttgart.projectindoorweb.web.RestTransmissionServiceComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses=RestTransmissionController.class)
+@EnableSwagger2
+@ComponentScan(basePackageClasses = PositioningController.class)
+@ComponentScan(basePackageClasses = ProjectController.class)
+@ComponentScan(basePackageClasses = BuildingController.class)
+@EntityScan("de.hftstuttgart.projectindoorweb.persistence.entities")
+@EnableJpaRepositories("de.hftstuttgart.projectindoorweb.persistence.repositories")
 public class Application {
+
+    @Autowired
+    private TypeResolver typeResolver;
 
     public static void main(String[] args) {
 
-        startApplication();
+        initComponents();
         SpringApplication.run(Application.class, args);
     }
 
-    private static void startApplication() {
+    private static void initComponents() {
 
-        File[] inputFiles = new File(ConfigContainer.RADIO_MAP_FILE_PATH).listFiles();
+        PreProcessingServiceComponent.initComponent();
+        PositionCalculatorComponent.initComponent();
+        PersistencyServiceComponent.initComponent();
 
-        initComponents(inputFiles.length);
+        PersistencyService persistencyService = PersistencyServiceComponent.getPersistencyService();
+        PreProcessingService preProcessingService = PreProcessingServiceComponent.getPreProcessingService();
+        PositionCalculatorService positionCalculatorService = PositionCalculatorComponent.getPositionCalculator();
 
-        InputHandler inputHandler = InputHandlerComponent.getInputHandler();
-        inputHandler.handleInput(true, inputFiles);
+        RestTransmissionServiceComponent.initComponent(persistencyService, preProcessingService, positionCalculatorService);
+
     }
 
-    private static void initComponents(int threadPoolSize) {
+    @Bean
+    public CommandLineRunner initApplication(ProjectRepository projectRepository,
+                                             EvaalFileRepository evaalFileRepository,
+                                             BuildingRepository buildingRepository) {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
+        return (args) -> {
+            RepositoryRegistry.registerRepository(Project.class.getName(), projectRepository);
+            RepositoryRegistry.registerRepository(EvaalFile.class.getName(), evaalFileRepository);
+            RepositoryRegistry.registerRepository(Building.class.getName(), buildingRepository);
+        };
+    }
 
-        InputHandlerComponent.initComponent(executorService);
-        RestTransmissionServiceComponent.initComponent();
+    @Bean
+    public Docket initIndoorRestApi() {
+        return IndoorApiDescriptionHelper.createIndoorRestApiDocket(typeResolver);
+    }
+
+    @Bean
+    UiConfiguration initUiConfiguration() {
+        return IndoorApiDescriptionHelper.createIndoorRestApiUiConfiguration();
     }
 }

@@ -1,12 +1,16 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'com.craigburke.client-dependencies' version '1.4.0'
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'checkstyle'
+    id 'pmd'
+    id 'findbugs'
+    id 'com.palantir.docker' version '0.13.0'
+}
+
 group 'de.hft-stuttgart'
 version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
-apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,17 +19,9 @@ def versions = [
         checkstyle: '8.3',
 ]
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
-    }
-}
-
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 jar {
@@ -54,11 +50,30 @@ pmd {
 }
 
 findbugs {
-
     ignoreFailures = true
-
     sourceSets = [sourceSets.main]
+}
 
+clientDependencies {
+    installDir = 'src/main/resources/static/assets/vendor'
+    npm {
+        'jquery'('3.2.1')
+        'angular'('1.5.5')
+        'angular-animate'('1.5.5', into: 'angular/modules')
+        'angular-aria'('1.5.5', into: 'angular/modules')
+        'angular-messages'('1.5.5', into: 'angular/modules')
+        'angular-route'('1.5.5', into: 'angular/modules')
+        'angular-sanitize'('1.5.5', into: 'angular/modules')
+        'angular-material'('1.1.0')
+        'openlayers'('4.5.0', transitive: false)
+        'angular-openlayers-directive'('1.20.1', transitive: false)
+    }
+}
+
+docker {
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
 
 dependencies {
@@ -67,6 +82,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.apache.commons:commons-csv:1.5")
     compile("com.h2database:h2")
+    compile "io.springfox:springfox-swagger2:2.7.0"
+    compile 'io.springfox:springfox-swagger-ui:2.7.0'
     checkstyleConfig ("com.puppycrawl.tools:checkstyle:${versions.checkstyle}"){ transitive = false }
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

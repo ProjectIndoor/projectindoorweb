@@ -3,29 +3,29 @@ package de.hftstuttgart.projectindoorweb.persistence.entities;
 import javax.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class PositionResult {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue
+    private Long id;
 
     private double x;
     private double y;
     private double z;
-    private boolean transformedPosition;
+    private boolean wgs84;
 
     protected PositionResult(){}
 
-    public PositionResult(double x, double y, double z, boolean transformedPosition) {
+    public PositionResult(double x, double y, double z, boolean wgs84) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.transformedPosition = transformedPosition;
+        this.wgs84 = wgs84;
     }
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -53,11 +53,12 @@ public class PositionResult {
         this.z = z;
     }
 
-    public boolean isTransformedPosition() {
-        return transformedPosition;
+    public boolean isWgs84() {
+        return wgs84;
     }
 
-    public void setTransformedPosition(boolean transformedPosition) {
-        this.transformedPosition = transformedPosition;
+    public void setWgs84(boolean wgs84) {
+        this.wgs84 = wgs84;
     }
+
 }

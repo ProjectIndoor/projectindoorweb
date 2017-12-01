@@ -1,0 +1,46 @@
+<md-card ng-hide="algoHide()" class="md-whiteframe-3dp" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Algorithm</span>
+            <span class="md-subhead">Select an algorithm</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">timeline</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Algorithm Type</label>
+            <md-select ng-model="algo.type">
+                <md-option value="a1">
+                    RadioMap WIFI
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </md-card-content>
+    <md-divider></md-divider>
+    <md-subheader class="md-primary">Parameters</md-subheader>
+
+    <!-- Radiomap chooser -->
+    <md-input-container style="margin: 16px">
+        <label>Radiomaps</label>
+        <md-select ng-model="algorithmParameters.radiomaps" multiple>
+            <md-option ng-repeat="rMap in radiomaps" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
+            </md-option>
+        </md-select>
+    </md-input-container>
+
+    <md-input-container style="margin: 16px">
+        <label>Parameter 1</label>
+        <input ng-model="algo.p2">
+    </md-input-container>
+
+    <md-input-container style="margin: 16px">
+        <label>Parameter 2</label>
+        <input ng-model="algo.p1">
+    </md-input-container>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button ng-click="calculatePos()" class="md-accent">Calculate</md-button>
+    </md-card-actions>
+</md-card>

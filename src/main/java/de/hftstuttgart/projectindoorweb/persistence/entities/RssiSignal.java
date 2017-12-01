@@ -9,47 +9,53 @@ public class RssiSignal {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private float signalStrength;
+    private double appTimestamp;
+    private double rssiSignalStrength;
+    private boolean averagedSignalStrength;
 
-    @ManyToOne
-    @JoinColumn(name = "accessPointId")
-    private AccessPoint wifiAccessPoint;
+    @ManyToOne(targetEntity = WifiAccessPoint.class, cascade = CascadeType.ALL)
+    private WifiAccessPoint wifiAccessPoint;
 
-    @ManyToOne
-    @JoinColumn(name = "signalVectorId")
-    private SignalVector signalVector;
+    protected RssiSignal(){}
 
-    public RssiSignal(float signalStrength, AccessPoint wifiAccessPoint, SignalVector signalVector) {
-        this.signalStrength = signalStrength;
-        this.wifiAccessPoint = wifiAccessPoint;
-        this.signalVector = signalVector;
+    public RssiSignal(double appTimestamp, double rssiSignalStrength,
+                      boolean averagedSignalStrength, WifiAccessPoint emittedByAccessPoint) {
+
+        this.appTimestamp = appTimestamp;
+        this.rssiSignalStrength = rssiSignalStrength;
+        this.averagedSignalStrength = averagedSignalStrength;
+        this.wifiAccessPoint = emittedByAccessPoint;
     }
 
-    public Long getId() {
-        return id;
+    public double getAppTimestamp() {
+        return appTimestamp;
     }
 
-    public float getSignalStrength() {
-        return signalStrength;
+    public void setAppTimestamp(double appTimestamp) {
+        this.appTimestamp = appTimestamp;
     }
 
-    public void setSignalStrength(float signalStrength) {
-        this.signalStrength = signalStrength;
+    public double getRssiSignalStrength() {
+        return rssiSignalStrength;
     }
 
-    public AccessPoint getWifiAccessPoint() {
+    public void setRssiSignalStrength(double rssiSignalStrength) {
+        this.rssiSignalStrength = rssiSignalStrength;
+    }
+
+    public boolean isAveragedSignalStrength() {
+        return averagedSignalStrength;
+    }
+
+    public void setAveragedSignalStrength(boolean averagedSignalStrength) {
+        this.averagedSignalStrength = averagedSignalStrength;
+    }
+
+    public WifiAccessPoint getWifiAccessPoint() {
         return wifiAccessPoint;
     }
 
-    public void setWifiAccessPoint(AccessPoint wifiAccessPoint) {
+    public void setWifiAccessPoint(WifiAccessPoint wifiAccessPoint) {
         this.wifiAccessPoint = wifiAccessPoint;
-    }
-
-    public SignalVector getSignalVector() {
-        return signalVector;
-    }
-
-    public void setSignalVector(SignalVector signalVector) {
-        this.signalVector = signalVector;
     }
 }

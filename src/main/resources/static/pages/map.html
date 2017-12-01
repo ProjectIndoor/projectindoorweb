@@ -1,0 +1,40 @@
+<!-- Sidebar definition for the map editor -->
+<md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
+            md-whiteframe="4">
+
+    <!-- Toolbar title -->
+    <md-toolbar class="md-theme-indigo">
+        <h1 class="md-toolbar-tools">Map Settings</h1>
+    </md-toolbar>
+
+    <md-content ng-controller="MapSettingsCtrl" layout-margin>
+
+        <!-- Toolbar map chooser -->
+        <div ng-include="'pages/forms/map/map-chooser.html'"></div>
+
+        <!-- Toolbar track chooser -->
+        <div ng-include="'pages/forms/map/track-chooser.html'"></div>
+
+        <!-- Toolbar algorithm chooser -->
+        <div ng-include="'pages/forms/map/algorithm-chooser.html'"></div>
+
+        <!-- Save project field -->
+        <div layout="row" ng>
+            <md-input-container>
+                <label>Projectname</label>
+                <input/>
+            </md-input-container>
+
+            <md-button class="md-button">
+                Save Project
+            </md-button>
+        </div>
+
+    </md-content>
+
+</md-sidenav>
+<!-- Actual map -->
+<openlayers id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()" custom-layers="true">
+    <ol-layer ol-layer-properties="map()"></ol-layer>
+    <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
+</openlayers>

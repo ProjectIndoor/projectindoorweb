@@ -1,7 +1,7 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 public class Phone {
@@ -9,17 +9,21 @@ public class Phone {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String manufacturer;
     private String model;
     private int apiVersion;
 
-    @OneToMany(mappedBy = "recordedByPhone", cascade = CascadeType.ALL)
-    private Set<LogFile> recordedLogFiles;
+    @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedByPhone")
+    private List<EvaalFile> recordedFiles;
 
-    public Phone(String manufacturer, String model, int apiVersion) {
+    protected Phone(){}
+
+    public Phone(String manufacturer, String model, int apiVersion, List<EvaalFile> recordedFiles) {
         this.manufacturer = manufacturer;
         this.model = model;
         this.apiVersion = apiVersion;
+        this.recordedFiles = recordedFiles;
     }
 
     public Long getId() {
@@ -50,11 +54,11 @@ public class Phone {
         this.apiVersion = apiVersion;
     }
 
-    public Set<LogFile> getRecordedLogFiles() {
-        return recordedLogFiles;
+    public List<EvaalFile> getRecordedFiles() {
+        return recordedFiles;
     }
 
-    public void setRecordedLogFiles(Set<LogFile> recordedLogFiles) {
-        this.recordedLogFiles = recordedLogFiles;
+    public void setRecordedFiles(List<EvaalFile> recordedFiles) {
+        this.recordedFiles = recordedFiles;
     }
 }
