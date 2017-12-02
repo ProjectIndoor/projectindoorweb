@@ -164,6 +164,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public Building getBuildingById(long buildingId) {
 
+        AssertParam.throwIfNull(buildingId,"buildingId");
+
         BuildingRepository buildingRepository = (BuildingRepository)RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
 
         return buildingRepository.findOne(buildingId);
@@ -219,8 +221,6 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters){
 
-        AssertParam.throwIfNull(saveNewProjectParamaters,"saveNewProjectParamaters");
-
         List<Parameter> parametersAsList = new ArrayList<>();
 
         for (SaveNewProjectParameters parameter:
@@ -234,8 +234,6 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     private CalculationAlgorithm getAlgorithmFromText(String text){
-
-        AssertParam.throwIfNullOrEmpty(text, "text");
 
         CalculationAlgorithm calculationAlgorithm = null;
         if(text.equals("WIFI")){
