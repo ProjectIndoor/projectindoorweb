@@ -61,14 +61,18 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     }
 
     @Override
-    public WifiPositionResult calculateSinglePosition(String wifiReading, EvaalFile[] radioMapFiles,
+    public WifiPositionResult calculateSinglePosition(String[] wifiReadings, EvaalFile[] radioMapFiles,
                                                       Building building, boolean pixelPositionRequired) {
 
-        AssertParam.throwIfNullOrEmpty(wifiReading,"wifiReading");
+        AssertParam.throwIfNull(wifiReadings, "wifiReadings");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
 
-        List<RssiSignal> rssiSignals = new ArrayList<>();
-        rssiSignals.add(parseRssiSignal(wifiReading));
+        List<RssiSignal> rssiSignals = new ArrayList<>(wifiReadings.length);
+
+        for (String wifiReading :
+                wifiReadings) {
+            rssiSignals.add(parseRssiSignal(wifiReading));
+        }
 
         List<RadioMap> radioMaps = collectRadioMaps(radioMapFiles);
         RadioMap mergedRadioMap = EvaalFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
@@ -123,7 +127,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             resultPosition = MathHelper.multiplyPosition(resultPosition, Double.valueOf(1) / weightSum);
         }
 
-        if(pixelPositionRequired){
+        if (pixelPositionRequired) {
             resultPosition = retrievePositionAsPixels(building, resultPosition);
         }
 
@@ -135,7 +139,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
     }
 
-    private Position retrievePositionAsPixels(Building building, Position latLongPosition){
+    private Position retrievePositionAsPixels(Building building, Position latLongPosition) {
 
         LatLongCoord latLongCoord = new LatLongCoord(latLongPosition.getX(), latLongPosition.getY());
         double[] positionInPixels = TransformationHelper.wgsToPict(building, latLongCoord,
@@ -145,7 +149,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
     }
 
-    private List<RadioMap> collectRadioMaps(EvaalFile[] radioMapFiles){
+    private List<RadioMap> collectRadioMaps(EvaalFile[] radioMapFiles) {
 
         List<RadioMap> radioMaps = new ArrayList<>(radioMapFiles.length);
 
@@ -158,7 +162,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
     }
 
-    private RssiSignal parseRssiSignal(String wifiReading){
+    private RssiSignal parseRssiSignal(String wifiReading) {
 
         String[] elements = wifiReading.split(";");
 

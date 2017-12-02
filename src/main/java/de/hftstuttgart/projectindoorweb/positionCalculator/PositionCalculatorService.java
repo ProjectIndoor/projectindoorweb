@@ -10,7 +10,7 @@ public interface PositionCalculatorService {
     List<? extends PositionResult> calculatePositions(EvaalFile evaluationFile, EvaalFile[] radioMapFiles,
                                                       Building building, boolean pixelPositionRequired);
 
-    <T extends PositionResult> T calculateSinglePosition(String wifiReading, EvaalFile[] radioMapFiles,
+    <T extends PositionResult> T calculateSinglePosition(String[] wifiReadings, EvaalFile[] radioMapFiles,
                                                          Building building, boolean pixelPositionRequired);
 
 }
