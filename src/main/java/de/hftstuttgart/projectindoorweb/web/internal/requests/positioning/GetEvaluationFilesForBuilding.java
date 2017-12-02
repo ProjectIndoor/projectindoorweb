@@ -1,16 +1,16 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EvaluationEntry {
+public class GetEvaluationFilesForBuilding {
 
     private Long id;
 
     private String evaluationEntryName;
 
     @JsonCreator
-    public EvaluationEntry(@JsonProperty("id")long id, @JsonProperty("evaluationEntryName")String evaluationEntryName) {
+    public GetEvaluationFilesForBuilding(@JsonProperty("id")long id, @JsonProperty("evaluationEntryName")String evaluationEntryName) {
         this.id = id;
         this.evaluationEntryName = evaluationEntryName;
     }

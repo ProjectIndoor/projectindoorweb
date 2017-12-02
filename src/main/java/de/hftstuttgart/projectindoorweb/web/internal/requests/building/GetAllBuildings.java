@@ -1,9 +1,9 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BuildingJsonWrapperSmall {
+public class GetAllBuildings {
 
     private Long id;
 
@@ -12,9 +12,9 @@ public class BuildingJsonWrapperSmall {
     private int numberOfFloors;
 
     @JsonCreator
-    public BuildingJsonWrapperSmall(@JsonProperty("id")Long id,
-                                    @JsonProperty("buildingName")String buildingName,
-                                    @JsonProperty("numberOfFloors")int numberOfFloors){
+    public GetAllBuildings(@JsonProperty("id")Long id,
+                           @JsonProperty("buildingName")String buildingName,
+                           @JsonProperty("numberOfFloors")int numberOfFloors){
         this.id = id;
         this.buildingName = buildingName;
         this.numberOfFloors = numberOfFloors;

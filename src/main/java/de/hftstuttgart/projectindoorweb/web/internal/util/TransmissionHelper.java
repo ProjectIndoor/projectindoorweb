@@ -1,14 +1,12 @@
 package de.hftstuttgart.projectindoorweb.web.internal.util;
 
-import com.sun.imageio.spi.RAFImageOutputStreamSpi;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
-import de.hftstuttgart.projectindoorweb.web.internal.BuildingJsonWrapperSmall;
-import de.hftstuttgart.projectindoorweb.web.internal.CalculatedPosition;
-import de.hftstuttgart.projectindoorweb.web.internal.EvaluationEntry;
-import de.hftstuttgart.projectindoorweb.web.internal.RadioMapEntry;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GeneratePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -31,59 +29,59 @@ public class TransmissionHelper {
 
     }
 
-    public static List<CalculatedPosition> convertToCalculatedPositions(List<? extends PositionResult> positionResults) {
+    public static List<GeneratePositionResult> convertToCalculatedPositions(List<? extends PositionResult> positionResults) {
 
 
-        List<CalculatedPosition> result = new ArrayList<>(positionResults.size());
+        List<GeneratePositionResult> result = new ArrayList<>(positionResults.size());
 
         for (PositionResult positionResult :
                 positionResults) {
-            result.add(new CalculatedPosition(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
+            result.add(new GeneratePositionResult(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
         }
 
         return result;
 
     }
 
-    public static CalculatedPosition convertToCalculatedPosition(PositionResult positionResult){
+    public static GeneratePositionResult convertToCalculatedPosition(PositionResult positionResult){
 
-        return new CalculatedPosition(positionResult.getX(), positionResult.getY(),
+        return new GeneratePositionResult(positionResult.getX(), positionResult.getY(),
                 positionResult.getZ(), positionResult.isWgs84(), "To be implemented");
 
     }
 
-    public static List<BuildingJsonWrapperSmall> convertToBuildingSmallJsonWrapper(List<Building> buildings) {
-        List<BuildingJsonWrapperSmall> result = new ArrayList<>(buildings.size());
+    public static List<GetAllBuildings> convertToBuildingSmallJsonWrapper(List<Building> buildings) {
+        List<GetAllBuildings> result = new ArrayList<>(buildings.size());
 
         for (Building building :
                 buildings) {
-            result.add(new BuildingJsonWrapperSmall(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
+            result.add(new GetAllBuildings(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
         }
 
         return result;
     }
 
-    public static List<EvaluationEntry> convertToEvaluationEntries(List<EvaalFile> evaalFiles){
+    public static List<GetEvaluationFilesForBuilding> convertToEvaluationEntries(List<EvaalFile> evaalFiles){
 
-        List<EvaluationEntry> evaluationEntries = new ArrayList<>(evaalFiles.size());
+        List<GetEvaluationFilesForBuilding> evaluationEntries = new ArrayList<>(evaalFiles.size());
 
         for (EvaalFile evaalFile:
              evaalFiles) {
-            evaluationEntries.add(new EvaluationEntry(evaalFile.getId(), evaalFile.getSourceFileName()));
+            evaluationEntries.add(new GetEvaluationFilesForBuilding(evaalFile.getId(), evaalFile.getSourceFileName()));
         }
 
         return evaluationEntries;
 
     }
 
-    public static List<RadioMapEntry> convertToRadioMapEntry(List<EvaalFile> evaalFiles){
+    public static List<GetRadioMapFilesForBuilding> convertToRadioMapEntry(List<EvaalFile> evaalFiles){
 
-        List<RadioMapEntry> radioMapEntries = new ArrayList<>(evaalFiles.size());
+        List<GetRadioMapFilesForBuilding> radioMapEntries = new ArrayList<>(evaalFiles.size());
 
         for (EvaalFile evaalFile:
              evaalFiles) {
 
-            radioMapEntries.add(new RadioMapEntry(evaalFile.getId(), evaalFile.getSourceFileName()));
+            radioMapEntries.add(new GetRadioMapFilesForBuilding(evaalFile.getId(), evaalFile.getSourceFileName()));
 
         }
 

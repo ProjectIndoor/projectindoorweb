@@ -1,12 +1,12 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 
-public class RadioMapEntry {
+public class GetRadioMapFilesForBuilding {
 
     private final long id;
 
     private final String radioMapSourceFileName;
 
-    public RadioMapEntry(long id, String radioMapSourceFileName) {
+    public GetRadioMapFilesForBuilding(long id, String radioMapSourceFileName) {
         this.id = id;
         this.radioMapSourceFileName = radioMapSourceFileName;
     }

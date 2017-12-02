@@ -1,28 +1,28 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BuildingJsonWrapperLarge {
+public class AddNewBuilding {
 
     private String buildingName;
     private int numberOfFloors;
     private int imagePixelWidth;
     private int imagePixelHeight;
-    private PositionAnchor northWest;
-    private PositionAnchor northEast;
-    private PositionAnchor southEast;
-    private PositionAnchor southWest;
+    private AddNewBuildingPositionAnchor northWest;
+    private AddNewBuildingPositionAnchor northEast;
+    private AddNewBuildingPositionAnchor southEast;
+    private AddNewBuildingPositionAnchor southWest;
 
     @JsonCreator
-    public BuildingJsonWrapperLarge(@JsonProperty("buildingName") String buildingName,
-                                    @JsonProperty("numberOfFloors") int numberOfFloors,
-                                    @JsonProperty("imagePixelWidth") int imagePixelWidth,
-                                    @JsonProperty("imagePixelHeight") int imagePixelHeight,
-                                    @JsonProperty("northWestAnchor") PositionAnchor northWest,
-                                    @JsonProperty("northEastAnchor") PositionAnchor northEast,
-                                    @JsonProperty("southEastAnchor") PositionAnchor southEast,
-                                    @JsonProperty("southWestAnchor") PositionAnchor southWest) {
+    public AddNewBuilding(@JsonProperty("buildingName") String buildingName,
+                          @JsonProperty("numberOfFloors") int numberOfFloors,
+                          @JsonProperty("imagePixelWidth") int imagePixelWidth,
+                          @JsonProperty("imagePixelHeight") int imagePixelHeight,
+                          @JsonProperty("northWestAnchor") AddNewBuildingPositionAnchor northWest,
+                          @JsonProperty("northEastAnchor") AddNewBuildingPositionAnchor northEast,
+                          @JsonProperty("southEastAnchor") AddNewBuildingPositionAnchor southEast,
+                          @JsonProperty("southWestAnchor") AddNewBuildingPositionAnchor southWest) {
 
         this.buildingName = buildingName;
         this.numberOfFloors = numberOfFloors;
@@ -66,35 +66,35 @@ public class BuildingJsonWrapperLarge {
         this.imagePixelHeight = imagePixelHeight;
     }
 
-    public PositionAnchor getNorthWest() {
+    public AddNewBuildingPositionAnchor getNorthWest() {
         return northWest;
     }
 
-    public void setNorthWest(PositionAnchor northWest) {
+    public void setNorthWest(AddNewBuildingPositionAnchor northWest) {
         this.northWest = northWest;
     }
 
-    public PositionAnchor getNorthEast() {
+    public AddNewBuildingPositionAnchor getNorthEast() {
         return northEast;
     }
 
-    public void setNorthEast(PositionAnchor northEast) {
+    public void setNorthEast(AddNewBuildingPositionAnchor northEast) {
         this.northEast = northEast;
     }
 
-    public PositionAnchor getSouthEast() {
+    public AddNewBuildingPositionAnchor getSouthEast() {
         return southEast;
     }
 
-    public void setSouthEast(PositionAnchor southEast) {
+    public void setSouthEast(AddNewBuildingPositionAnchor southEast) {
         this.southEast = southEast;
     }
 
-    public PositionAnchor getSouthWest() {
+    public AddNewBuildingPositionAnchor getSouthWest() {
         return southWest;
     }
 
-    public void setSouthWest(PositionAnchor southWest) {
+    public void setSouthWest(AddNewBuildingPositionAnchor southWest) {
         this.southWest = southWest;
     }
 }

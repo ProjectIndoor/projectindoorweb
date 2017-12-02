@@ -1,4 +1,4 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 public class TransmissionConstants { //TODO move to config container file and move somewhere more viewable
 

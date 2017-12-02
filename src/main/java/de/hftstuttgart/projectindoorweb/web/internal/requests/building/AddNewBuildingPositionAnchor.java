@@ -1,14 +1,14 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PositionAnchor {
+public class AddNewBuildingPositionAnchor {
     private double longitude;
     private double latitude;
 
     @JsonCreator
-    public PositionAnchor(@JsonProperty("longitude")double longitude, @JsonProperty("latitude")double latitude) {
+    public AddNewBuildingPositionAnchor(@JsonProperty("longitude")double longitude, @JsonProperty("latitude")double latitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }

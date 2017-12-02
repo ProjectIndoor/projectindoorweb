@@ -3,8 +3,8 @@ package de.hftstuttgart.projectindoorweb.persistence;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
 import java.util.List;
 import java.util.Set;
@@ -12,8 +12,8 @@ import java.util.Set;
 public interface PersistencyService {
 
     boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                           PositionAnchor southEastAnchor, PositionAnchor southWestAnchor,
-                           PositionAnchor northEastAnchor, PositionAnchor northWestAnchor);
+                           AddNewBuildingPositionAnchor southEastAnchor, AddNewBuildingPositionAnchor southWestAnchor,
+                           AddNewBuildingPositionAnchor northEastAnchor, AddNewBuildingPositionAnchor northWestAnchor);
 
     List<Building> getAllBuildings();
 
@@ -27,9 +27,9 @@ public interface PersistencyService {
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);
 
-    long createNewProject(String projectName, String algorithmType, Set<ProjectParameter> projectParameters);
+    long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParamaters);
 
-    boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<ProjectParameter> newProjectParameters);
+    boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParamaters);
 
     boolean updateProject(Project project);
 

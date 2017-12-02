@@ -1,9 +1,9 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CalculatedPosition {
+public class GeneratePositionResult {
 
     private double x;
     private double y;
@@ -14,7 +14,7 @@ public class CalculatedPosition {
     private String identifier;
 
     @JsonCreator
-    public CalculatedPosition(@JsonProperty("x")double x, @JsonProperty("y")double y, @JsonProperty("z")double z, @JsonProperty("wgs84")boolean wgs84, @JsonProperty("identifier")String identifier) {
+    public GeneratePositionResult(@JsonProperty("x")double x, @JsonProperty("y")double y, @JsonProperty("z")double z, @JsonProperty("wgs84")boolean wgs84, @JsonProperty("identifier")String identifier) {
         this.x = x;
         this.y = y;
         this.z = z;

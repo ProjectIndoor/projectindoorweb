@@ -1,6 +1,7 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -43,56 +44,56 @@ public class PositioningController {
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/generateBatchPositionResults", method = POST)
-    public ResponseEntity<List<CalculatedPosition>> generateBatchPositionResults(
-            @RequestBody BatchPositionRequestElement batchPositionRequestElement) {
+    public ResponseEntity<List<GeneratePositionResult>> generateBatchPositionResults(
+            @RequestBody GenerateBatchPositionResults generateBatchPositionResults) {
 
-        List<CalculatedPosition> result = restTransmissionService.generatePositionResults(batchPositionRequestElement);
-        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+        List<GeneratePositionResult> result = restTransmissionService.generatePositionResults(generateBatchPositionResults);
+        return new ResponseEntity<List<GeneratePositionResult>>(result, HttpStatus.OK);
 
     }
 
     @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/generateSinglePositionResult", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/generateSinglePositionResult", method = POST)
-    public ResponseEntity<CalculatedPosition> generateSinglePositionResult(
-            @RequestBody SinglePositionRequestEntry singlePositionRequestEntry) {
+    public ResponseEntity<GeneratePositionResult> generateSinglePositionResult(
+            @RequestBody GenerateSinglePositionResult generateSinglePositionResult) {
 
-        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(singlePositionRequestEntry);
-        return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
+        GeneratePositionResult result = restTransmissionService.getPositionForWifiReading(generateSinglePositionResult);
+        return new ResponseEntity<GeneratePositionResult>(result, HttpStatus.OK);
 
     }
 
     @ApiOperation(value = "Get position results for project identifier", nickname = "position/getPositionResultsForProjectIdentifier", notes = TransmissionConstants.GET_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/getPositionResultsForProjectIdentifier", method = GET)
-    public ResponseEntity<List<CalculatedPosition>> getPositionResultsForProjectIdentifier(
+    public ResponseEntity<List<GeneratePositionResult>> getPositionResultsForProjectIdentifier(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
-        List<CalculatedPosition> result = restTransmissionService.getPositionResultsForProjectIdentifier(projectIdentifier);
-        return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
+        List<GeneratePositionResult> result = restTransmissionService.getPositionResultsForProjectIdentifier(projectIdentifier);
+        return new ResponseEntity<List<GeneratePositionResult>>(result, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get evaluation entries for building identifier", nickname = "position/getEvaluationFilesForBuilding",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
     @RequestMapping(path = "/getEvalFilesForBuildingId", method = GET)
-    public ResponseEntity<List<EvaluationEntry>> getEvaluationEntriesForBuildingId(
+    public ResponseEntity<List<GetEvaluationFilesForBuilding>> getEvaluationEntriesForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                     String buildingIdentifier) {
 
-        List<EvaluationEntry> result = restTransmissionService.getEvaluationFilesForBuilding(buildingIdentifier);
-        return new ResponseEntity<List<EvaluationEntry>>(result, HttpStatus.OK);
+        List<GetEvaluationFilesForBuilding> result = restTransmissionService.getEvaluationFilesForBuilding(buildingIdentifier);
+        return new ResponseEntity<List<GetEvaluationFilesForBuilding>>(result, HttpStatus.OK);
 
     }
 
     @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuildingId",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
     @RequestMapping(path = "/getRadioMapsForBuildingId", method = GET)
-    public ResponseEntity<List<RadioMapEntry>> getRadioMapsForBuildingId(
+    public ResponseEntity<List<GetRadioMapFilesForBuilding>> getRadioMapsForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                     String buildingIdentifier) {
 
-        List<RadioMapEntry> result = restTransmissionService.getRadioMapFilesForBuilding(buildingIdentifier);
-        return new ResponseEntity<List<RadioMapEntry>>(result, HttpStatus.OK);
+        List<GetRadioMapFilesForBuilding> result = restTransmissionService.getRadioMapFilesForBuilding(buildingIdentifier);
+        return new ResponseEntity<List<GetRadioMapFilesForBuilding>>(result, HttpStatus.OK);
 
     }
 

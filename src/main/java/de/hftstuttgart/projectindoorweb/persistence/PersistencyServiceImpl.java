@@ -6,8 +6,8 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingReposit
 import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
-import de.hftstuttgart.projectindoorweb.web.internal.PositionAnchor;
-import de.hftstuttgart.projectindoorweb.web.internal.ProjectParameter;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.Set;
 public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
-    public long createNewProject(String projectName, String algorithmType, Set<ProjectParameter> projectParameters) {
+    public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParamaters) {
 
         AssertParam.throwIfNullOrEmpty(projectName,"projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType,"algorithmType");
-        AssertParam.throwIfNull(projectParameters,"projectParameters");
+        AssertParam.throwIfNull(saveNewProjectParamaters,"saveNewProjectParamaters");
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
 
@@ -28,7 +28,7 @@ public class PersistencyServiceImpl implements PersistencyService {
             return -1;
         }
 
-        List<Parameter> parametersAsList = convertToEntityParameters(projectParameters);
+        List<Parameter> parametersAsList = convertToEntityParameters(saveNewProjectParamaters);
 
         Project newProject = new Project(projectName, calculationAlgorithm, parametersAsList);
 
@@ -40,12 +40,12 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<ProjectParameter> newProjectParameters) {
+    public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParamaters) {
 
         AssertParam.throwIfNull(projectId,"projectId");
         AssertParam.throwIfNullOrEmpty(newProjectName,"newProjectName");
         AssertParam.throwIfNullOrEmpty(newAlgorithmType,"newAlgorithmType");
-        AssertParam.throwIfNull(newProjectParameters,"newProjectParameters");
+        AssertParam.throwIfNull(newSaveNewProjectParamaters,"newSaveNewProjectParamaters");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
@@ -55,7 +55,7 @@ public class PersistencyServiceImpl implements PersistencyService {
         if(project != null && requestedAlgorithm != null){
             project.setProjectName(newProjectName);
             project.setCalculationAlgorithm(requestedAlgorithm);
-            project.setProjectParameters(convertToEntityParameters(newProjectParameters));
+            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParamaters));
             projectRepository.save(project);
             return true;
         }
@@ -104,8 +104,8 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                                  PositionAnchor southEastAnchor, PositionAnchor southWestAnchor,
-                                  PositionAnchor northEastAnchor, PositionAnchor northWestAnchor) {
+                                  AddNewBuildingPositionAnchor southEastAnchor, AddNewBuildingPositionAnchor southWestAnchor,
+                                  AddNewBuildingPositionAnchor northEastAnchor, AddNewBuildingPositionAnchor northWestAnchor) {
 
         AssertParam.throwIfNullOrEmpty(buildingName,"buildingName");
         AssertParam.throwIfNull(numberOfFloors,"numberOfFloors");
@@ -217,14 +217,14 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
 
-    private List<Parameter> convertToEntityParameters(Set<ProjectParameter> projectParameters){
+    private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters){
 
-        AssertParam.throwIfNull(projectParameters,"projectParameters");
+        AssertParam.throwIfNull(saveNewProjectParamaters,"saveNewProjectParamaters");
 
         List<Parameter> parametersAsList = new ArrayList<>();
 
-        for (ProjectParameter parameter:
-                projectParameters) {
+        for (SaveNewProjectParameters parameter:
+                saveNewProjectParamaters) {
             parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
         }
 

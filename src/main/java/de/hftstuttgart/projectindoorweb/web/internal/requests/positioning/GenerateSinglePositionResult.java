@@ -1,16 +1,16 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SinglePositionRequestEntry {
+public class GenerateSinglePositionResult {
 
     private String wifiReading;
     private Long[] radioMapFileIdentifiers;
 
     @JsonCreator
-    public SinglePositionRequestEntry(@JsonProperty("wifiReading")String wifiReading,
-                                      @JsonProperty("radioMapFileIdentifiers")Long[] radioMapFileIdentifiers) {
+    public GenerateSinglePositionResult(@JsonProperty("wifiReading")String wifiReading,
+                                        @JsonProperty("radioMapFileIdentifiers")Long[] radioMapFileIdentifiers) {
         this.wifiReading = wifiReading;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
     }
