@@ -97,7 +97,8 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
                 //TODO: Implement scalar position weight calculation
             }
             referencePosition = radioMapElement.getPosiReference().getReferencePosition();
-            preResults.add(new WifiPositionResult(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(), false, positionWeight));
+            preResults.add(new WifiPositionResult(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(),
+                    true, positionWeight));
         }
 
         Collections.sort(preResults);
@@ -129,6 +130,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         if (pixelPositionRequired) {
             resultPosition = retrievePositionAsPixels(building, resultPosition);
+            resultPosition.setWgs84(false);
         }
 
         result = new WifiPositionResult(resultPosition.getX(), resultPosition.getY(), resultPosition.getZ(),

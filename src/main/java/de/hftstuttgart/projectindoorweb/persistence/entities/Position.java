@@ -17,7 +17,12 @@ public class Position {
     private double z;
     private boolean wgs84;
 
-    public Position(){ }
+    public Position(){
+        this.x = 0.0;
+        this.y = 0.0;
+        this.z = 0.0;
+        this.wgs84 = true;
+    }
 
     public Position(double x, double y, double z, boolean wgs84) {
         this.x = x;

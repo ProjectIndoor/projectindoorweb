@@ -152,6 +152,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                         .calculateSinglePosition(generateSinglePositionResult.getWifiReadings(), radioMapFiles,
                                 building, generateSinglePositionResult.isWithPixelPosition());
                 result = TransmissionHelper.convertToCalculatedPosition(retrievedWifiResult);
+
             }
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
