@@ -67,6 +67,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean updateProject(Project project) {
 
+        AssertParam.throwIfNull(project,"project");
+
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         Project fromDatabase = projectRepository.findOne(project.getId());
@@ -121,8 +123,10 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         Building buildingToBeSaved = new Building(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight, northWestPosition,
                 northEastPosition, southEastPosition, southWestPosition);
+
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
+
         return buildingToBeSaved != null;
 
     }
@@ -182,6 +186,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public EvaalFile getEvaalFileForId(long evaalFileId) {
 
+        AssertParam.throwIfNull(evaalFileId,"evaalFileId");
+
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         return evaalFileRepository.findOne(evaalFileId);
@@ -191,6 +197,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public List<EvaalFile> getEvaluationFilesForBuilding(Building building) {
 
+        AssertParam.throwIfNull(building,"building");
 
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
@@ -201,6 +208,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public List<EvaalFile> getRadioMapFilesForBuiling(Building building) {
 
+        AssertParam.throwIfNull(building,"building");
+
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         return evaalFileRepository.findByRecordedInBuildingAndEvaluationFileFalse(building);
@@ -209,6 +218,8 @@ public class PersistencyServiceImpl implements PersistencyService {
 
 
     private List<Parameter> convertToEntityParameters(Set<ProjectParameter> projectParameters){
+
+        AssertParam.throwIfNull(projectParameters,"projectParameters");
 
         List<Parameter> parametersAsList = new ArrayList<>();
 
@@ -223,6 +234,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     private CalculationAlgorithm getAlgorithmFromText(String text){
+
+        AssertParam.throwIfNullOrEmpty(text, "text");
 
         CalculationAlgorithm calculationAlgorithm = null;
         if(text.equals("WIFI")){

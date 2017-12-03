@@ -13,13 +13,83 @@
 
         <md-input-container flex="100">
             <label>Name of building</label>
-            <input ng-model="buildingName"/>
+            <input ng-model="building.buildingName"/>
         </md-input-container>
 
         <md-input-container flex="100">
             <label>Number of floors</label>
-            <input type="number" ng-model="floor"/>
+            <input type="number" ng-model="building.numberOfFloors"/>
         </md-input-container>
+
+        <!-- Image size fields -->
+        <md-subheader class="md-primary">Image size of maps</md-subheader>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>Width of images</label>
+                <input type="number" ng-model="building.imagePixelWidth"/>
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <label>Height of images</label>
+                <input type="number" ng-model="building.imagePixelHeight"/>
+            </md-input-container>
+        </div>
+
+        <!-- NW anchor -->
+        <md-subheader class="md-primary">North West Anchor</md-subheader>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>NW Latitude</label>
+                <input type="number" ng-model="building.northWestAnchor.latitude"/>
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <label>NW Longitude</label>
+                <input type="number" ng-model="building.northWestAnchor.longitude"/>
+            </md-input-container>
+        </div>
+
+        <!-- NE anchor -->
+        <md-subheader class="md-primary">North East Anchor</md-subheader>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>NE Latitude</label>
+                <input type="number" ng-model="building.northEastAnchor.latitude"/>
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <label>NE Longitude</label>
+                <input type="number" ng-model="building.northEastAnchor.longitude"/>
+            </md-input-container>
+        </div>
+
+        <!-- SE anchor -->
+        <md-subheader class="md-primary">South East Anchor</md-subheader>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>SE Latitude</label>
+                <input type="number" ng-model="building.southEastAnchor.latitude"/>
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <label>SE Longitude</label>
+                <input type="number" ng-model="building.southEastAnchor.longitude"/>
+            </md-input-container>
+        </div>
+
+        <!-- SW anchor -->
+        <md-subheader class="md-primary">South West Anchor</md-subheader>
+        <div layout="row">
+            <md-input-container flex="50">
+                <label>SW Latitude</label>
+                <input type="number" ng-model="building.southWestAnchor.latitude"/>
+            </md-input-container>
+
+            <md-input-container flex="50">
+                <label>SW Longitude</label>
+                <input type="number" ng-model="building.southWestAnchor.longitude"/>
+            </md-input-container>
+        </div>
 
     </md-card-content>
 

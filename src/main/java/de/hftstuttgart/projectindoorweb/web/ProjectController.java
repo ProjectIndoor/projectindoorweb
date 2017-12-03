@@ -25,29 +25,14 @@ public class ProjectController {
 
     @ApiOperation(value = "Save a new project", nickname = "project/saveNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)
-    public long saveNewProject(@RequestBody Set<ProjectParameter> projectParameterSet,
-                               @RequestParam(value = TransmissionConstants.PROJECT_NAME_PARAM,
-                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                       String projectName,
-                               @RequestParam(value = TransmissionConstants.ALGORITHM_TYPE_PARAM,
-                                       defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                       String algorithmType) {
-        return restTransmissionService.saveNewProject(projectParameterSet, projectName, algorithmType);
+    public long saveNewProject(@RequestBody NewProjectRequestElement newProjectRequestElement) {
+        return restTransmissionService.saveNewProject(newProjectRequestElement);
     }
 
     @ApiOperation(value = "Save a current project", nickname = "project/saveCurrentProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
     @RequestMapping(path = "/saveCurrentProject", method = POST)
-    public boolean saveCurrentProject(@RequestBody Set<ProjectParameter> projectParameterSet,
-                                      @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
-                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String projectIdentifier,
-                                      @RequestParam(value = TransmissionConstants.PROJECT_NAME_PARAM,
-                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String projectName,
-                                      @RequestParam(value = TransmissionConstants.ALGORITHM_TYPE_PARAM,
-                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String algorithmType) {
-        return restTransmissionService.saveCurrentProject(projectName, projectParameterSet, projectIdentifier, algorithmType);
+    public boolean saveCurrentProject(@RequestBody CurrentProjectRequestElement currentProjectRequestElement) {
+        return restTransmissionService.saveCurrentProject(currentProjectRequestElement);
     }
 
     @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteSelectedProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)

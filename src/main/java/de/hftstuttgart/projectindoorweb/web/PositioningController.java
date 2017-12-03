@@ -28,11 +28,7 @@ public class PositioningController {
     @ApiOperation(value = "Processes Radio Map files.", nickname = "position/processEvaalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
     public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                                String buildingIdentifier,
-                                        @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
-                                                defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
-                                                boolean withPixelPosition,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                         @RequestBody MultipartFile[] radioMapFiles) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles);
     }
@@ -40,25 +36,17 @@ public class PositioningController {
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processEvalFiles", method = POST)
     public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                            String buildingIdentifier,
-                                    @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
-                                            defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
-                                            boolean withPixelPosition,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                     @RequestBody MultipartFile[] evalFiles) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles);
     }
 
-
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/generateBatchPositionResults", method = POST)
     public ResponseEntity<List<CalculatedPosition>> generateBatchPositionResults(
-            @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
-                    defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
-                    boolean withPixelPosition,
-            @RequestBody GeneratePositionJsonWrapper generatePositionJsonWrapper) {
+            @RequestBody BatchPositionRequestElement batchPositionRequestElement) {
 
-        List<CalculatedPosition> result = restTransmissionService.generatePositionResults(withPixelPosition, generatePositionJsonWrapper);
+        List<CalculatedPosition> result = restTransmissionService.generatePositionResults(batchPositionRequestElement);
         return new ResponseEntity<List<CalculatedPosition>>(result, HttpStatus.OK);
 
     }
@@ -66,15 +54,9 @@ public class PositioningController {
     @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/generateSinglePositionResult", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/generateSinglePositionResult", method = POST)
     public ResponseEntity<CalculatedPosition> generateSinglePositionResult(
-            @RequestParam(value = TransmissionConstants.WIFI_READING_PARAM,
-                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                    String wifiReading,
-            @RequestParam(value = TransmissionConstants.WITH_PIXEL_POSITION_PARAM,
-                    defaultValue = TransmissionConstants.FALSE_STRING_VALUE)
-                    boolean withPixelPosition,
-            @RequestBody GeneratePositionJsonWrapper generatePositionJsonWrapper) {
+            @RequestBody SinglePositionRequestEntry singlePositionRequestEntry) {
 
-        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(wifiReading, withPixelPosition, generatePositionJsonWrapper);
+        CalculatedPosition result = restTransmissionService.getPositionForWifiReading(singlePositionRequestEntry);
         return new ResponseEntity<CalculatedPosition>(result, HttpStatus.OK);
 
     }
@@ -90,7 +72,7 @@ public class PositioningController {
 
     @ApiOperation(value = "Get evaluation entries for building identifier", nickname = "position/getEvaluationFilesForBuilding",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
-    @RequestMapping(path = "/getEvalFilesForBuilding", method = GET)
+    @RequestMapping(path = "/getEvalFilesForBuildingId", method = GET)
     public ResponseEntity<List<EvaluationEntry>> getEvaluationEntriesForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -101,9 +83,9 @@ public class PositioningController {
 
     }
 
-    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuilding",
+    @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuildingId",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
-    @RequestMapping(path = "/getRadioMapsForBuilding", method = GET)
+    @RequestMapping(path = "/getRadioMapsForBuildingId", method = GET)
     public ResponseEntity<List<RadioMapEntry>> getRadioMapsForBuildingId(
             @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -113,6 +95,5 @@ public class PositioningController {
         return new ResponseEntity<List<RadioMapEntry>>(result, HttpStatus.OK);
 
     }
-
 
 }

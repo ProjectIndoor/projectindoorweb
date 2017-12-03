@@ -16,15 +16,17 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
     public List<EvaalFile> processIntoLogFiles(Building building, boolean evaluationFiles, File... radioMapFiles) {
 
         AssertParam.throwIfNull(radioMapFiles,"radioMapFiles");
+        AssertParam.throwIfNull(building,"building");
 
         List<EvaalFileParser> fileParsers = new ArrayList<>(radioMapFiles.length);
+        List<EvaalFile> processedEvaalFiles = new ArrayList<>();
+
         for (File inputFile: radioMapFiles) {
             if(!inputFile.isDirectory() && !inputFile.getPath().contains(".swp")){
                 fileParsers.add(new EvaalFileParser(evaluationFiles, inputFile, building));
             }
         }
 
-        List<EvaalFile> processedEvaalFiles = new ArrayList<>();
         for (EvaalFileParser parser: fileParsers) {
             processedEvaalFiles.add(parser.parseIntoEvaalFile());
         }

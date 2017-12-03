@@ -1,4 +1,4 @@
-<md-card class="md-whiteframe-3dp" md-theme="default">
+<md-card ng-hide="algoHide()" class="md-whiteframe-3dp" md-theme="default">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">Algorithm</span>
@@ -13,13 +13,7 @@
             <label>Algorithm Type</label>
             <md-select ng-model="algo.type">
                 <md-option value="a1">
-                    RadioMap Simple
-                </md-option>
-                <md-option value="a2">
-                    RadioMap with Sensors
-                </md-option>
-                <md-option value="a3">
-                    AP only mode
+                    RadioMap WIFI
                 </md-option>
             </md-select>
         </md-input-container>
@@ -27,11 +21,14 @@
     <md-divider></md-divider>
     <md-subheader class="md-primary">Parameters</md-subheader>
 
-    <md-slider-container style="padding: 16px">
-        <span>RSSI Thrsh.</span>
-        <md-slider flex min="-100" max="0" id="rssi-slider">
-        </md-slider>
-    </md-slider-container>
+    <!-- Radiomap chooser -->
+    <md-input-container style="margin: 16px">
+        <label>Radiomaps</label>
+        <md-select ng-model="algorithmParameters.radiomaps" multiple>
+            <md-option ng-repeat="rMap in radiomaps" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
+            </md-option>
+        </md-select>
+    </md-input-container>
 
     <md-input-container style="margin: 16px">
         <label>Parameter 1</label>
