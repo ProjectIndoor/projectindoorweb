@@ -39,8 +39,18 @@
         <md-subheader class="md-primary">North West Anchor</md-subheader>
         <div layout="row">
             <md-input-container flex="50">
-                <label>NW Latitude</label>
-                <input type="number" ng-model="building.northWestAnchor.latitude"/>
+                <div ng-form="buildingForm">
+                    <label>NW Latitude</label>
+                    <input type="number" ng-model="building.northWestAnchor.latitude"
+                           name="northwest" required ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="-90"
+                           max="90"/>
+                    <div ng-messages="buildingForm.northwest.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="pattern">Must be a valid floating number</div>
+                        <div ng-message="min">Minimum value should be -90</div>
+                        <div ng-message="max">Maximum value should be 90</div>
+                    </div>
+                </div>
             </md-input-container>
 
             <md-input-container flex="50">

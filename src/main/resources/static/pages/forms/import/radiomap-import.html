@@ -16,8 +16,13 @@
 
         <!-- Name field -->
         <md-input-container flex="100">
-            <label>Name</label>
-            <input ng-model="fileName"/>
+            <div ng-form="radioMapForm">
+                <label>Name</label>
+                <input ng-model="fileName" required/>
+                <div ng-messages="radioMapForm.fileName.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </div>
         </md-input-container>
 
         <!-- Building chooser -->
@@ -38,7 +43,6 @@
             </md-button>
             <p id="fileNameField">{{fileUploaded}}</p>
         </md-input-container>
-
 
     </md-card-content>
 
