@@ -372,104 +372,17 @@ app.factory("calculationService", CalculationService);
 // Project service (create, persist and load projects)
 function ProjectService($http) {
     //api endpoints
-    var newProjUrl = '/project/saveNewProject';
-    var generateRadiomapUrl = '/position/generateRadioMaps';
-    var generatePositionsUrl = '/position/generatePositionResults';
+    var newProjUrl = '';
     // project properties
     var projectId;
     var projectName = 'DemoRun';
-    var algorithmType = 'WIFI';
-    var projectParameter = {
-        "name": "string",
-        "value": "string"
-    };
-    var calcFile;
-
-    var positionResults;
 
 
     // project access function
     return {
         // access methods
-        currentProjectId: function () {
-            return projectId;
-        },
-        calcPositions: function () {
-            return positionResults;
-        },
-        // working methods
-        createNewProject: function () {
-            //service init - create Project
-            var requestParameters = {
-                projectName: projectName,
-                algorithmType: algorithmType
-            };
-            $http({
-                method: 'POST',
-                url: newProjUrl,
-                params: requestParameters,
-                data: [projectParameter]
-            }).then(function successCallback(response) {
-                // success
-                projectId = response.data;
-            }, function errorCallback(response) {
-                // failure
-            });
-        },
-        generateRadiomap: function (files) {
-            calcFile = files[0];
-            var formData = new FormData();
-            formData.append('radioMapFiles', calcFile);
 
-            var requestParameters = {
-                projectIdentifier: projectId,
-                buildingIdentifier: 1,
-                withPixelPosition: false
-            };
-            $http({
-                method: 'POST',
-                url: generateRadiomapUrl,
-                params: requestParameters,
-                data: formData,
-                transformRequest: function (data, headersGetterFunction) {
-                    return data;
-                },
-                headers: {
-                    'Content-Type': undefined
-                }
-            }).then(function successCallback(response) {
-                // success
-            }, function errorCallback(response) {
-                // failure
-            });
-        },
-        retreivePositions: function () {
-            var formData = new FormData();
-            formData.append('evaluationFile', calcFile);
-
-            var requestParameters = {
-                projectIdentifier: projectId,
-                buildingIdentifier: 1,
-                withPixelPosition: false
-            };
-            $http({
-                method: 'POST',
-                url: generatePositionsUrl,
-                params: requestParameters,
-                data: formData,
-                transformRequest: function (data, headersGetterFunction) {
-                    return data;
-                },
-                headers: {
-                    'Content-Type': undefined
-                }
-            }).then(function successCallback(response) {
-                // success
-                positionResults = response.data;
-            }, function errorCallback(response) {
-                // failure
-            });
-        }
+        // api calls
     }
 }
 
