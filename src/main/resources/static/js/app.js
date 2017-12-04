@@ -507,42 +507,16 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 
 });
 
-// controller which handles map configuration
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService, calculationService, dataService) {
+// controller which handles map configuration panel
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
-
-    // controller properties
-    $scope.algorithmParameters = {
-        // selected radiomaps
-        radiomaps: []
-    };
-
-    // available radiomaps for this building
-    $scope.availableRadiomaps = dataService.getCurrentRadiomaps;
 
     function buildToggler(componentId) {
         return function () {
             $mdSidenav(componentId).toggle();
         };
     }
-
-    $scope.algoHide = function () {
-        return calculationService.flowProgress() < 2;
-    };
-
-    $scope.calculatePos = function () {
-        calculationService.setRadiomaps($scope.algorithmParameters.radiomaps);
-        // run calculation and show results
-        calculationService.generatePositions().then(function (data) {
-            var posis = data;
-            for (var i = 0; i < posis.length; i++) {
-                var p = posis[i];
-                // api returns picture coordinates move them by height to match image
-                mapService.addRefPoint(p.x, p.y - 818);
-            }
-        });
-    };
 });
 
 // controller which handles the map
@@ -652,6 +626,38 @@ function TrackController($scope, dataService, calculationService) {
 }
 
 app.controller('TrackCtrl', TrackController);
+
+function AlgorithmController($scope, dataService, calculationService, mapService) {
+    // decide when to hide/show
+    $scope.algoHide = function () {
+        return calculationService.flowProgress() < 2;
+    };
+
+    // controller model
+    $scope.algorithmParameters = {
+        // selected radiomaps
+        radiomaps: []
+    };
+
+    // available radiomaps for selected building
+    $scope.availableRadiomaps = dataService.getCurrentRadiomaps;
+
+    // action for calculation button
+    $scope.calculatePos = function () {
+        calculationService.setRadiomaps($scope.algorithmParameters.radiomaps);
+        // run calculation and show results
+        calculationService.generatePositions().then(function (data) {
+            var posis = data;
+            for (var i = 0; i < posis.length; i++) {
+                var p = posis[i];
+                // api returns picture coordinates move them by height to match image
+                mapService.addRefPoint(p.x, p.y - 818);
+            }
+        });
+    };
+}
+
+app.controller('AlgorithmCtrl', AlgorithmController);
 
 
 /**
