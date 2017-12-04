@@ -9,7 +9,7 @@
  */
 
 // definition of the angular app
-var app = angular.module('IndoorApp', ['ngMaterial', 'ngRoute', 'openlayers-directive']);
+var app = angular.module('IndoorApp', ['ngMaterial', 'ngRoute', 'ngMessages', 'openlayers-directive']);
 
 // ------------- Page routing
 app.config(['$routeProvider',

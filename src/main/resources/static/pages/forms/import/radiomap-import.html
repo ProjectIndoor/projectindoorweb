@@ -18,7 +18,7 @@
         <md-input-container flex="100">
             <div ng-form="radioMapForm">
                 <label>Name</label>
-                <input ng-model="fileName" required/>
+                <input ng-model="fileName" name="fileName" required/>
                 <div ng-messages="radioMapForm.fileName.$error">
                     <div ng-message="required">This is required.</div>
                 </div>
