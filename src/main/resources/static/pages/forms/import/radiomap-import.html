@@ -10,29 +10,28 @@
         </md-card-title-media>
     </md-card-title>
     <md-card-content layout="column">
-
-        <!--Display Success/Error message-->
-        <div ng-show="uploadStatus" class="{{fileUpload}}">{{logMessage}}</div>
-
-        <!-- Name field -->
-        <md-input-container flex="100">
-            <div ng-form="radioMapForm">
+        <div ng-form="radioMapForm">
+            <!-- Name field -->
+            <md-input-container flex="100">
                 <label>Name</label>
                 <input ng-model="fileName" name="fileName" required/>
                 <div ng-messages="radioMapForm.fileName.$error">
                     <div ng-message="required">This is required.</div>
                 </div>
-            </div>
-        </md-input-container>
+            </md-input-container>
 
-        <!-- Building chooser -->
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Building</label>
-            <md-select ng-model="logFileParameters.buildingIdentifier">
-                <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
-                </md-option>
-            </md-select>
-        </md-input-container>
+            <!-- Building chooser -->
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Building</label>
+                <md-select ng-model="logFileParameters.buildingIdentifier" required name="buildingIdentifier">
+                    <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
+                    </md-option>
+                </md-select>
+                <div ng-messages="radioMapForm.buildingIdentifier.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+        </div>
 
         <!-- File chooser -->
         <md-input-container flex="100">
