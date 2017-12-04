@@ -6,7 +6,7 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingReposit
 import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
 import java.util.ArrayList;
@@ -18,13 +18,13 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParamaters) {
 
-        AssertParam.throwIfNullOrEmpty(projectName,"projectName");
-        AssertParam.throwIfNullOrEmpty(algorithmType,"algorithmType");
-        AssertParam.throwIfNull(saveNewProjectParamaters,"saveNewProjectParamaters");
+        AssertParam.throwIfNullOrEmpty(projectName, "projectName");
+        AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
+        AssertParam.throwIfNull(saveNewProjectParamaters, "saveNewProjectParamaters");
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
 
-        if(calculationAlgorithm==null){
+        if (calculationAlgorithm == null) {
             return -1;
         }
 
@@ -42,17 +42,17 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParamaters) {
 
-        AssertParam.throwIfNull(projectId,"projectId");
-        AssertParam.throwIfNullOrEmpty(newProjectName,"newProjectName");
-        AssertParam.throwIfNullOrEmpty(newAlgorithmType,"newAlgorithmType");
-        AssertParam.throwIfNull(newSaveNewProjectParamaters,"newSaveNewProjectParamaters");
+        AssertParam.throwIfNull(projectId, "projectId");
+        AssertParam.throwIfNullOrEmpty(newProjectName, "newProjectName");
+        AssertParam.throwIfNullOrEmpty(newAlgorithmType, "newAlgorithmType");
+        AssertParam.throwIfNull(newSaveNewProjectParamaters, "newSaveNewProjectParamaters");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         Project project = projectRepository.findOne(projectId);
         CalculationAlgorithm requestedAlgorithm = getAlgorithmFromText(newAlgorithmType);
 
-        if(project != null && requestedAlgorithm != null){
+        if (project != null && requestedAlgorithm != null) {
             project.setProjectName(newProjectName);
             project.setCalculationAlgorithm(requestedAlgorithm);
             project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParamaters));
@@ -67,13 +67,13 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean updateProject(Project project) {
 
-        AssertParam.throwIfNull(project,"project");
+        AssertParam.throwIfNull(project, "project");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         Project fromDatabase = projectRepository.findOne(project.getId());
 
-        if(project != null){
+        if (project != null) {
             fromDatabase.setProjectName(project.getProjectName());
             fromDatabase.setProjectParameters(project.getProjectParameters());
             fromDatabase.setCalculationAlgorithm(project.getCalculationAlgorithm());
@@ -87,11 +87,10 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
 
-
     @Override
     public boolean deleteProject(long projectId) {
 
-        AssertParam.throwIfNull(projectId,"projectId");
+        AssertParam.throwIfNull(projectId, "projectId");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
@@ -104,37 +103,50 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                                  AddNewBuildingPositionAnchor southEastAnchor, AddNewBuildingPositionAnchor southWestAnchor,
-                                  AddNewBuildingPositionAnchor northEastAnchor, AddNewBuildingPositionAnchor northWestAnchor) {
+                                  BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
+                                  BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
+                                  BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel) {
 
-        AssertParam.throwIfNullOrEmpty(buildingName,"buildingName");
-        AssertParam.throwIfNull(numberOfFloors,"numberOfFloors");
+        AssertParam.throwIfNullOrEmpty(buildingName, "buildingName");
+        AssertParam.throwIfNull(numberOfFloors, "numberOfFloors");
         AssertParam.throwIfNull(imagePixelWidth, "imagePixelWidth");
         AssertParam.throwIfNull(imagePixelHeight, "imagePixelHeigth");
-        AssertParam.throwIfNull(southEastAnchor,"southEastAnchor");
-        AssertParam.throwIfNull(southWestAnchor,"southWestAnchor");
-        AssertParam.throwIfNull(northEastAnchor,"northEastAnchor");
-        AssertParam.throwIfNull(northWestAnchor,"northWestAnchor");
+
+        if ((southEastAnchor == null || southWestAnchor == null || northEastAnchor == null || northWestAnchor == null)
+                && (buildingCenterPoint == null)) {
+
+            return false;
+        }
+
+        if (southEastAnchor == null || southWestAnchor == null || northEastAnchor == null || northWestAnchor == null) {
+            /*
+            Call Gerald's new utility method here in order to populate the four corner points from center point,
+            rotation angle, and the meters per pixel number.
+            */
+        }
+
 
         Position northWestPosition = new Position(northWestAnchor.getLatitude(), northWestAnchor.getLongitude(), 0.0, true);
         Position northEastPosition = new Position(northEastAnchor.getLatitude(), northEastAnchor.getLongitude(), 0.0, true);
         Position southEastPosition = new Position(southEastAnchor.getLatitude(), southEastAnchor.getLongitude(), 0.0, true);
         Position southWestPosition = new Position(southWestAnchor.getLatitude(), southWestAnchor.getLongitude(), 0.0, true);
+        Position buildingCenterPosition = new Position(buildingCenterPoint.getLatitude(), buildingCenterPoint.getLongitude(), 0.0, true);
 
-        Building buildingToBeSaved = new Building(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight, northWestPosition,
-                northEastPosition, southEastPosition, southWestPosition);
+        Building buildingToBeSaved = new Building(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight,
+                rotationAngle, metersPerPixel, northWestPosition, northEastPosition, southEastPosition,
+                southWestPosition, buildingCenterPosition);
 
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
 
         return buildingToBeSaved != null;
-
     }
+
 
     @Override
     public Project getProjectById(long projectId) {
 
-        AssertParam.throwIfNull(projectId,"projectId");
+        AssertParam.throwIfNull(projectId, "projectId");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
@@ -164,9 +176,9 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public Building getBuildingById(long buildingId) {
 
-        AssertParam.throwIfNull(buildingId,"buildingId");
+        AssertParam.throwIfNull(buildingId, "buildingId");
 
-        BuildingRepository buildingRepository = (BuildingRepository)RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
 
         return buildingRepository.findOne(buildingId);
 
@@ -175,7 +187,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean saveEvaalFiles(List<EvaalFile> evaalFiles) {
 
-        AssertParam.throwIfNull(evaalFiles,"evaalFiles");
+        AssertParam.throwIfNull(evaalFiles, "evaalFiles");
 
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
@@ -188,7 +200,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public EvaalFile getEvaalFileForId(long evaalFileId) {
 
-        AssertParam.throwIfNull(evaalFileId,"evaalFileId");
+        AssertParam.throwIfNull(evaalFileId, "evaalFileId");
 
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
@@ -199,7 +211,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public List<EvaalFile> getEvaluationFilesForBuilding(Building building) {
 
-        AssertParam.throwIfNull(building,"building");
+        AssertParam.throwIfNull(building, "building");
 
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
@@ -210,7 +222,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public List<EvaalFile> getRadioMapFilesForBuiling(Building building) {
 
-        AssertParam.throwIfNull(building,"building");
+        AssertParam.throwIfNull(building, "building");
 
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
@@ -219,11 +231,11 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
 
-    private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters){
+    private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters) {
 
         List<Parameter> parametersAsList = new ArrayList<>();
 
-        for (SaveNewProjectParameters parameter:
+        for (SaveNewProjectParameters parameter :
                 saveNewProjectParamaters) {
             parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
         }
@@ -233,10 +245,10 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     }
 
-    private CalculationAlgorithm getAlgorithmFromText(String text){
+    private CalculationAlgorithm getAlgorithmFromText(String text) {
 
         CalculationAlgorithm calculationAlgorithm = null;
-        if(text.equals("WIFI")){
+        if (text.equals("WIFI")) {
             calculationAlgorithm = CalculationAlgorithm.WIFI;
         }
 

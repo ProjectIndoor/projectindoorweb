@@ -12,23 +12,22 @@ public class GenerateBatchPositionResults {
     private Long evalFileIdentifier;
     private Long[] radioMapFileIdentifiers;
     private String algorithmType;
-    private Set<SaveNewProjectParameters> saveNewProjectParamaters;
+    private Set<SaveNewProjectParameters> projectParameters;
     private boolean withPixelPosition;
-
 
     @JsonCreator
     public GenerateBatchPositionResults(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                         @JsonProperty("evaluationFile") Long evalFileIdentifier,
                                         @JsonProperty("radioMapFiles") Long[] radioMapFileIdentifiers,
                                         @JsonProperty("algorithmType") String algorithmType,
-                                        @JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParamaters,
+                                        @JsonProperty("projectParameters") Set<SaveNewProjectParameters> projectParameters,
                                         @JsonProperty("withPixelPosition") boolean withPixelPosition) {
 
         this.buildingIdentifier = buildingIdentifier;
         this.evalFileIdentifier = evalFileIdentifier;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
         this.algorithmType = algorithmType;
-        this.saveNewProjectParamaters = saveNewProjectParamaters;
+        this.projectParameters = projectParameters;
         this.withPixelPosition = withPixelPosition;
     }
 
@@ -64,12 +63,12 @@ public class GenerateBatchPositionResults {
         this.algorithmType = algorithmType;
     }
 
-    public Set<SaveNewProjectParameters> getSaveNewProjectParamaters() {
-        return saveNewProjectParamaters;
+    public Set<SaveNewProjectParameters> getProjectParameters() {
+        return projectParameters;
     }
 
-    public void setSaveNewProjectParamaters(Set<SaveNewProjectParameters> saveNewProjectParamaters) {
-        this.saveNewProjectParamaters = saveNewProjectParamaters;
+    public void setProjectParameters(Set<SaveNewProjectParameters> projectParameters) {
+        this.projectParameters = projectParameters;
     }
 
     public boolean isWithPixelPosition() {

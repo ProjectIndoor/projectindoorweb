@@ -1,9 +1,7 @@
 package de.hftstuttgart.projectindoorweb.web.internal.util;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GeneratePositionResult;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
@@ -100,6 +98,61 @@ public class TransmissionHelper {
         }
 
         return true;
+
+    }
+
+    public static GetSingleBuilding convertToGetSingleBuildingResultObject(Building building){
+
+        long buildingId = building.getId();
+        String buildingName = building.getBuildingName();
+        int numberOfFloors = building.getBuildingFloors().size();
+        int imagePixelWidth = building.getImagePixelWidth();
+        int imagePixeHeight = building.getImagePixelHeight();
+        BuildingPositionAnchor northWest = convertToBuildingPositionAnchor(building.getNorthWest());
+        BuildingPositionAnchor northEast = convertToBuildingPositionAnchor(building.getNorthEast());
+        BuildingPositionAnchor southEast = convertToBuildingPositionAnchor(building.getSouthEast());
+        BuildingPositionAnchor southWest = convertToBuildingPositionAnchor(building.getSouthWest());
+        BuildingPositionAnchor buildingCenterPoint = convertToBuildingPositionAnchor(building.getCenterPoint());
+        double rotationAngle = building.getRotationAngle();
+        double metersPerPixel = building.getMetersPerPixel();
+        List<GetSingleBuildingEvaalFile> getSingleBuildingEvaalFiles = convertToGetSingleBuildingEvaalFiles(building.getEvaalFiles());
+        List<GetSingleBuildingFloor> getSingleBuildingFloors = convertToGetSingleBuildingFloor(building.getBuildingFloors());
+
+        return new GetSingleBuilding(buildingId, buildingName, numberOfFloors, imagePixelWidth, imagePixeHeight, northWest, northEast,
+                southEast, southWest, buildingCenterPoint, rotationAngle, metersPerPixel, getSingleBuildingEvaalFiles, getSingleBuildingFloors);
+
+    }
+
+    public static List<GetSingleBuildingFloor> convertToGetSingleBuildingFloor(List<Floor> floors){
+
+        List<GetSingleBuildingFloor> result = new ArrayList<>(floors.size());
+
+        for (Floor floor:
+             floors) {
+            result.add(new GetSingleBuildingFloor(floor.getId(), floor.getLevel(), floor.getFloorMapUrl()));
+        }
+
+        return result;
+
+    }
+
+    public static List<GetSingleBuildingEvaalFile> convertToGetSingleBuildingEvaalFiles(List<EvaalFile> evaalFiles){
+
+        List<GetSingleBuildingEvaalFile> result = new ArrayList<>(evaalFiles.size());
+
+        for (EvaalFile evaalFile :
+                evaalFiles) {
+            result.add(new GetSingleBuildingEvaalFile(evaalFile.getId(), evaalFile.getSourceFileName(),
+                    evaalFile.isEvaluationFile()));
+        }
+
+        return result;
+
+    }
+
+    public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position){
+
+        return new BuildingPositionAnchor(position.getX(), position.getY());
 
     }
 }

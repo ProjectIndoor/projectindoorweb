@@ -3,7 +3,7 @@ package de.hftstuttgart.projectindoorweb.persistence;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
 import java.util.List;
@@ -12,8 +12,9 @@ import java.util.Set;
 public interface PersistencyService {
 
     boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                           AddNewBuildingPositionAnchor southEastAnchor, AddNewBuildingPositionAnchor southWestAnchor,
-                           AddNewBuildingPositionAnchor northEastAnchor, AddNewBuildingPositionAnchor northWestAnchor);
+                           BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
+                           BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
+                           BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
 
     List<Building> getAllBuildings();
 

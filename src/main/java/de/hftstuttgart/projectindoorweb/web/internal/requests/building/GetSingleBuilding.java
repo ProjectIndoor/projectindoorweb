@@ -3,8 +3,11 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AddNewBuilding {
+import java.util.List;
 
+public class GetSingleBuilding {
+
+    private long buildingId;
     private String buildingName;
     private int numberOfFloors;
     private int imagePixelWidth;
@@ -16,20 +19,26 @@ public class AddNewBuilding {
     private BuildingPositionAnchor buildingCenterPoint;
     private double rotationAngle;
     private double metersPerPixel;
+    private List<GetSingleBuildingEvaalFile> evaalFiles;
+    private List<GetSingleBuildingFloor> buildingFloors;
 
     @JsonCreator
-    public AddNewBuilding(@JsonProperty("buildingName") String buildingName,
-                          @JsonProperty("numberOfFloors") int numberOfFloors,
-                          @JsonProperty("imagePixelWidth") int imagePixelWidth,
-                          @JsonProperty("imagePixelHeight") int imagePixelHeight,
-                          @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
-                          @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
-                          @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
-                          @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
-                          @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
-                          @JsonProperty("rotationAngle") double rotationAngle,
-                          @JsonProperty("metersPerPixel") double metersPerPixel) {
+    public GetSingleBuilding(@JsonProperty("buildingId") long buildingId,
+                             @JsonProperty("buildingName") String buildingName,
+                             @JsonProperty("numberOfFloors") int numberOfFloors,
+                             @JsonProperty("imagePixelWidth") int imagePixelWidth,
+                             @JsonProperty("imagePixelHeight") int imagePixelHeight,
+                             @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
+                             @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
+                             @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
+                             @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
+                             @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
+                             @JsonProperty("rotationAngle") double rotationAngle,
+                             @JsonProperty("metersPerPixel") double metersPerPixel,
+                             @JsonProperty("evaalFiles") List<GetSingleBuildingEvaalFile> evaalFiles,
+                             @JsonProperty("buildingFloors") List<GetSingleBuildingFloor> buildingFloors) {
 
+        this.buildingId = buildingId;
         this.buildingName = buildingName;
         this.numberOfFloors = numberOfFloors;
         this.imagePixelWidth = imagePixelWidth;
@@ -41,6 +50,16 @@ public class AddNewBuilding {
         this.buildingCenterPoint = buildingCenterPoint;
         this.rotationAngle = rotationAngle;
         this.metersPerPixel = metersPerPixel;
+        this.evaalFiles = evaalFiles;
+        this.buildingFloors = buildingFloors;
+    }
+
+    public long getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(long buildingId) {
+        this.buildingId = buildingId;
     }
 
     public String getBuildingName() {
@@ -129,5 +148,21 @@ public class AddNewBuilding {
 
     public void setMetersPerPixel(double metersPerPixel) {
         this.metersPerPixel = metersPerPixel;
+    }
+
+    public List<GetSingleBuildingEvaalFile> getEvaalFiles() {
+        return evaalFiles;
+    }
+
+    public void setEvaalFiles(List<GetSingleBuildingEvaalFile> evaalFiles) {
+        this.evaalFiles = evaalFiles;
+    }
+
+    public List<GetSingleBuildingFloor> getBuildingFloors() {
+        return buildingFloors;
+    }
+
+    public void setBuildingFloors(List<GetSingleBuildingFloor> buildingFloors) {
+        this.buildingFloors = buildingFloors;
     }
 }

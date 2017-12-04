@@ -16,6 +16,9 @@ public class Building {
     private int imagePixelWidth;
     private int imagePixelHeight;
 
+    private double rotationAngle;
+    private double metersPerPixel;
+
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position northWest;
 
@@ -28,6 +31,9 @@ public class Building {
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position southWest;
 
+    @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
+    private Position centerPoint;
+
     @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedInBuilding")
     private List<EvaalFile> evaalFiles;
 
@@ -36,38 +42,44 @@ public class Building {
 
     protected Building(){}
 
-    public Building(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight, Position northWest, Position northEast,
-                    Position southEast, Position southWest) {
+    public Building(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight, double rotationAngle,
+                    double metersPerPixel, Position northWest, Position northEast, Position southEast, Position southWest,
+                    Position centerPoint) {
+
         this.buildingName = buildingName;
         this.imagePixelWidth = imagePixelWidth;
         this.imagePixelHeight = imagePixelHeight;
+        this.rotationAngle = rotationAngle;
+        this.metersPerPixel = metersPerPixel;
         this.northWest = northWest;
         this.northEast = northEast;
         this.southEast = southEast;
         this.southWest = southWest;
+        this.centerPoint = centerPoint;
         initInitialFloors(numberOfFloors);
     }
 
-    public Building(String buildingName, int imagePixelWidth, int imagePixelHeight, Position northWest, Position northEast,
-                    Position southEast, Position southWest, List<EvaalFile> evaalFiles, List<Floor> buildingFloors) {
+    public Building(String buildingName, int imagePixelWidth, int imagePixelHeight, double rotationAngle, double metersPerPixel,
+                    Position northWest, Position northEast, Position southEast, Position southWest, Position centerPoint,
+                    List<EvaalFile> evaalFiles, List<Floor> buildingFloors) {
 
         this.buildingName = buildingName;
         this.imagePixelWidth = imagePixelWidth;
         this.imagePixelHeight = imagePixelHeight;
+        this.rotationAngle = rotationAngle;
+        this.metersPerPixel = metersPerPixel;
         this.northWest = northWest;
         this.northEast = northEast;
         this.southEast = southEast;
         this.southWest = southWest;
+        this.centerPoint = centerPoint;
         this.evaalFiles = evaalFiles;
         this.buildingFloors = buildingFloors;
     }
 
-
-
     public Long getId() {
         return id;
     }
-
 
     public String getBuildingName() {
         return buildingName;
@@ -91,6 +103,22 @@ public class Building {
 
     public void setImagePixelHeight(int imagePixelHeight) {
         this.imagePixelHeight = imagePixelHeight;
+    }
+
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
+
+    public void setRotationAngle(double rotationAngle) {
+        this.rotationAngle = rotationAngle;
+    }
+
+    public double getMetersPerPixel() {
+        return metersPerPixel;
+    }
+
+    public void setMetersPerPixel(double metersPerPixel) {
+        this.metersPerPixel = metersPerPixel;
     }
 
     public Position getNorthWest() {
@@ -123,6 +151,14 @@ public class Building {
 
     public void setSouthWest(Position southWest) {
         this.southWest = southWest;
+    }
+
+    public Position getCenterPoint() {
+        return centerPoint;
+    }
+
+    public void setCenterPoint(Position centerPoint) {
+        this.centerPoint = centerPoint;
     }
 
     public List<EvaalFile> getEvaalFiles() {
