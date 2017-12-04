@@ -1,4 +1,4 @@
-<md-card ng-hide="algoHide()" class="md-whiteframe-3dp" md-theme="default">
+<md-card ng-hide="algoHide()" ng-controller="AlgorithmCtrl" class="md-whiteframe-3dp" md-theme="default">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">Algorithm</span>
@@ -25,7 +25,7 @@
     <md-input-container style="margin: 16px">
         <label>Radiomaps</label>
         <md-select ng-model="algorithmParameters.radiomaps" multiple>
-            <md-option ng-repeat="rMap in radiomaps" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
+            <md-option ng-repeat="rMap in availableRadiomaps()" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
             </md-option>
         </md-select>
     </md-input-container>
