@@ -140,20 +140,22 @@ function UploadService($http, $mdToast) {
         uploadBuilding: function (newBuilding) {
             var postData = newBuilding;
 
-            $http({
+            var promise = $http({
                 method: 'POST',
                 url: buildingUploadUrl,
                 data: postData,
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            }).success(function (data, status, headers, config) {
+            }).then(function (response) {
                 logMessage = "Building Data uploaded successfully!";
                 showToast(logMessage);
-            }).error(function (data, status, headers, config) {
+                return response.data;
+            }, function errorCallback(response) {
                 logMessage = "Error while uploading Building Data";
                 showToast(logMessage);
             });
+            return promise;
         },
         uploadRadioMap: function (radioMapSet) {
             // request parameters
@@ -250,7 +252,7 @@ function DataService($http) {
     // Service functions
     return {
         // API calls
-        getAllBuildings: function () {
+        loadAllBuildings: function () {
             // api to get all buildings
             // $http returns a promise, which has a then function, which also returns a promise
             var promise = $http.get(getBuildingsUrl).then(function (response) {
@@ -307,6 +309,10 @@ function DataService($http) {
         getCurrentRadiomaps: function () {
             // return a copy of radiomaps
             return [].concat(radiomaps);
+        },
+        getAllBuildings: function () {
+            // return a copy of radiomaps
+            return [].concat(buildings);
         },
         getAllAlgorithmTypes: function () {
 
@@ -537,7 +543,7 @@ function MapController($scope, mapService) {
 app.controller('MapCtrl', MapController);
 
 // controller which handles the building import view
-function BuildingImportController($scope, uploadService) {
+function BuildingImportController($scope, uploadService, dataService) {
 
     $scope.building = {
         buildingName: "",
@@ -563,8 +569,11 @@ function BuildingImportController($scope, uploadService) {
     };
 
     $scope.uploadBuildingData = function () {
-        uploadService.uploadBuilding($scope.building);
-        console.log($scope.building)
+        uploadService.uploadBuilding($scope.building).then(function (data) {
+            // update building list when building added
+            dataService.loadAllBuildings();
+        });
+        console.log($scope.building);
     }
 }
 
@@ -574,10 +583,13 @@ app.controller('BuildingImportCtrl', BuildingImportController);
 function BuildingController($scope, dataService, calculationService) {
     // properties
     $scope.buildingData = {
-        buildings: [],
         selectedBuilding: {},
         selectedFloor: 0
     };
+
+    // building list
+    $scope.buildings = dataService.getAllBuildings;
+
 
     // enumeration function
     $scope.getNumber = function (num) {
@@ -585,13 +597,7 @@ function BuildingController($scope, dataService, calculationService) {
     };
 
     // load data from backend with service
-    dataService.getAllBuildings().then(function (data) {
-        // set building
-        $scope.buildingData.buildings = data;
-        $scope.buildingData.selectedBuilding = data[0];
-        $scope.buildingData.selectedFloor = 0;
-        console.log(data)
-    });
+    dataService.loadAllBuildings().then();
 
     $scope.setBuilding = function () {
         // set building for calculation parameters
@@ -678,20 +684,16 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 }]);
 
 // controller which handles the log import view
-function LogImportController($scope, uploadService) {
+function LogImportController($scope, uploadService, dataService) {
     // show file chooser on button click
     $scope.upload = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
 
+    dataService.loadAllBuildings();
+
     // buildings to show for chooser
-    $scope.buildings = [
-        {
-            id: 1,
-            buildingName: "CAR2",
-            floorCount: 1
-        }
-    ];
+    $scope.buildings = dataService.getAllBuildings;
 
     // parameters needed to upload log file
     $scope.logFileParameters = {
@@ -727,14 +729,10 @@ function EvaluationImportController($scope, uploadService) {
         angular.element(document.querySelector('#evalInputFile')).click();
     };
 
+    dataService.getAllBuildings();
+
     // buildings to show for chooser
-    $scope.buildings = [
-        {
-            id: 1,
-            buildingName: "CAR2",
-            floorCount: 1
-        }
-    ];
+    $scope.buildings = dataService.getAllBuildings;
 
     // parameters needed to upload eval file
     $scope.evalFileParameters = {

@@ -24,7 +24,7 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Building</label>
             <md-select ng-model="evalFileParameters.buildingIdentifier">
-                <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
+                <md-option ng-repeat="building in buildings()" value="{{building.id}}">{{building.buildingName}}
                 </md-option>
             </md-select>
         </md-input-container>
