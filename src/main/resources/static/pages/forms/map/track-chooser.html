@@ -11,8 +11,8 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Track</label>
-            <md-select ng-model="selectedTrack">
-                <md-option ng-repeat="evalFile in evalFiles" value="{{evalFile.id}}">{{evalFile.evaluationEntryName}}
+            <md-select ng-model="trackData.selectedTrack">
+                <md-option ng-repeat="evalFile in evalFiles()" value="{{evalFile.id}}">{{evalFile.evaluationEntryName}}
                 </md-option>
             </md-select>
         </md-input-container>

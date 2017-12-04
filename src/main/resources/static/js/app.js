@@ -239,16 +239,19 @@ function DataService($http) {
     // API endpoints
     var getBuildingsUrl = '/building/getAllBuildings';
     var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
+    var getRadiomapsUrl = '/position/getRadioMapsForBuildingId';
     var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
 
     // Cache
     var buildings = [];
     var evalFiles = [];
+    var radiomaps = [];
 
     // Service functions
     return {
-        // api to get all buildings
+        // API calls
         getAllBuildings: function () {
+            // api to get all buildings
             // $http returns a promise, which has a then function, which also returns a promise
             var promise = $http.get(getBuildingsUrl).then(function (response) {
                 // The then function here is an opportunity to modify the response
@@ -279,9 +282,31 @@ function DataService($http) {
             });
             return promise;
         },
-        getEvalFilesForBuilding: function () {
+        loadRadiomapsForBuilding: function (buildingId) {
+            var config = {
+                params: {
+                    buildingIdentifier: buildingId
+                }
+            };
+            var promise = $http.get(getRadiomapsUrl, config).then(function (response) {
+                console.log("Retrieved radiomaps:");
+                console.log(response);
+
+                // save response in cache
+                angular.copy(response.data, radiomaps);
+
+                return response.data;
+            });
+            return promise;
+        },
+        // access functions
+        getCurrentEvalFiles: function () {
             // return a copy of evalFiles
             return [].concat(evalFiles);
+        },
+        getCurrentRadiomaps: function () {
+            // return a copy of radiomaps
+            return [].concat(radiomaps);
         },
         getAllAlgorithmTypes: function () {
 
@@ -297,8 +322,8 @@ function CalculationService($http) {
     //api endpoints
     var generatePositionsUrl = '/position/generateBatchPositionResults';
     // properties
-    var buildingId;
-    var evalFileId;
+    var buildingId = 1;
+    var evalFileId = 1;
     var radioMapFileIds = [1];
     var algorithmType = "WIFI";
     var projectParameters = [
@@ -342,6 +367,15 @@ function CalculationService($http) {
             evalFileId = evId;
             console.log("Eval File Changed: " + evalFileId);
         },
+        // set and get radiomaps
+        getRadiomaps: function () {
+            return [].concat(radioMapFileIds);
+        },
+        setRadiomaps: function (radiomapIds) {
+            radioMapFileIds = radiomapIds;
+            console.log("Radiomaps Changed: " + radioMapFileIds);
+        },
+        // API calls
         generatePositions: function () {
             var data = {
                 buildingIdentifier: buildingId,
@@ -474,16 +508,18 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 });
 
 // controller which handles map configuration
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService, calculationService) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapService, projectService, calculationService, dataService) {
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
-    $scope.radiomaps = [
-        {
-            id: 1,
-            radioMapSourceFileName: "radiomap.txt"
-        }
-    ];
+    // controller properties
+    $scope.algorithmParameters = {
+        // selected radiomaps
+        radiomaps: []
+    };
+
+    // available radiomaps for this building
+    $scope.availableRadiomaps = dataService.getCurrentRadiomaps;
 
     function buildToggler(componentId) {
         return function () {
@@ -496,6 +532,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, mapSer
     };
 
     $scope.calculatePos = function () {
+        calculationService.setRadiomaps($scope.algorithmParameters.radiomaps);
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
@@ -583,9 +620,12 @@ function BuildingController($scope, dataService, calculationService) {
     });
 
     $scope.setBuilding = function () {
-        calculationService.setCalculationBuilding(1);
+        // set building for calculation parameters
+        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding);
         calculationService.increaseProgress();
-
+        // load building related evaluation files and radiomaps
+        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding);
+        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding);
     };
 }
 
@@ -593,18 +633,20 @@ app.controller('BuildingCtrl', BuildingController);
 
 // Track chooser controller
 function TrackController($scope, dataService, calculationService) {
+    // properties
+    $scope.trackData = {
+        selectedTrack: 0
+    };
 
     // hide if not needed yet
     $scope.trackHide = function () {
         return calculationService.flowProgress() < 1;
     };
 
-    dataService.loadEvalFilesForBuilding(1).then(function (data) {
-        $scope.evalFiles = data;
-    });
+    $scope.evalFiles = dataService.getCurrentEvalFiles;
 
     $scope.setEvaluationFile = function () {
-        calculationService.setEvalFile(1);
+        calculationService.setEvalFile($scope.trackData.selectedTrack);
         calculationService.increaseProgress();
     };
 }
