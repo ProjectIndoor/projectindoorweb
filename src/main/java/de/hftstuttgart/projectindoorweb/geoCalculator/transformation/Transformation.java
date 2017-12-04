@@ -15,6 +15,15 @@ class Transformation {
     static XYPoint transformDataWGStoXY(LLPoint point, LatLongCoord SE, LatLongCoord SW) {
         return new XYPoint(point.getPointNumber(), MyGeoMath.ll2xy(new LatLongCoord(point.getCoords().latitude,point.getCoords().longitude),SE,SW),point.getBuilding(),point.getFloor());
     }
+
+    public static LLPoint transformDataXYtoWGS(XYPoint point, LatLongCoord BP, double angle) {
+        return new LLPoint(point.getPointNumber(), MyGeoMath.xy2ll(new LocalXYCoord(point.getCoords().x,point.getCoords().y),BP,angle),point.getBuilding(),point.getFloor());
+    }
+
+    public static XYPoint transformDataWGStoXY(LLPoint point, LatLongCoord BP, double angle) {
+        return new XYPoint(point.getPointNumber(), MyGeoMath.ll2xy(new LatLongCoord(point.getCoords().latitude,point.getCoords().longitude),BP,angle),point.getBuilding(),point.getFloor());
+    }
+
     static XYPoint transformDataPictXYtoXY(XYPoint PictPoint, double scaleX, double scaleY, double pictureSizeY, double bpX, double bpY) {
         double y = -scaleY * (PictPoint.getCoords().y - bpY - pictureSizeY);
         double x = (PictPoint.getCoords().x - bpX) * scaleX;
