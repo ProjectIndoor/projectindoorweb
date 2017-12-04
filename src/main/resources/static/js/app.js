@@ -520,7 +520,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
 });
 
 // controller which handles the map
-function MapController($scope, $http, olData, mapService) {
+function MapController($scope, mapService) {
 
     // example map service setup
     mapService.setMap("/maps/car.png", 1282, 818);
