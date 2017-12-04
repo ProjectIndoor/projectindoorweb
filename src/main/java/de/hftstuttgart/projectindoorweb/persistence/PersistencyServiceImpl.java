@@ -1,6 +1,8 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
@@ -8,6 +10,7 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectReposito
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,22 +118,44 @@ public class PersistencyServiceImpl implements PersistencyService {
         if ((southEastAnchor == null || southWestAnchor == null || northEastAnchor == null || northWestAnchor == null)
                 && (buildingCenterPoint == null)) {
 
-            return false;
+            AssertParam.throwIfNull(northWestAnchor, "northWestAnchor");
+            AssertParam.throwIfNull(northEastAnchor, "northEastAnchor");
+            AssertParam.throwIfNull(southEastAnchor, "southEastAnchor");
+            AssertParam.throwIfNull(southWestAnchor, "southWestAnchor");
+            AssertParam.throwIfNull(buildingCenterPoint, "buildingCenterPoint");
+
         }
 
-        if (southEastAnchor == null || southWestAnchor == null || northEastAnchor == null || northWestAnchor == null) {
-            /*
-            Call Gerald's new utility method here in order to populate the four corner points from center point,
-            rotation angle, and the meters per pixel number.
-            */
+
+        if(northWestAnchor == null){
+            northWestAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
+                    imagePixelWidth, imagePixelHeight, "northWest");
         }
 
+        if(northEastAnchor == null){
+            northEastAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
+                    imagePixelWidth, imagePixelHeight, "northEast");
+        }
+
+        if(southEastAnchor == null){
+            southEastAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
+                    imagePixelWidth, imagePixelHeight, "southEast");
+        }
+
+        if(southWestAnchor == null){
+            southWestAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
+                    imagePixelWidth, imagePixelHeight, "southWest");
+        }
 
         Position northWestPosition = new Position(northWestAnchor.getLatitude(), northWestAnchor.getLongitude(), 0.0, true);
         Position northEastPosition = new Position(northEastAnchor.getLatitude(), northEastAnchor.getLongitude(), 0.0, true);
         Position southEastPosition = new Position(southEastAnchor.getLatitude(), southEastAnchor.getLongitude(), 0.0, true);
         Position southWestPosition = new Position(southWestAnchor.getLatitude(), southWestAnchor.getLongitude(), 0.0, true);
-        Position buildingCenterPosition = new Position(buildingCenterPoint.getLatitude(), buildingCenterPoint.getLongitude(), 0.0, true);
+
+        Position buildingCenterPosition = null;
+        if(buildingCenterPoint != null){
+            buildingCenterPosition = new Position(buildingCenterPoint.getLatitude(), buildingCenterPoint.getLongitude(), 0.0, true);
+        }
 
         Building buildingToBeSaved = new Building(buildingName, numberOfFloors, imagePixelWidth, imagePixelHeight,
                 rotationAngle, metersPerPixel, northWestPosition, northEastPosition, southEastPosition,
@@ -244,6 +269,41 @@ public class PersistencyServiceImpl implements PersistencyService {
 
 
     }
+
+    private BuildingPositionAnchor retrievePositionAnchor(BuildingPositionAnchor buildingCenterPoint,
+                                            double rotationAngle, double metersPerPixel,
+                                            int imagePixelWidth, int imagePixelHeight,
+                                            String corner){
+
+        String capitalizedCorner = corner.toUpperCase();
+
+        double[] calculatedLatLong;
+        switch(capitalizedCorner){
+            case "NORTHWEST":
+                calculatedLatLong = TransformationHelper.calculateNorthWestCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
+                        buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
+                break;
+            case "NORTHEAST":
+                calculatedLatLong = TransformationHelper.calculateNorthEastCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
+                        buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
+                break;
+            case "SOUTHEAST":
+                calculatedLatLong = TransformationHelper.calculateSouthEastCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
+                        buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
+                break;
+            case "SOUTHWEST":
+                calculatedLatLong = TransformationHelper.calculateSouthWestCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
+                        buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
+                break;
+                default:
+                    calculatedLatLong = null;
+        }
+
+        return new BuildingPositionAnchor(calculatedLatLong[0], calculatedLatLong[1]);
+
+    }
+
+
 
     private CalculationAlgorithm getAlgorithmFromText(String text) {
 
