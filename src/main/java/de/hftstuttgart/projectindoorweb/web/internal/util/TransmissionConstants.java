@@ -19,6 +19,7 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String NUMBER_OF_FLOORS_PARAM = "numberOfFloors";
 
     public static final String RADIOMAP_FILES_PARAM = "radioMapFiles";
+    public static final String EVAL_FILE_PARAM = "evalFiles";
     public static final String WITH_PIXEL_POSITION_PARAM = "withPixelPosition";
 
     public static final String TRANSFORMED_POINTS_FILE_PARAM = "transformedPointsFile";

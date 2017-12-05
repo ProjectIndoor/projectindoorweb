@@ -431,9 +431,21 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
 
-    private boolean processEvaalFilesWithTransformedPoints(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile) {
+    private boolean processEvaalFilesWithTransformedPoints(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles,
+                                                           MultipartFile transformedPointsFile) {
 
-        return false; //TODO implement when ready
+        File[] radioMapFileArray = new File[radioMapFiles.length];
+
+        try {
+            for (int i = 0; i < radioMapFiles.length; i++) {
+                radioMapFileArray[i] = TransmissionHelper.convertMultipartFileToLocalFile(radioMapFiles[i]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
 
     }
 
