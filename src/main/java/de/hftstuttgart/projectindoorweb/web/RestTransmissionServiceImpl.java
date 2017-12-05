@@ -32,41 +32,21 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles) {
+    public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles,
+                                     MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile) {
 
         if (buildingIdentifier == null || buildingIdentifier.isEmpty()
                 || radioMapFiles == null || radioMapFiles.length == 0) {
             return false;
         }
 
-        File[] radioMapFileArray = new File[radioMapFiles.length];
+        if (transformedPointsFile == null) {
 
-        try {
-            for (int i = 0; i < radioMapFiles.length; i++) {
-                radioMapFileArray[i] = TransmissionHelper.convertMultipartFileToLocalFile(radioMapFiles[i]);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            return processEvaalFilesWithoutTransformedPoints(buildingIdentifier, evaluationFiles, radioMapFiles);
+
+        } else {
+            return processEvaalFilesWithTransformedPoints(buildingIdentifier, evaluationFiles, radioMapFiles, transformedPointsFile);
         }
-
-        try {
-            long buildingId = Long.valueOf(buildingIdentifier);
-            Building building = this.persistencyService.getBuildingById(buildingId);
-
-            if (building != null) {
-                List<EvaalFile> processedEvaalFiles = this.preProcessingService.processIntoLogFiles(building, evaluationFiles, radioMapFileArray);
-                return this.persistencyService.saveEvaalFiles(processedEvaalFiles);
-            } else {
-                return false;
-            }
-
-
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-
-
     }
 
     @Override
@@ -285,15 +265,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         GetSingleBuilding result = createEmptySingleBuildingResult();
 
-        try{
+        try {
             long buildingId = Long.valueOf(buildingIdentifier);
             Building building = this.persistencyService.getBuildingById(buildingId);
 
             result = TransmissionHelper.convertToGetSingleBuildingResultObject(building);
 
-        }catch (NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             return result;
         }
 
@@ -305,15 +285,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         AssertParam.throwIfNullOrEmpty(buildingIdentifier, "buildingIdentifier");
 
         boolean result = true;
-        try{
+        try {
             long buildingId = Long.valueOf(buildingIdentifier);
 
-            result =  this.persistencyService.updateBuilding(buildingId);
+            result = this.persistencyService.updateBuilding(buildingId);
 
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
             result = false;
-        }finally {
+        } finally {
             return result;
         }
     }
@@ -419,11 +399,47 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
     }
 
+    private boolean processEvaalFilesWithoutTransformedPoints(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles) {
+        File[] radioMapFileArray = new File[radioMapFiles.length];
+
+        try {
+            for (int i = 0; i < radioMapFiles.length; i++) {
+                radioMapFileArray[i] = TransmissionHelper.convertMultipartFileToLocalFile(radioMapFiles[i]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            long buildingId = Long.valueOf(buildingIdentifier);
+            Building building = this.persistencyService.getBuildingById(buildingId);
+
+            if (building != null) {
+                List<EvaalFile> processedEvaalFiles = this.preProcessingService.processIntoLogFiles(building, evaluationFiles, radioMapFileArray);
+                return this.persistencyService.saveEvaalFiles(processedEvaalFiles);
+            } else {
+                return false;
+            }
+
+
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+
+    private boolean processEvaalFilesWithTransformedPoints(String buildingIdentifier, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile) {
+
+        return false; //TODO implement when ready
+
+    }
+
     private GeneratePositionResult createEmptyCalculatedPosition() {
         return new GeneratePositionResult(0, 0, 0, false, "");
     }
 
-    private GetSingleBuilding createEmptySingleBuildingResult(){
+    private GetSingleBuilding createEmptySingleBuildingResult() {
         return new GetSingleBuilding(-1, "", -1, -1, -1, null, null,
                 null, null, null, -1.0, -1.0, null, null);
     }
