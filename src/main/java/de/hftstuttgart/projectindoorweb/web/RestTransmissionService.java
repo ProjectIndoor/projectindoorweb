@@ -1,42 +1,46 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 
-import de.hftstuttgart.projectindoorweb.web.internal.*;
-import de.hftstuttgart.projectindoorweb.web.internal.EvaluationEntry;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
     boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles);
 
-    List<CalculatedPosition> generatePositionResults(BatchPositionRequestElement batchPositionRequestElement);
+    List<GeneratePositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
 
-    CalculatedPosition getPositionForWifiReading(SinglePositionRequestEntry singlePositionRequestEntry);
+    GeneratePositionResult getPositionForWifiReading(GenerateSinglePositionResult generateSinglePositionResult);
 
-    List<CalculatedPosition> getPositionResultsForProjectIdentifier(String positionIdentifier);
+    List<GeneratePositionResult> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
-    long saveNewProject(NewProjectRequestElement newProjectRequestElement);
+    long saveNewProject(SaveNewProject saveNewProject);
 
-    boolean saveCurrentProject(CurrentProjectRequestElement currentProjectRequestElement);
+    boolean saveCurrentProject(SaveCurrentProject saveCurrentProject);
 
     boolean deleteSelectedProject(String projectIdentifier);
 
-    ProjectElement loadSelectedProject(String projectIdentifier);
+    LoadSelectedProject loadSelectedProject(String projectIdentifier);
 
-    List<ProjectElement> getAllProjects();
+    List<LoadSelectedProject> getAllProjects();
 
-    List<BuildingJsonWrapperSmall>getAllBuildings();
+    List<GetAllAlgorithmTypes> getAllAlgorithmTypes();
 
-    List<AlgorithmType> getAllAlgorithmTypes();
+    List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier);
 
-    List<EvaluationEntry> getEvaluationFilesForBuilding(String buildingIdentifier);
+    List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
 
-    List<RadioMapEntry> getRadioMapFilesForBuilding(String buildingIdentifier);
+    List<GetAlgorithmParameters> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
 
-    List<ParameterElement> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
+    boolean addNewBuilding(AddNewBuilding buildingJsonWrapper);
 
-    boolean addNewBuilding(BuildingJsonWrapperLarge buildingJsonWrapper);
+    List<GetAllBuildings>getAllBuildings();
+
+    GetSingleBuilding getSingleBuilding(String buildingIdentifier);
 }

@@ -1,34 +1,34 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.project;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
 
-public class CurrentProjectRequestElement {
+public class SaveCurrentProject {
 
-    private Set<ProjectParameter> projectParameterSet;
+    private Set<SaveNewProjectParameters> saveNewProjectParametersSet;
     private String projectName;
     private String algorithmType;
     private String projectIdentifier;
 
     @JsonCreator
-    public CurrentProjectRequestElement(@JsonProperty("projectParameterSet")Set<ProjectParameter> projectParameterSet,
-                                        @JsonProperty("projectName")String projectName,
-                                        @JsonProperty("algorithmType")String algorithmType,
-                                        @JsonProperty("projectIdentifier")String projectIdentifier) {
-        this.projectParameterSet = projectParameterSet;
+    public SaveCurrentProject(@JsonProperty("saveNewProjectParametersSet")Set<SaveNewProjectParameters> saveNewProjectParametersSet,
+                              @JsonProperty("projectName")String projectName,
+                              @JsonProperty("algorithmType")String algorithmType,
+                              @JsonProperty("projectIdentifier")String projectIdentifier) {
+        this.saveNewProjectParametersSet = saveNewProjectParametersSet;
         this.projectName = projectName;
         this.algorithmType = algorithmType;
         this.projectIdentifier = projectIdentifier;
     }
 
-    public Set<ProjectParameter> getProjectParameterSet() {
-        return projectParameterSet;
+    public Set<SaveNewProjectParameters> getSaveNewProjectParametersSet() {
+        return saveNewProjectParametersSet;
     }
 
-    public void setProjectParameterSet(Set<ProjectParameter> projectParameterSet) {
-        this.projectParameterSet = projectParameterSet;
+    public void setSaveNewProjectParametersSet(Set<SaveNewProjectParameters> saveNewProjectParametersSet) {
+        this.saveNewProjectParametersSet = saveNewProjectParametersSet;
     }
 
     public String getProjectName() {

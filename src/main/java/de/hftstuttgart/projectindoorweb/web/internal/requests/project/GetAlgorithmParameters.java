@@ -1,16 +1,16 @@
-package de.hftstuttgart.projectindoorweb.web.internal;
+package de.hftstuttgart.projectindoorweb.web.internal.requests.project;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ParameterElement {
+public class GetAlgorithmParameters {
 
     private String name;
 
     private String type; //Why type? No value?
 
     @JsonCreator
-    public ParameterElement(@JsonProperty("name")String name, @JsonProperty("type")String type) {
+    public GetAlgorithmParameters(@JsonProperty("name")String name, @JsonProperty("type")String type) {
         this.name = name;
         this.type = type;
     }
