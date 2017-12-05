@@ -14,14 +14,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/custom-indoor.css">
 </head>
-<body ng-cloak>
+<body ng-cloak layout="column" layout-fill>
 
 <!--
   HTML content here
 -->
-
 <!-- Toolbar -->
-<md-toolbar class="indoor-toolbar">
+<md-toolbar class="">
     <div ng-controller="NavToolbarCtrl" class="md-toolbar-tools">
         <md-button ng-controller="MapSettingsCtrl" ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
             <i class="material-icons">menu</i>
@@ -42,9 +41,9 @@
 </md-toolbar>
 
 <!-- Content -->
-<div ng-view></div>
-
-
+<md-content>
+    <div ng-view></div>
+</md-content>
 <!--
   JavaScript
 -->
