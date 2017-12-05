@@ -24,7 +24,7 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Building</label>
                 <md-select ng-model="evalFileParameters.buildingIdentifier" name="buildingIdentifier" required>
-                    <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
+                    <md-option ng-repeat="building in buildings()" value="{{building.id}}">{{building.buildingName}}
                     </md-option>
                 </md-select>
                 <div ng-messages="evalForm.buildingIdentifier.$error">
