@@ -158,19 +158,14 @@ function UploadService($http, $mdToast) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            // request parameters
-            var requestParameters = {
-                buildingIdentifier: radioMapSet.buildingIdentifier
-            };
-
-            // body content (log files)
+            // body content (log files and buildingId)
             var formData = new FormData();
+            formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
             formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
 
             $http({
                 method: 'POST',
                 url: logFileUploadUrl,
-                params: requestParameters,
                 data: formData,
                 transformRequest: function (data, headersGetterFunction) {
                     return data;
@@ -189,19 +184,14 @@ function UploadService($http, $mdToast) {
             });
         },
         uploadEvaluationFile: function (evaluationSet) {
-            // request parameters
-            var requestParameters = {
-                buildingIdentifier: evaluationSet.buildingIdentifier
-            };
-
-            // body content (eval files)
+            // body content (eval files and buildingId)
             var formData = new FormData();
-            formData.append('evalFiles', evaluationSet.evalFiles[0]);
+            formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
+            formData.append('radioMapFiles', evaluationSet.evalFiles[0]);
 
             $http({
                 method: 'POST',
                 url: evalFileUploadUrl,
-                params: requestParameters,
                 data: formData,
                 transformRequest: function (data, headersGetterFunction) {
                     return data;
@@ -463,9 +453,11 @@ function MapService() {
             return [].concat(referencePoints);
         },
         addRefPoint: function (x, y) {
+            // Y needs mirroring because start of map is at bottom
+            var mirroredY = staticMap.source.imageSize[1] - y;
             // create a new reference point
             var newRef = {
-                coord: [x, y],
+                coord: [x, mirroredY],
                 projection: 'pixel',
                 style: ref_marker_style
             };
@@ -551,20 +543,20 @@ function BuildingImportController($scope, uploadService, dataService) {
         imagePixelWidth: 3688,
         imagePixelHeight: 2304,
         northWestAnchor: {
-            latitude: 48.78002331402018,
-            longitude: 9.173034525813376
-        },
-        northEastAnchor: {
             latitude: 48.77951340793322,
             longitude: 9.173423636538017
         },
-        southEastAnchor: {
-            latitude: 48.77966682484418,
-            longitude: 9.1738866322615
+        northEastAnchor: {
+            latitude: 48.78002331402018,
+            longitude: 9.173034525813376
         },
-        southWestAnchor: {
+        southEastAnchor: {
             latitude: 48.78017673093113,
             longitude: 9.173497521536861
+        },
+        southWestAnchor: {
+            latitude: 48.77966682484418,
+            longitude: 9.1738866322615
         }
     };
 
