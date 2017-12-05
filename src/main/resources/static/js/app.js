@@ -187,7 +187,7 @@ function UploadService($http, $mdToast) {
             // body content (eval files and buildingId)
             var formData = new FormData();
             formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
-            formData.append('radioMapFiles', evaluationSet.evalFiles[0]);
+            formData.append('evalFiles', evaluationSet.evalFiles[0]);
 
             $http({
                 method: 'POST',
