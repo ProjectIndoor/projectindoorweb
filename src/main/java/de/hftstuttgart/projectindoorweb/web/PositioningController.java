@@ -26,20 +26,24 @@ public class PositioningController {
             = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
 
-    @ApiOperation(value = "Processes Radio Map files.", nickname = "position/processEvaalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
+    @ApiOperation(value = "Processes Radio Map files", nickname = "position/processRadioMapFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
     public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                        @RequestBody MultipartFile[] radioMapFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles);
+                                        @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM)
+                                        MultipartFile[] radioMapFiles,
+                                        @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM)
+                                        MultipartFile transformedPointsFile) {
+        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFile);
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processEvalFiles", method = POST)
     public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                    @RequestBody MultipartFile[] evalFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles);
+                                    @RequestParam (value = TransmissionConstants.RADIOMAP_FILES_PARAM)
+                                    MultipartFile[] evalFiles) {
+        return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
