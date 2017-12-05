@@ -2,6 +2,7 @@ package de.hftstuttgart.projectindoorweb.persistence;
 
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
@@ -20,7 +21,9 @@ public interface PersistencyService {
 
     Building getBuildingById(long buildingId);
 
-    boolean updateBuilding(long buildingId);
+    boolean updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
+                           Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
+                           double rotationAngle, double metersPerPixel);
 
     boolean saveEvaalFiles(List<EvaalFile> evaalFiles);
 

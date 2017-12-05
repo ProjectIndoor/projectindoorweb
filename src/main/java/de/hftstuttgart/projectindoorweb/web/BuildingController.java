@@ -56,11 +56,11 @@ public class BuildingController {
 
     @ApiOperation(value = "Updates a given building by the given JSON body.", nickname = "building/updateBuilding",
             notes = TransmissionConstants.UPDATE_BUILDING_NOTE)
-    @RequestMapping(path = "/updateBuilding", method = GET)
+    @RequestMapping(path = "/updateBuilding", method = POST)
     public boolean updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
 
-        //return restTransmissionService.updateBuilding(buildingIdentifier);
-        return false;
+        return restTransmissionService.updateBuilding(updateBuilding);
+
     }
 
 

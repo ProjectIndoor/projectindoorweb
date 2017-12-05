@@ -4,6 +4,7 @@ package de.hftstuttgart.projectindoorweb.web;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,5 +45,5 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     GetSingleBuilding getSingleBuilding(String buildingIdentifier);
 
-    boolean updateBuilding(String buildingIdentifier);
+    boolean updateBuilding(UpdateBuilding updateBuilding);
 }

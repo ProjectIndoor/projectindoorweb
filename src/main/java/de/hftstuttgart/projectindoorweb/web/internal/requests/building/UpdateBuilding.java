@@ -3,11 +3,12 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class UpdateBuilding {
 
-    private long id;
+    private long buildingId;
     private String buildingName;
-    private int numberOfFloors;
     private int imagePixelWidth;
     private int imagePixelHeight;
     private BuildingPositionAnchor northWest;
@@ -20,21 +21,19 @@ public class UpdateBuilding {
 
     @JsonCreator
     public UpdateBuilding(@JsonProperty("buildingId") long buildingId,
-                          @JsonProperty("buildingName") String buildingName,
-                          @JsonProperty("numberOfFloors") int numberOfFloors,
-                          @JsonProperty("imagePixelWidth") int imagePixelWidth,
-                          @JsonProperty("imagePixelHeight") int imagePixelHeight,
-                          @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
-                          @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
-                          @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
-                          @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
-                          @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
-                          @JsonProperty("rotationAngle") double rotationAngle,
-                          @JsonProperty("metersPerPixel") double metersPerPixel) {
+                             @JsonProperty("buildingName") String buildingName,
+                             @JsonProperty("imagePixelWidth") int imagePixelWidth,
+                             @JsonProperty("imagePixelHeight") int imagePixelHeight,
+                             @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
+                             @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
+                             @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
+                             @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
+                             @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
+                             @JsonProperty("rotationAngle") double rotationAngle,
+                             @JsonProperty("metersPerPixel") double metersPerPixel) {
 
-        this.id = buildingId;
+        this.buildingId = buildingId;
         this.buildingName = buildingName;
-        this.numberOfFloors = numberOfFloors;
         this.imagePixelWidth = imagePixelWidth;
         this.imagePixelHeight = imagePixelHeight;
         this.northWest = northWestAnchor;
@@ -46,20 +45,20 @@ public class UpdateBuilding {
         this.metersPerPixel = metersPerPixel;
     }
 
+    public long getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(long buildingId) {
+        this.buildingId = buildingId;
+    }
+
     public String getBuildingName() {
         return buildingName;
     }
 
     public void setBuildingName(String buildingName) {
         this.buildingName = buildingName;
-    }
-
-    public int getNumberOfFloors() {
-        return numberOfFloors;
-    }
-
-    public void setNumberOfFloors(int numberOfFloors) {
-        this.numberOfFloors = numberOfFloors;
     }
 
     public int getImagePixelWidth() {
@@ -133,4 +132,5 @@ public class UpdateBuilding {
     public void setMetersPerPixel(double metersPerPixel) {
         this.metersPerPixel = metersPerPixel;
     }
+
 }

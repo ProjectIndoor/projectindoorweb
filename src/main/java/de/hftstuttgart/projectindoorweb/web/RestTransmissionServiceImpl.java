@@ -5,10 +5,7 @@ import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
@@ -300,22 +297,27 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean updateBuilding(String buildingIdentifier) {
+    public boolean updateBuilding(UpdateBuilding updateBuilding) {
 
-        AssertParam.throwIfNullOrEmpty(buildingIdentifier, "buildingIdentifier");
+        AssertParam.throwIfNull(updateBuilding, "updateBuildng");
 
-        boolean result = true;
-        try{
-            long buildingId = Long.valueOf(buildingIdentifier);
+        long buildingId = updateBuilding.getBuildingId();
+        String buildingName = updateBuilding.getBuildingName();
+        int imagePixelWidth = updateBuilding.getImagePixelWidth();
+        int imagePixelHeight = updateBuilding.getImagePixelHeight();
+        Position northWest = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getNorthWest());
+        Position northEast = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getNorthEast());
+        Position southEast = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getSouthEast());
+        Position southWest = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getSouthWest());
+        Position buildingCenterPoint = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getBuildingCenterPoint());
+        double rotationAngle = updateBuilding.getRotationAngle();
+        double metersPerPixel = updateBuilding.getMetersPerPixel();
 
-            result =  this.persistencyService.updateBuilding(buildingId);
 
-        }catch(NumberFormatException ex){
-            ex.printStackTrace();
-            result = false;
-        }finally {
-            return result;
-        }
+        return this.persistencyService.updateBuilding(buildingId, buildingName, imagePixelWidth, imagePixelHeight,
+                northWest, northEast, southEast, southWest, buildingCenterPoint, rotationAngle, metersPerPixel);
+
+
     }
 
     @Override

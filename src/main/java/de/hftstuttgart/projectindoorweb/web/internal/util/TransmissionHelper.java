@@ -150,9 +150,16 @@ public class TransmissionHelper {
 
     }
 
+
     public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position){
 
         return new BuildingPositionAnchor(position.getX(), position.getY());
+
+    }
+
+    public static Position convertPositionAnchorToPosition(BuildingPositionAnchor buildingPositionAnchor){
+
+        return new Position(buildingPositionAnchor.getLatitude(), buildingPositionAnchor.getLongitude(), 0.0, true);
 
     }
 }

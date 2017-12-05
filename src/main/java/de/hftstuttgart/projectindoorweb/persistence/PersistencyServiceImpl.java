@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
@@ -10,6 +11,7 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectReposito
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
+import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -147,10 +149,10 @@ public class PersistencyServiceImpl implements PersistencyService {
                     imagePixelWidth, imagePixelHeight, "southWest");
         }
 
-        Position northWestPosition = new Position(northWestAnchor.getLatitude(), northWestAnchor.getLongitude(), 0.0, true);
-        Position northEastPosition = new Position(northEastAnchor.getLatitude(), northEastAnchor.getLongitude(), 0.0, true);
-        Position southEastPosition = new Position(southEastAnchor.getLatitude(), southEastAnchor.getLongitude(), 0.0, true);
-        Position southWestPosition = new Position(southWestAnchor.getLatitude(), southWestAnchor.getLongitude(), 0.0, true);
+        Position northWestPosition = TransmissionHelper.convertPositionAnchorToPosition(northWestAnchor);
+        Position northEastPosition = TransmissionHelper.convertPositionAnchorToPosition(northEastAnchor);
+        Position southEastPosition = TransmissionHelper.convertPositionAnchorToPosition(southEastAnchor);
+        Position southWestPosition = TransmissionHelper.convertPositionAnchorToPosition(southWestAnchor);
 
         Position buildingCenterPosition = null;
         if(buildingCenterPoint != null){
@@ -210,9 +212,42 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateBuilding(long buildingId) {
+    public boolean updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
+                                  Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
+                                  double rotationAngle, double metersPerPixel) {
 
-        return true;
+        AssertParam.throwIfNull(buildingId, "buildingId");
+        AssertParam.throwIfNullOrEmpty(buildingName, "buildingName");
+        AssertParam.throwIfNull(imagePixelWidth, "imagePixelWidth");
+        AssertParam.throwIfNull(imagePixelHeight, "imagePixelHeight");
+        AssertParam.throwIfNull(northWest, "northWest");
+        AssertParam.throwIfNull(northEast, "northEast");
+        AssertParam.throwIfNull(southEast, "southEast");
+        AssertParam.throwIfNull(southWest, "southWest");
+        AssertParam.throwIfNull(buildingCenterPoint, "buildingCenterPoint");
+        AssertParam.throwIfNull(rotationAngle, "rotationAngle");
+        AssertParam.throwIfNull(metersPerPixel, "metersPerPixel");
+
+        Building buildingToBeUpdated = this.getBuildingById(buildingId);
+
+        if(buildingToBeUpdated != null){
+            buildingToBeUpdated.setBuildingName(buildingName);
+            buildingToBeUpdated.setImagePixelWidth(imagePixelWidth);
+            buildingToBeUpdated.setImagePixelHeight(imagePixelHeight);
+            buildingToBeUpdated.setNorthWest(northWest);
+            buildingToBeUpdated.setNorthEast(northEast);
+            buildingToBeUpdated.setSouthEast(southEast);
+            buildingToBeUpdated.setSouthWest(southWest);
+            buildingToBeUpdated.setCenterPoint(buildingCenterPoint);
+            buildingToBeUpdated.setRotationAngle(rotationAngle);
+            buildingToBeUpdated.setMetersPerPixel(metersPerPixel);
+
+            BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+            return buildingRepository.save(buildingToBeUpdated) != null;
+        }
+
+        return false;
+
 
     }
 
