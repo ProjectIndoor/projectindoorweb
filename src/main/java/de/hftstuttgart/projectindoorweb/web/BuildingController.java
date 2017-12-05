@@ -3,6 +3,7 @@ package de.hftstuttgart.projectindoorweb.web;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,18 +54,14 @@ public class BuildingController {
         return new ResponseEntity<GetSingleBuilding>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Updates a given building by its ID.", nickname = "building/updateBuildingByBuildingId",
+    @ApiOperation(value = "Updates a given building by the given JSON body.", nickname = "building/updateBuilding",
             notes = TransmissionConstants.UPDATE_BUILDING_NOTE)
-    @RequestMapping(path = "/updateBuildingByBuildingId", method = GET)
-    public boolean updateBuildingByBuildingId(
-            @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
-                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                    String buildingIdentifier) {
+    @RequestMapping(path = "/updateBuilding", method = GET)
+    public boolean updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
 
-        return restTransmissionService.updateBuilding(buildingIdentifier);
+        //return restTransmissionService.updateBuilding(buildingIdentifier);
+        return false;
     }
-
-
 
 
 }

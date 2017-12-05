@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UpdateBuilding {
 
+    private long id;
     private String buildingName;
     private int numberOfFloors;
     private int imagePixelWidth;
@@ -18,7 +19,8 @@ public class UpdateBuilding {
     private double metersPerPixel;
 
     @JsonCreator
-    public UpdateBuilding(@JsonProperty("buildingName") String buildingName,
+    public UpdateBuilding(@JsonProperty("buildingId") long buildingId,
+                          @JsonProperty("buildingName") String buildingName,
                           @JsonProperty("numberOfFloors") int numberOfFloors,
                           @JsonProperty("imagePixelWidth") int imagePixelWidth,
                           @JsonProperty("imagePixelHeight") int imagePixelHeight,
@@ -30,6 +32,7 @@ public class UpdateBuilding {
                           @JsonProperty("rotationAngle") double rotationAngle,
                           @JsonProperty("metersPerPixel") double metersPerPixel) {
 
+        this.id = buildingId;
         this.buildingName = buildingName;
         this.numberOfFloors = numberOfFloors;
         this.imagePixelWidth = imagePixelWidth;
