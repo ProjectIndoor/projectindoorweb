@@ -29,10 +29,10 @@ public class PositioningController {
     @ApiOperation(value = "Processes Radio Map files", nickname = "position/processRadioMapFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
     public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                        @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM)
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE, required = true) String buildingIdentifier,
+                                        @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
                                         MultipartFile[] radioMapFiles,
-                                        @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM)
+                                        @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
                                         MultipartFile transformedPointsFile) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFile);
     }
@@ -41,7 +41,7 @@ public class PositioningController {
     @RequestMapping(path = "/processEvalFiles", method = POST)
     public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                    @RequestParam (value = TransmissionConstants.RADIOMAP_FILES_PARAM)
+                                    @RequestParam (value = TransmissionConstants.EVAL_FILE_PARAM)
                                     MultipartFile[] evalFiles) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
     }
