@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
-    boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles);
+    boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile);
 
     List<GeneratePositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
 
