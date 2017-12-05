@@ -20,6 +20,8 @@ public interface PersistencyService {
 
     Building getBuildingById(long buildingId);
 
+    boolean updateBuilding(long buildingId);
+
     boolean saveEvaalFiles(List<EvaalFile> evaalFiles);
 
     EvaalFile getEvaalFileForId(long evaalFileId);

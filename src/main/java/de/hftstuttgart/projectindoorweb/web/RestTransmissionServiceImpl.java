@@ -300,6 +300,25 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
+    public boolean updateBuilding(String buildingIdentifier) {
+
+        AssertParam.throwIfNullOrEmpty(buildingIdentifier, "buildingIdentifier");
+
+        boolean result = true;
+        try{
+            long buildingId = Long.valueOf(buildingIdentifier);
+
+            result =  this.persistencyService.updateBuilding(buildingId);
+
+        }catch(NumberFormatException ex){
+            ex.printStackTrace();
+            result = false;
+        }finally {
+            return result;
+        }
+    }
+
+    @Override
     public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {//TODO use reflection instead if viable
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
 

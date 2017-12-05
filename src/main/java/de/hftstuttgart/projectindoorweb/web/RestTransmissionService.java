@@ -43,4 +43,6 @@ public interface RestTransmissionService { //If too many methods get introduced,
     List<GetAllBuildings>getAllBuildings();
 
     GetSingleBuilding getSingleBuilding(String buildingIdentifier);
+
+    boolean updateBuilding(String buildingIdentifier);
 }

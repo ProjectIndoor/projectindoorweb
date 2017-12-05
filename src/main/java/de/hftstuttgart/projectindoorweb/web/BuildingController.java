@@ -42,7 +42,7 @@ public class BuildingController {
         return new ResponseEntity<List<GetAllBuildings>>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Retrieves detailes information about a single building", nickname = "building/getBuildingByBuildingId",
+    @ApiOperation(value = "Retrieves detailed information about a single building", nickname = "building/getBuildingByBuildingId",
             notes = TransmissionConstants.GET_SINGLE_BUILDING_NOTE)
     @RequestMapping(path = "/getBuildingByBuildingId", method = GET)
     public ResponseEntity<GetSingleBuilding> getBuildingByBuildingId(
@@ -52,6 +52,19 @@ public class BuildingController {
         GetSingleBuilding result = restTransmissionService.getSingleBuilding(buildingIdentifier);
         return new ResponseEntity<GetSingleBuilding>(result, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Updates a given building by its ID.", nickname = "building/updateBuildingByBuildingId",
+            notes = TransmissionConstants.UPDATE_BUILDING_NOTE)
+    @RequestMapping(path = "/updateBuildingByBuildingId", method = GET)
+    public boolean updateBuildingByBuildingId(
+            @RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String buildingIdentifier) {
+
+        return restTransmissionService.updateBuilding(buildingIdentifier);
+    }
+
+
 
 
 }

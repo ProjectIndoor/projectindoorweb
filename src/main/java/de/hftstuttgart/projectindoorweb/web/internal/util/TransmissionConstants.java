@@ -33,6 +33,7 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String GENERATE_POSITIONRESULTS_NOTE = "Generates and returns position results. Returns a list of generated position results or an empty list if generation was not successful or given parameters were invalid.";
     public static final String GET_ALL_BUILDINGS_NOTE = "Returns a list of buildings or an empty list if no buildings are available.";
     public static final String GET_SINGLE_BUILDING_NOTE = "Returns detailed information about a building by its ID or null if a building with the specified ID does not exist.";
+    public static final String UPDATE_BUILDING_NOTE = "Updates a given building by its ID. Returns 'true' if the operation was successful, 'false' otherwise";
     public static final String CALCULATE_POSITION_NOTE = "Calculates and returns a position for a wifi reading line. Returns an empty position if given data was invalid.";
     public static final String GET_POSITIONRESULTS_NOTE = "Returns a list of position results which are associated with a given project identifier.";
     public static final String GET_EVALUATIONENTRIES_NOTE = "Returns a list of evaluation entries which are associated with a given building identifier.";

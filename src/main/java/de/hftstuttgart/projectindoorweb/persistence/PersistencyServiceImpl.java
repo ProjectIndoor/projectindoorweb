@@ -210,6 +210,13 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
+    public boolean updateBuilding(long buildingId) {
+
+        return true;
+
+    }
+
+    @Override
     public boolean saveEvaalFiles(List<EvaalFile> evaalFiles) {
 
         AssertParam.throwIfNull(evaalFiles, "evaalFiles");
