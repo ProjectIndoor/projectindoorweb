@@ -15,9 +15,9 @@ import java.util.Iterator;
 
 public class TransformationHelper {
 
-    public static double getDistance(LatLongCoord point1, LatLongCoord point2, LatLongCoord SE, LatLongCoord SW) {
-        XYPoint p1 = Transformation.transformDataWGStoXY(new LLPoint("",point1,0,0),SE,SW);
-        XYPoint p2 = Transformation.transformDataWGStoXY(new LLPoint("",point2,0,0),SE,SW);
+    public static double getDistance(LatLongCoord point1, LatLongCoord point2, LatLongCoord SW, LatLongCoord SE) {
+        XYPoint p1 = Transformation.transformDataWGStoXY(new LLPoint("",point1,0,0),SW,SE);
+        XYPoint p2 = Transformation.transformDataWGStoXY(new LLPoint("",point2,0,0),SW,SE);
         return Math.sqrt(Math.pow(p1.getCoords().x - p2.getCoords().x,2)+Math.pow(p1.getCoords().y - p2.getCoords().y,2));
     }
 
@@ -78,9 +78,9 @@ public class TransformationHelper {
         LatLongCoord SE = new LatLongCoord(b.getSouthEast().getX(),b.getSouthEast().getY());
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
         LatLongCoord NE = new LatLongCoord(b.getNorthEast().getX(),b.getNorthEast().getY());
-        XYPoint pXY = Transformation.transformDataWGStoXY(new LLPoint("",point,0,0),SE,SW);
-        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
-        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+        XYPoint pXY = Transformation.transformDataWGStoXY(new LLPoint("",point,0,0),SW,SE);
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SW,SE));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SW,SE));
 
         XYPoint pPict = Transformation.transformDataXYtoPictXY(pXY,scaleX,scaleY,picHeight,0,0);
         double[] result = new double[2];
@@ -92,7 +92,7 @@ public class TransformationHelper {
     public static double[] wgsToXY(Building b, LatLongCoord point) {
         LatLongCoord SE = new LatLongCoord(b.getSouthEast().getX(),b.getSouthEast().getY());
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
-        XYPoint pXY = Transformation.transformDataWGStoXY(new LLPoint("",point,0,0),SE,SW);
+        XYPoint pXY = Transformation.transformDataWGStoXY(new LLPoint("",point,0,0),SW,SE);
         double[] result = new double[2];
         result[0] = pXY.getCoords().x;
         result[1] = pXY.getCoords().y;
@@ -101,7 +101,7 @@ public class TransformationHelper {
     public static double[] xyToWGS(Building b, LocalXYCoord point) {
         LatLongCoord SE = new LatLongCoord(b.getSouthEast().getX(),b.getSouthEast().getY());
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
-        LLPoint pLL = Transformation.transformDataXYtoWGS(new XYPoint("",point,0,0),SE,SW);
+        LLPoint pLL = Transformation.transformDataXYtoWGS(new XYPoint("",point,0,0),SW,SE);
         double[] result = new double[2];
         result[0] = pLL.getCoords().latitude;
         result[1] = pLL.getCoords().longitude;
@@ -112,8 +112,8 @@ public class TransformationHelper {
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
         LatLongCoord NE = new LatLongCoord(b.getNorthEast().getX(),b.getNorthEast().getY());
 
-        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
-        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SW,SE));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SW,SE));
 
         XYPoint pPict = Transformation.transformDataXYtoPictXY(new XYPoint("",point,0,0),scaleX,scaleY,picHeight,0,0);
         double[] result = new double[2];
@@ -126,8 +126,8 @@ public class TransformationHelper {
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
         LatLongCoord NE = new LatLongCoord(b.getNorthEast().getX(),b.getNorthEast().getY());
 
-        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
-        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SW,SE));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SW,SE));
 
         XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("",point,0,0),scaleX,scaleY,picHeight,0,0);
 
@@ -141,12 +141,12 @@ public class TransformationHelper {
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
         LatLongCoord NE = new LatLongCoord(b.getNorthEast().getX(),b.getNorthEast().getY());
 
-        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
-        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SW,SE));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SW,SE));
 
         XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("",point,0,0),scaleX,scaleY,picHeight,0,0);
 
-        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,SE,SW);
+        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,SW,SE);
 
         double[] result = new double[2];
         result[0] = pLL.getCoords().latitude;
@@ -167,12 +167,12 @@ public class TransformationHelper {
 
     private static double[] pictToWGS(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord point, double picWidth, double picHeight, double picSizeY, double bpX, double bpY) {
 
-        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
-        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SW,SE));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SW,SE));
 
         XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("",point,0,0),scaleX,scaleY,picSizeY,bpX,bpY);
 
-        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,SE,SW);
+        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,SW,SE);
 
         double[] result = new double[2];
         result[0] = pLL.getCoords().latitude;
