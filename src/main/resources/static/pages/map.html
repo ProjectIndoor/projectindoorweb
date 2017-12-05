@@ -19,13 +19,13 @@
         <div ng-include="'pages/forms/map/algorithm-chooser.html'"></div>
 
         <!-- Save project field -->
-        <div layout="row" ng>
+        <div ng-hide="projectHide()" layout="row">
             <md-input-container>
                 <label>Projectname</label>
-                <input/>
+                <input ng-model="projectData.projectName"/>
             </md-input-container>
 
-            <md-button class="md-button">
+            <md-button ng-click="saveProject" class="md-button">
                 Save Project
             </md-button>
         </div>

@@ -317,6 +317,8 @@ app.factory("dataService", DataService);
 function CalculationService($http) {
     //api endpoints
     var generatePositionsUrl = '/position/generateBatchPositionResults';
+    var createProjectUrl = '/project/saveNewProject';
+
     // properties
     var buildingId = 1;
     var evalFileId = 1;
@@ -330,11 +332,6 @@ function CalculationService($http) {
 
     // workflow progress
     var workflowProgress = 0;
-
-    function updateCalculationData() {
-        // update broadcast
-        $rootScope.$broadcast('updatedCalculationData');
-    }
 
     return {
         // set and get progress
@@ -390,6 +387,27 @@ function CalculationService($http) {
                 console.log("Retrieved positions:");
                 console.log(response);
 
+                return response.data;
+            });
+            return promise;
+        },
+        saveCurrentProject: function (projectName) {
+            var data = {
+                projectName: projectName,
+                buildingIdentifier: buildingId,
+                evaluationFile: evalFileId,
+                radioMapFiles: radioMapFileIds,
+                algorithmType: algorithmType,
+                projectParameters: projectParameters,
+                withPixelPosition: asPixel
+            };
+            var config = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            var promise = $http.post(createProjectUrl, data, config).then(function (response) {
+                console.log("Saved project:" + projectName);
                 return response.data;
             });
             return promise;
@@ -506,7 +524,8 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 });
 
 // controller which handles map configuration panel
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calculationService) {
+    // Logic to open/hide sidebar
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
 
@@ -515,6 +534,21 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
             $mdSidenav(componentId).toggle();
         };
     }
+
+    // project settings
+    // properties
+    $scope.projectData = {
+        projectName: ""
+    };
+
+    $scope.saveProject = function () {
+        calculationService.saveCurrentProject($scope.projectData.projectName);
+    };
+
+    // decide when to hide/show project interface
+    $scope.projectHide = function () {
+        return calculationService.flowProgress() < 2;
+    };
 });
 
 // controller which handles the map
