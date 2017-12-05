@@ -6,13 +6,13 @@ import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.XYPoint;
 
-class Transformation {
+public class Transformation {
 
-    static LLPoint transformDataXYtoWGS(XYPoint point, LatLongCoord SE, LatLongCoord SW) {
+    public static LLPoint transformDataXYtoWGS(XYPoint point, LatLongCoord SE, LatLongCoord SW) {
         return new LLPoint(point.getPointNumber(), MyGeoMath.xy2ll(new LocalXYCoord(point.getCoords().x,point.getCoords().y),SE,SW),point.getBuilding(),point.getFloor());
     }
 
-    static XYPoint transformDataWGStoXY(LLPoint point, LatLongCoord SE, LatLongCoord SW) {
+    public static XYPoint transformDataWGStoXY(LLPoint point, LatLongCoord SE, LatLongCoord SW) {
         return new XYPoint(point.getPointNumber(), MyGeoMath.ll2xy(new LatLongCoord(point.getCoords().latitude,point.getCoords().longitude),SE,SW),point.getBuilding(),point.getFloor());
     }
 
