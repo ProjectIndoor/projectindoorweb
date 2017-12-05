@@ -29,7 +29,6 @@ class Transformation {
         double y;
         double x;
         if (bpX == 0.) {
-
             x = (PictPoint.getCoords().x) * scaleX;
         }else {
             x = (PictPoint.getCoords().x - bpX) * scaleX;
@@ -47,8 +46,7 @@ class Transformation {
         double y;
         double x;
         if (bpX == 0.) {
-
-            x = (Point.getCoords().x) * scaleX;
+            x = (Point.getCoords().x) / scaleX;
         }else {
             x = (Point.getCoords().x + bpX) / scaleX;
         }
@@ -57,9 +55,6 @@ class Transformation {
         }else {
             y = (((-Point.getCoords().y / scaleY) + pictureSizeY) - (( -bpY / scaleY) + pictureSizeY));
         }
-
-
-        y = Math.round((-Point.getCoords().y + bpY )/scaleY) + pictureSizeY;
         return new XYPoint(Point.getPointNumber(), new LocalXYCoord(Math.round(x),Math.round(y)),Point.getBuilding(),Point.getFloor());
     }
 
