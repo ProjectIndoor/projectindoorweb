@@ -40,6 +40,40 @@ public class TransformationHelper {
         }
     }
 
+    public static double[] calculateSouthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+        LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
+        return pictToWGS(center,new LocalXYCoord(imgSizeX,imgSizeY),centerXY,angle,scale,imgSizeY);
+    }
+
+    public static double[] calculateSouthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+        LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
+        return pictToWGS(center,new LocalXYCoord(0,imgSizeY),centerXY,angle,scale,imgSizeY);
+    }
+    public static double[] calculateNorthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+        LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
+        return pictToWGS(center,new LocalXYCoord(imgSizeX,0),centerXY,angle,scale,imgSizeY);
+    }
+    public static double[] calculateNorthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+        LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
+        return pictToWGS(center,new LocalXYCoord(0,0),centerXY,angle,scale,imgSizeY);
+    }
+    //Method to calculate the image Corner out of the building corners
+    public static double[] calculateNorthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+        return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(0,0),buildingSizeX ,buildingSizeY,imgSizeY, BP.x,BP.y);
+    }
+    //Method to calculate the image Corner out of the building corners
+    public static double[] calculateNorthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+        return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(imgSizeX,0),buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
+    }
+    //Method to calculate the image Corner out of the building corners
+    public static double[] calculateSouthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+        return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(0,imgSizeY), buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
+    }
+    //Method to calculate the image Corner out of the building corners
+    public static double[] calculateSouthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+        return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(imgSizeX,imgSizeY),buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
+    }
+
     public static double[] wgsToPict(Building b, LatLongCoord point, int picWidth, int picHeight) {
         LatLongCoord SE = new LatLongCoord(b.getSouthEast().getX(),b.getSouthEast().getY());
         LatLongCoord SW = new LatLongCoord(b.getSouthWest().getX(),b.getSouthWest().getY());
@@ -119,5 +153,30 @@ public class TransformationHelper {
         result[1] = pLL.getCoords().longitude;
         return result;
     }
+    public static double[] pictToWGS(LatLongCoord center, LocalXYCoord point, LocalXYCoord BP,double angle, double scale, double picHeight) {
 
+        XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("",point,0,0),scale,scale,picHeight,BP.x,BP.y);
+
+        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,center,angle);
+
+        double[] result = new double[2];
+        result[0] = pLL.getCoords().latitude;
+        result[1] = pLL.getCoords().longitude;
+        return result;
+    }
+
+    private static double[] pictToWGS(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord point, double picWidth, double picHeight, double picSizeY, double bpX, double bpY) {
+
+        double scaleX = calculateScaleFactor(picWidth,getDistance(SE,SW,SE,SW));
+        double scaleY = calculateScaleFactor(picHeight,getDistance(SE,NE,SE,SW));
+
+        XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("",point,0,0),scaleX,scaleY,picSizeY,bpX,bpY);
+
+        LLPoint pLL = Transformation.transformDataXYtoWGS(pXY,SE,SW);
+
+        double[] result = new double[2];
+        result[0] = pLL.getCoords().latitude;
+        result[1] = pLL.getCoords().longitude;
+        return result;
+    }
 }
