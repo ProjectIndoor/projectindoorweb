@@ -529,7 +529,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav) {
 function MapController($scope, mapService) {
 
     // example map service setup
-    mapService.setMap("/maps/car.png", 1282, 818);
+    mapService.setMap("/maps/hft_2_floor_3.png", 3688, 2304);
 
     // setup usage of map service
     angular.extend($scope, {
@@ -547,24 +547,24 @@ function BuildingImportController($scope, uploadService, dataService) {
 
     $scope.building = {
         buildingName: "",
-        numberOfFloors: 0,
-        imagePixelWidth: 1282,
-        imagePixelHeight: 818,
+        numberOfFloors: 1,
+        imagePixelWidth: 3688,
+        imagePixelHeight: 2304,
         northWestAnchor: {
-            latitude: 40.313342,
-            longitude: -3.484113
+            latitude: 48.78002331402018,
+            longitude: 9.173034525813376
         },
         northEastAnchor: {
-            latitude: 40.313438,
-            longitude: -3.483299
+            latitude: 48.77951340793322,
+            longitude: 9.173423636538017
         },
         southEastAnchor: {
-            latitude: 40.313041,
-            longitude: -3.483226
+            latitude: 48.77966682484418,
+            longitude: 9.1738866322615
         },
         southWestAnchor: {
-            latitude: 40.312959,
-            longitude: -3.484038
+            latitude: 48.78017673093113,
+            longitude: 9.173497521536861
         }
     };
 
@@ -657,7 +657,7 @@ function AlgorithmController($scope, dataService, calculationService, mapService
             for (var i = 0; i < posis.length; i++) {
                 var p = posis[i];
                 // api returns picture coordinates move them by height to match image
-                mapService.addRefPoint(p.x, p.y - 818);
+                mapService.addRefPoint(p.x, p.y);
             }
         });
     };
@@ -723,7 +723,7 @@ function LogImportController($scope, uploadService, dataService) {
 app.controller('LogImportCtrl', LogImportController);
 
 // controller which handles the eval import view
-function EvaluationImportController($scope, uploadService) {
+function EvaluationImportController($scope, dataService, uploadService) {
     // show file chooser on button click
     $scope.evalUpload = function () {
         angular.element(document.querySelector('#evalInputFile')).click();
