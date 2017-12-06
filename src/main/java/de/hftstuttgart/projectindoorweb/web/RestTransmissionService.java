@@ -15,11 +15,11 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile);
 
-    List<GeneratePositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
+    List<BatchPositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
 
-    GeneratePositionResult getPositionForWifiReading(GenerateSinglePositionResult generateSinglePositionResult);
+    SinglePositionResult getPositionForWifiReading(GenerateSinglePositionResult generateSinglePositionResult);
 
-    List<GeneratePositionResult> getPositionResultsForProjectIdentifier(String positionIdentifier);
+    List<BatchPositionResult> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
     long saveNewProject(SaveNewProject saveNewProject);
 

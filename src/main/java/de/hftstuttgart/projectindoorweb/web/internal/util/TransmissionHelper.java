@@ -1,10 +1,10 @@
 package de.hftstuttgart.projectindoorweb.web.internal.util;
 
+import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GeneratePositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TransmissionHelper {
 
-    public static  File convertMultipartFileToLocalFile(MultipartFile multipartFile) throws IOException {
+    public static File convertMultipartFileToLocalFile(MultipartFile multipartFile) throws IOException {
 
         File convertedFile = new File(multipartFile.getOriginalFilename());
         convertedFile.createNewFile();
@@ -27,24 +27,43 @@ public class TransmissionHelper {
 
     }
 
-    public static List<GeneratePositionResult> convertToCalculatedPositions(List<? extends PositionResult> positionResults) {
+    public static List<BatchPositionResult> convertToBatchPositionResults(List<? extends PositionResult> positionResults, Building building) {
 
 
-        List<GeneratePositionResult> result = new ArrayList<>(positionResults.size());
+        List<BatchPositionResult> result = new ArrayList<>(positionResults.size());
 
+        CalculatedPosition calculatedPosition;
+        Position position;
+        ReferencePosition referencePosition = null;
+        WifiPositionResult wifiPositionResult;
         for (PositionResult positionResult :
                 positionResults) {
-            result.add(new GeneratePositionResult(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84(), "To be implemented"));
+            calculatedPosition = new CalculatedPosition(positionResult.getX(), positionResult.getY(), positionResult.getZ(), positionResult.isWgs84());
+            if (positionResult instanceof WifiPositionResult) {
+                wifiPositionResult = (WifiPositionResult) positionResult;
+                if (wifiPositionResult.getPosiReference() != null) {
+                    position = wifiPositionResult.getPosiReference().getReferencePosition();
+                    referencePosition = new ReferencePosition(wifiPositionResult.getPosiReference().getPositionInSourceFile(),
+                            position.getX(), position.getY(), position.getZ(), position.isWgs84());
+                }
+            }
+
+            double distance = 0.0;
+            if(calculatedPosition != null && referencePosition != null){
+                distance = retrieveDistanceBetweenWgsPositions(calculatedPosition, referencePosition, building);
+            }
+
+            result.add(new BatchPositionResult(calculatedPosition, referencePosition, distance));
         }
 
         return result;
 
     }
 
-    public static GeneratePositionResult convertToCalculatedPosition(PositionResult positionResult){
+    public static SinglePositionResult convertToCalculatedPosition(PositionResult positionResult) {
 
-        return new GeneratePositionResult(positionResult.getX(), positionResult.getY(),
-                positionResult.getZ(), positionResult.isWgs84(), "To be implemented");
+        return new SinglePositionResult(positionResult.getX(), positionResult.getY(),
+                positionResult.getZ(), positionResult.isWgs84());
 
     }
 
@@ -59,12 +78,12 @@ public class TransmissionHelper {
         return result;
     }
 
-    public static List<GetEvaluationFilesForBuilding> convertToEvaluationEntries(List<EvaalFile> evaalFiles){
+    public static List<GetEvaluationFilesForBuilding> convertToEvaluationEntries(List<EvaalFile> evaalFiles) {
 
         List<GetEvaluationFilesForBuilding> evaluationEntries = new ArrayList<>(evaalFiles.size());
 
-        for (EvaalFile evaalFile:
-             evaalFiles) {
+        for (EvaalFile evaalFile :
+                evaalFiles) {
             evaluationEntries.add(new GetEvaluationFilesForBuilding(evaalFile.getId(), evaalFile.getSourceFileName()));
         }
 
@@ -72,12 +91,12 @@ public class TransmissionHelper {
 
     }
 
-    public static List<GetRadioMapFilesForBuilding> convertToRadioMapEntry(List<EvaalFile> evaalFiles){
+    public static List<GetRadioMapFilesForBuilding> convertToRadioMapEntry(List<EvaalFile> evaalFiles) {
 
         List<GetRadioMapFilesForBuilding> radioMapEntries = new ArrayList<>(evaalFiles.size());
 
-        for (EvaalFile evaalFile:
-             evaalFiles) {
+        for (EvaalFile evaalFile :
+                evaalFiles) {
 
             radioMapEntries.add(new GetRadioMapFilesForBuilding(evaalFile.getId(), evaalFile.getSourceFileName()));
 
@@ -87,10 +106,10 @@ public class TransmissionHelper {
 
     }
 
-    public static boolean areRequestedFilesPresent(EvaalFile[] evaalFiles){
+    public static boolean areRequestedFilesPresent(EvaalFile[] evaalFiles) {
 
-        for(int i = 0; i < evaalFiles.length; i++){
-            if(evaalFiles[i] == null){
+        for (int i = 0; i < evaalFiles.length; i++) {
+            if (evaalFiles[i] == null) {
                 return false;
             }
 
@@ -101,7 +120,7 @@ public class TransmissionHelper {
 
     }
 
-    public static GetSingleBuilding convertToGetSingleBuildingResultObject(Building building){
+    public static GetSingleBuilding convertToGetSingleBuildingResultObject(Building building) {
 
         long buildingId = building.getId();
         String buildingName = building.getBuildingName();
@@ -123,12 +142,12 @@ public class TransmissionHelper {
 
     }
 
-    public static List<GetSingleBuildingFloor> convertToGetSingleBuildingFloor(List<Floor> floors){
+    public static List<GetSingleBuildingFloor> convertToGetSingleBuildingFloor(List<Floor> floors) {
 
         List<GetSingleBuildingFloor> result = new ArrayList<>(floors.size());
 
-        for (Floor floor:
-             floors) {
+        for (Floor floor :
+                floors) {
             result.add(new GetSingleBuildingFloor(floor.getId(), floor.getLevel(), floor.getFloorMapUrl()));
         }
 
@@ -136,7 +155,7 @@ public class TransmissionHelper {
 
     }
 
-    public static List<GetSingleBuildingEvaalFile> convertToGetSingleBuildingEvaalFiles(List<EvaalFile> evaalFiles){
+    public static List<GetSingleBuildingEvaalFile> convertToGetSingleBuildingEvaalFiles(List<EvaalFile> evaalFiles) {
 
         List<GetSingleBuildingEvaalFile> result = new ArrayList<>(evaalFiles.size());
 
@@ -151,15 +170,87 @@ public class TransmissionHelper {
     }
 
 
-    public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position){
+    public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position) {
 
         return new BuildingPositionAnchor(position.getX(), position.getY());
 
     }
 
-    public static Position convertPositionAnchorToPosition(BuildingPositionAnchor buildingPositionAnchor){
+    public static Position convertPositionAnchorToPosition(BuildingPositionAnchor buildingPositionAnchor) {
 
         return new Position(buildingPositionAnchor.getLatitude(), buildingPositionAnchor.getLongitude(), 0.0, true);
+
+    }
+
+    public static List<WifiPositionResult> convertCalculatedResultsToPixelPositions(List<WifiPositionResult> wifiPositionResults,
+                                                                                    Building building) {
+
+        Position latLongPosition;
+        Position pixelPosition;
+        List<WifiPositionResult> convertedWifiPositionsResults = new ArrayList<>(wifiPositionResults.size());
+        PosiReference posiReference;
+        for (WifiPositionResult wifiPositionResult :
+                wifiPositionResults) {
+            latLongPosition = new Position(wifiPositionResult.getX(), wifiPositionResult.getY(), wifiPositionResult.getZ(), wifiPositionResult.isWgs84());
+            pixelPosition = retrievePositionAsPixels(building, latLongPosition);
+            wifiPositionResult.setX(pixelPosition.getX());
+            wifiPositionResult.setY(pixelPosition.getY());
+            wifiPositionResult.setZ(pixelPosition.getZ());
+            wifiPositionResult.setWgs84(pixelPosition.isWgs84());
+            posiReference = wifiPositionResult.getPosiReference();
+            latLongPosition = posiReference.getReferencePosition();
+            pixelPosition = retrievePositionAsPixels(building, latLongPosition);
+            wifiPositionResult.setPosiReference(new PosiReference(posiReference.getPositionInSourceFile(), posiReference.getAvgNumber(),
+                    pixelPosition, posiReference.getIntervalStart(), posiReference.getIntervalEnd(), posiReference.getFloor()));
+            convertedWifiPositionsResults.add(wifiPositionResult);
+        }
+
+        return convertedWifiPositionsResults;
+
+
+    }
+
+    public static WifiPositionResult convertCalculatedResultToPixelPosition(WifiPositionResult wifiPositionResult, Building building) {
+
+
+        Position latLongPosition;
+        Position pixelPosition;
+
+        latLongPosition = new Position(wifiPositionResult.getX(), wifiPositionResult.getY(), wifiPositionResult.getZ(), wifiPositionResult.isWgs84());
+        pixelPosition = retrievePositionAsPixels(building, latLongPosition);
+        wifiPositionResult.setX(pixelPosition.getX());
+        wifiPositionResult.setY(pixelPosition.getY());
+        wifiPositionResult.setZ(pixelPosition.getZ());
+        wifiPositionResult.setWgs84(pixelPosition.isWgs84());
+
+        return wifiPositionResult;
+
+    }
+
+    public static Position retrievePositionAsPixels(Building building, Position latLongPosition) {
+
+        LatLongCoord latLongCoord = new LatLongCoord(latLongPosition.getX(), latLongPosition.getY());
+        double[] positionInPixels = TransformationHelper.wgsToPict(building, latLongCoord,
+                building.getImagePixelWidth(), building.getImagePixelHeight());
+
+        return new Position(positionInPixels[0], positionInPixels[1], latLongPosition.getZ(), false);
+
+    }
+
+    public static double retrieveDistanceBetweenWgsPositions(CalculatedPosition calculatedPosition, ReferencePosition referencePosition, Building building){
+
+        Position southWest = building.getSouthWest();
+        Position southEast = building.getSouthEast();
+
+        if(southWest != null && southEast != null){
+            LatLongCoord position1Wrapper = new LatLongCoord(calculatedPosition.getX(), calculatedPosition.getY());
+            LatLongCoord position2Wrapper = new LatLongCoord(referencePosition.getX(), referencePosition.getY());
+            LatLongCoord southWestWrapper = new LatLongCoord(southWest.getX(), southWest.getY());
+            LatLongCoord southEastWrapper = new LatLongCoord(southEast.getX(), southEast.getY());
+            return TransformationHelper.getDistance(position1Wrapper, position2Wrapper, southWestWrapper, southEastWrapper);
+        }
+
+        return 0.0;
 
     }
 }
