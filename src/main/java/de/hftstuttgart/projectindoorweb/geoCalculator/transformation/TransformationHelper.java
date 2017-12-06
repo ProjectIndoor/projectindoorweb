@@ -40,37 +40,37 @@ public class TransformationHelper {
         }
     }
 
-    public static double[] calculateSouthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+    public static double[] calculateSouthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
         LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
         return pictToWGS(center,new LocalXYCoord(imgSizeX,imgSizeY),centerXY,angle,scale,imgSizeY);
     }
 
-    public static double[] calculateSouthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+    public static double[] calculateSouthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
         LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
         return pictToWGS(center,new LocalXYCoord(0,imgSizeY),centerXY,angle,scale,imgSizeY);
     }
-    public static double[] calculateNorthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+    public static double[] calculateNorthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
         LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
         return pictToWGS(center,new LocalXYCoord(imgSizeX,0),centerXY,angle,scale,imgSizeY);
     }
-    public static double[] calculateNorthEastCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
+    public static double[] calculateNorthWestCorner(LatLongCoord center, double angle, double scale, int imgSizeX, int imgSizeY) {
         LocalXYCoord centerXY = new LocalXYCoord(imgSizeX/2,imgSizeY/2);
         return pictToWGS(center,new LocalXYCoord(0,0),centerXY,angle,scale,imgSizeY);
     }
     //Method to calculate the image Corner out of the building corners
-    public static double[] calculateNorthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+    public static double[] calculateNorthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
         return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(0,0),buildingSizeX ,buildingSizeY,imgSizeY, BP.x,BP.y);
     }
     //Method to calculate the image Corner out of the building corners
-    public static double[] calculateNorthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+    public static double[] calculateNorthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
         return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(imgSizeX,0),buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
     }
     //Method to calculate the image Corner out of the building corners
-    public static double[] calculateSouthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+    public static double[] calculateSouthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
         return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(0,imgSizeY), buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
     }
     //Method to calculate the image Corner out of the building corners
-    public static double[] calculateSouthWestCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
+    public static double[] calculateSouthEastCorner(LatLongCoord SE, LatLongCoord SW, LatLongCoord NE, LocalXYCoord BP, double buildingSizeX, double buildingSizeY, int imgSizeX, int imgSizeY) {
         return TransformationHelper.pictToWGS(SE,SW,NE,new LocalXYCoord(imgSizeX,imgSizeY),buildingSizeX,buildingSizeY,imgSizeY, BP.x,BP.y);
     }
 
