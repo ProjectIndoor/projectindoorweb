@@ -3,7 +3,7 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class GeneratePositionResult {
+public class SinglePositionResult {
 
     private double x;
     private double y;
@@ -11,36 +11,46 @@ public class GeneratePositionResult {
 
     private boolean wgs84;
 
-    private String identifier;
-
     @JsonCreator
-    public GeneratePositionResult(@JsonProperty("x")double x, @JsonProperty("y")double y, @JsonProperty("z")double z, @JsonProperty("wgs84")boolean wgs84, @JsonProperty("identifier")String identifier) {
+    public SinglePositionResult(@JsonProperty("x") double x,
+                                @JsonProperty("y") double y,
+                                @JsonProperty("z") double z,
+                                @JsonProperty("wgs84") boolean wgs84) {
         this.x = x;
         this.y = y;
         this.z = z;
-
         this.wgs84 = wgs84;
-        this.identifier=identifier;
     }
 
     public double getX() {
         return x;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
     public double getY() {
         return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     public double getZ() {
         return z;
     }
 
+    public void setZ(double z) {
+        this.z = z;
+    }
+
     public boolean isWgs84() {
         return wgs84;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public void setWgs84(boolean wgs84) {
+        this.wgs84 = wgs84;
     }
-
 }

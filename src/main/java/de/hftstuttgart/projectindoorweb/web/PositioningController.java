@@ -48,31 +48,31 @@ public class PositioningController {
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/generateBatchPositionResults", method = POST)
-    public ResponseEntity<List<GeneratePositionResult>> generateBatchPositionResults(
+    public ResponseEntity<List<BatchPositionResult>> generateBatchPositionResults(
             @RequestBody GenerateBatchPositionResults generateBatchPositionResults) {
 
-        List<GeneratePositionResult> result = restTransmissionService.generatePositionResults(generateBatchPositionResults);
-        return new ResponseEntity<List<GeneratePositionResult>>(result, HttpStatus.OK);
+        List<BatchPositionResult> result = restTransmissionService.generatePositionResults(generateBatchPositionResults);
+        return new ResponseEntity<List<BatchPositionResult>>(result, HttpStatus.OK);
 
     }
 
     @ApiOperation(value = "Calculate position with wifi reading line", nickname = "position/generateSinglePositionResult", notes = TransmissionConstants.CALCULATE_POSITION_NOTE)
     @RequestMapping(path = "/generateSinglePositionResult", method = POST)
-    public ResponseEntity<GeneratePositionResult> generateSinglePositionResult(
+    public ResponseEntity<SinglePositionResult> generateSinglePositionResult(
             @RequestBody GenerateSinglePositionResult generateSinglePositionResult) {
 
-        GeneratePositionResult result = restTransmissionService.getPositionForWifiReading(generateSinglePositionResult);
-        return new ResponseEntity<GeneratePositionResult>(result, HttpStatus.OK);
+        SinglePositionResult result = restTransmissionService.getPositionForWifiReading(generateSinglePositionResult);
+        return new ResponseEntity<SinglePositionResult>(result, HttpStatus.OK);
 
     }
 
     @ApiOperation(value = "Get position results for project identifier", nickname = "position/getPositionResultsForProjectIdentifier", notes = TransmissionConstants.GET_POSITIONRESULTS_NOTE)
     @RequestMapping(path = "/getPositionResultsForProjectIdentifier", method = GET)
-    public ResponseEntity<List<GeneratePositionResult>> getPositionResultsForProjectIdentifier(
+    public ResponseEntity<List<BatchPositionResult>> getPositionResultsForProjectIdentifier(
             @RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String projectIdentifier) {
-        List<GeneratePositionResult> result = restTransmissionService.getPositionResultsForProjectIdentifier(projectIdentifier);
-        return new ResponseEntity<List<GeneratePositionResult>>(result, HttpStatus.OK);
+        List<BatchPositionResult> result = restTransmissionService.getPositionResultsForProjectIdentifier(projectIdentifier);
+        return new ResponseEntity<List<BatchPositionResult>>(result, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get evaluation entries for building identifier", nickname = "position/getEvaluationFilesForBuilding",

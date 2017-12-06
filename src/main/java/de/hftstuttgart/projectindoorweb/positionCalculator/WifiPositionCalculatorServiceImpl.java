@@ -18,12 +18,10 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
 
     @Override
-    public List<WifiPositionResult> calculatePositions(EvaalFile evaluationFile, EvaalFile[] radioMapFiles,
-                                                       Building building, boolean pixelPositionRequired) {
+    public List<WifiPositionResult> calculatePositions(EvaalFile evaluationFile, EvaalFile[] radioMapFiles) {
 
         AssertParam.throwIfNull(evaluationFile, "evaluationFile");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
-        AssertParam.throwIfNull(building, "building");
 
         int totalNumberOfWifiBlocks = evaluationFile.getWifiBlocks().size();
 
@@ -45,14 +43,26 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         for (RadioMap radioMap :
                 radioMaps) {
             rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(evaluationFile.getWifiBlocks(), 0);
-            previousResult = calculateSinglePosition(rssiSignals, radioMap, building, pixelPositionRequired);
+            previousResult = calculateSinglePosition(rssiSignals, radioMap);
+            if(!ConfigContainer.SMOOTHEN_WIFI_POSITIONS){
+                wifiPositionResults.add(previousResult);
+            }
 
             for (int block = 1; block < totalNumberOfWifiBlocks; block++) {
                 rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(evaluationFile.getWifiBlocks(), block);
-                result = calculateSinglePosition(rssiSignals, radioMap, building, pixelPositionRequired);
-                result = WifiMathHelper.smoothenWifiPosition(result, previousResult, result.getWeight());
+                result = calculateSinglePosition(rssiSignals, radioMap);
+
+                if(ConfigContainer.SMOOTHEN_WIFI_POSITIONS){
+                    result = WifiMathHelper.smoothenWifiPosition(result, previousResult, result.getWeight());
+                    previousResult = result;
+                }
+
+                if(evaluationFile.getRadioMap() != null){
+                    result.setPosiReference(EvaalFileHelper
+                            .findBestPostReferenceForWifiResult(result.getRssiSignalsAppTimestamp(), evaluationFile.getRadioMap()));
+                }
+
                 wifiPositionResults.add(result);
-                previousResult = result;
             }
         }
 
@@ -61,12 +71,10 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     }
 
     @Override
-    public WifiPositionResult calculateSinglePosition(String[] wifiReadings, EvaalFile[] radioMapFiles,
-                                                      Building building, boolean pixelPositionRequired) {
+    public WifiPositionResult calculateSinglePosition(String[] wifiReadings, EvaalFile[] radioMapFiles) {
 
         AssertParam.throwIfNull(wifiReadings, "wifiReadings");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
-        AssertParam.throwIfNull(building, "building");
 
         List<RssiSignal> rssiSignals = new ArrayList<>(wifiReadings.length);
 
@@ -78,17 +86,17 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         List<RadioMap> radioMaps = collectRadioMaps(radioMapFiles);
         RadioMap mergedRadioMap = EvaalFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
 
-        return calculateSinglePosition(rssiSignals, mergedRadioMap, building, pixelPositionRequired);
+        return calculateSinglePosition(rssiSignals, mergedRadioMap);
 
     }
 
-    private WifiPositionResult calculateSinglePosition(List<RssiSignal> rssiSignals, RadioMap radioMap,
-                                                       Building building, boolean pixelPositionRequired) {
+    private WifiPositionResult calculateSinglePosition(List<RssiSignal> rssiSignals, RadioMap radioMap) {
 
         List<RadioMapElement> radioMapElements = radioMap.getRadioMapElements();
         List<WifiPositionResult> preResults = new ArrayList<>();
 
         double positionWeight = 0.0;
+        double wifiBlockAppTimestamp = rssiSignals.get(0).getAppTimestamp();
         Position referencePosition;
         for (RadioMapElement radioMapElement :
                 radioMapElements) {
@@ -99,7 +107,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             }
             referencePosition = radioMapElement.getPosiReference().getReferencePosition();
             preResults.add(new WifiPositionResult(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(),
-                    true, positionWeight));
+                    true, positionWeight, wifiBlockAppTimestamp));
         }
 
         Collections.sort(preResults);
@@ -129,28 +137,15 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             resultPosition = MathHelper.multiplyPosition(resultPosition, Double.valueOf(1) / weightSum);
         }
 
-        if (pixelPositionRequired) {
-            resultPosition = retrievePositionAsPixels(building, resultPosition);
-            resultPosition.setWgs84(false);
-        }
-
         result = new WifiPositionResult(resultPosition.getX(), resultPosition.getY(), resultPosition.getZ(),
-                resultPosition.isWgs84(), weightSum);
+                resultPosition.isWgs84(), weightSum, wifiBlockAppTimestamp);
 
         return result;
 
 
     }
 
-    private Position retrievePositionAsPixels(Building building, Position latLongPosition) {
 
-        LatLongCoord latLongCoord = new LatLongCoord(latLongPosition.getX(), latLongPosition.getY());
-        double[] positionInPixels = TransformationHelper.wgsToPict(building, latLongCoord,
-                building.getImagePixelWidth(), building.getImagePixelHeight());
-
-        return new Position(positionInPixels[0], positionInPixels[1], latLongPosition.getZ(), false);
-
-    }
 
     private List<RadioMap> collectRadioMaps(EvaalFile[] radioMapFiles) {
 

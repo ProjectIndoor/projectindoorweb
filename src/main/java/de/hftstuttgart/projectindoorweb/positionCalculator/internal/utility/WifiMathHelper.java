@@ -55,6 +55,7 @@ public class WifiMathHelper {
 
         double factorOld = ConfigContainer.WIFI_POSITION_SMOOTHENER;
         double factorNew = Double.valueOf(1) - factorOld;
+        double averagedAppTimestamp = (previousResult.getRssiSignalsAppTimestamp() + currentResult.getRssiSignalsAppTimestamp()) / 2;
 
         Position newPreviousPosition = MathHelper.multiplyPosition(previousResult.getX(), previousResult.getY(),
                 previousResult.getZ(), previousResult.isWgs84(), factorOld);
@@ -62,7 +63,8 @@ public class WifiMathHelper {
                 currentResult.getZ(), currentResult.isWgs84(), factorNew);
 
         Position newPosition = MathHelper.addTwoPositions(newPreviousPosition, newCurrentPosition);
-        return new WifiPositionResult(newPosition.getX(), newPosition.getY(), newPosition.getZ(), newPosition.isWgs84(), weight);
+        return new WifiPositionResult(newPosition.getX(), newPosition.getY(), newPosition.getZ(), newPosition.isWgs84(),
+                weight, averagedAppTimestamp);
 
 
     }

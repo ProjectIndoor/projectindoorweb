@@ -345,17 +345,20 @@ public class EvaalFileHelper {
         List<String> wifiBlock = wifiBlocks.get(block).getWifiLines();
         Map<String, Double> rssiSignalsForMacs = retrieveRssiSignalsForWifiBlock(wifiBlock);
         Map<String, Integer> numberOfMacs = retrieveNumMacsForWifiBlock(wifiBlock);
+        double appTimestampForWifiBlock = Double.valueOf(wifiBlock.get(0).split(";")[1]);
 
         List<RssiSignal> result = new ArrayList<>();
         int numMacs;
+
         double rssiSignalStrength;
         boolean averaged;
         for (String currentMac:
                 rssiSignalsForMacs.keySet()) {
+
             numMacs = numberOfMacs.get(currentMac);
             rssiSignalStrength = rssiSignalsForMacs.get(currentMac) / Double.valueOf(numMacs);
             averaged = numMacs > 1;
-            result.add(new RssiSignal(0.0, rssiSignalStrength, averaged, new WifiAccessPoint(currentMac)));
+            result.add(new RssiSignal(appTimestampForWifiBlock, rssiSignalStrength, averaged, new WifiAccessPoint(currentMac)));
         }
 
         return result;
@@ -394,6 +397,23 @@ public class EvaalFileHelper {
                 result.put(mac, 1);
             }else{
                 result.put(mac, result.get(mac) + 1);
+            }
+        }
+
+        return result;
+
+    }
+
+    public static PosiReference findBestPostReferenceForWifiResult(double resultAppTimestamp, RadioMap radioMap){
+
+        PosiReference result = null;
+        PosiReference candidate;
+        for (RadioMapElement radioMapElement:
+             radioMap.getRadioMapElements()) {
+            candidate = radioMapElement.getPosiReference();
+            if(candidate.getIntervalStart() <= resultAppTimestamp && resultAppTimestamp < candidate.getIntervalEnd()){
+                result = candidate;
+                break;
             }
         }
 
