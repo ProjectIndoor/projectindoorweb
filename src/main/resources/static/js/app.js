@@ -445,6 +445,7 @@ app.factory("projectService", ProjectService);
 // Map service
 function MapService() {
     // map service properties
+    var calculatedPoints = [];
     var referencePoints = [];
     var staticMap = {};
     var mDefaults = {
@@ -457,6 +458,17 @@ function MapService() {
     };
 
     // styles
+    var calc_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0, 5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 1.0,
+                src: '/icons/calc-marker.png'
+            }
+        }
+    };
     var ref_marker_style = {
         image: {
             icon: {
@@ -471,7 +483,23 @@ function MapService() {
 
     // map service access functions
     return {
-        // Reference points
+        // calculated points
+        calcPoints: function () {
+            // return copy of list
+            return [].concat(calculatedPoints);
+        },
+        addCalcPoint: function (x, y) {
+            // Y needs mirroring because start of map is at bottom
+            var mirroredY = staticMap.source.imageSize[1] - y;
+            // create a new calculated point
+            var newCalc = {
+                coord: [x, mirroredY],
+                projection: 'pixel',
+                style: calc_marker_style
+            };
+            calculatedPoints.push(newCalc)
+        },
+        // reference points
         refPoints: function () {
             // return copy of list
             return [].concat(referencePoints);
@@ -479,7 +507,7 @@ function MapService() {
         addRefPoint: function (x, y) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = staticMap.source.imageSize[1] - y;
-            // create a new reference point
+            // create a new calculated point
             var newRef = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
@@ -568,6 +596,7 @@ function MapController($scope, mapService) {
         mapCenter: mapService.mapCenter,
         mapDefaults: mapService.mapDefaults,
         map: mapService.map,
+        calcPoints: mapService.calcPoints,
         refPoints: mapService.refPoints
     });
 }
@@ -687,9 +716,12 @@ function AlgorithmController($scope, dataService, calculationService, mapService
         calculationService.generatePositions().then(function (data) {
             var posis = data;
             for (var i = 0; i < posis.length; i++) {
-                var p = posis[i];
-                // api returns picture coordinates move them by height to match image
-                mapService.addRefPoint(p.x, p.y);
+                var calcP = posis[i].calculatedPosition;
+                var refP = posis[i].referencePosition;
+
+                // add points to map
+                mapService.addCalcPoint(calcP.x, calcP.y);
+                mapService.addRefPoint(refP.x, refP.y);
             }
         });
     };
