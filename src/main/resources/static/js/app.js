@@ -31,6 +31,11 @@ app.config(['$routeProvider',
                 templateUrl: 'pages/import.html',
                 controller: 'LogImportCtrl'
             })
+            .when('/project', {
+                title: 'Project',
+                templateUrl: 'pages/project.html',
+                controller: 'ProjectCtrl'
+            })
             .otherwise({
                 redirectTo: '/map'
             });
@@ -420,17 +425,18 @@ app.factory("calculationService", CalculationService);
 // Project service (create, persist and load projects)
 function ProjectService($http) {
     //api endpoints
-    var newProjUrl = '';
+    var allProjUrl = '/project/getAllProjects';
     // project properties
     var projectId;
     var projectName = 'DemoRun';
 
-
-    // project access function
-    return {
-        // access methods
-
-        // api calls
+    return{
+        getAllProjects: function () {
+            var promise = $http.get(allProjUrl).then(function (response) {
+                return response.data;
+            });
+            return promise;
+        }
     }
 }
 
@@ -784,6 +790,18 @@ function EvaluationImportController($scope, dataService, uploadService) {
 }
 
 app.controller('EvalImportCtrl', EvaluationImportController);
+
+//Controller to handle the projects
+function ProjectController($scope, projectService) {
+    $scope.projects = projectService.getAllProjects();
+    $scope.projects = [
+        { name: 'Project 1'},
+        { name: 'Project 2'},
+        { name: 'Project 3'}
+    ];
+}
+
+app.controller('ProjectCtrl', ProjectController);
 
 /**
  * ----------------------------------------------
