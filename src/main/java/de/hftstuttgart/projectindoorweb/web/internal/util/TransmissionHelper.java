@@ -5,6 +5,7 @@ import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.Transformat
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import org.hibernate.engine.jdbc.batch.spi.Batch;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class TransmissionHelper {
             }
 
             double distance = 0.0;
-            if(calculatedPosition != null && referencePosition != null){
+            if (calculatedPosition != null && referencePosition != null) {
                 distance = retrieveDistanceBetweenWgsPositions(calculatedPosition, referencePosition, building);
             }
 
@@ -182,30 +183,35 @@ public class TransmissionHelper {
 
     }
 
-    public static List<WifiPositionResult> convertCalculatedResultsToPixelPositions(List<WifiPositionResult> wifiPositionResults,
+    public static List<BatchPositionResult> convertCalculatedResultsToPixelPositions(List<BatchPositionResult> batchPositionResults,
                                                                                     Building building) {
 
         Position latLongPosition;
         Position pixelPosition;
-        List<WifiPositionResult> convertedWifiPositionsResults = new ArrayList<>(wifiPositionResults.size());
-        PosiReference posiReference;
-        for (WifiPositionResult wifiPositionResult :
-                wifiPositionResults) {
-            latLongPosition = new Position(wifiPositionResult.getX(), wifiPositionResult.getY(), wifiPositionResult.getZ(), wifiPositionResult.isWgs84());
+        List<BatchPositionResult> convertedBatchPositionResults = new ArrayList<>(batchPositionResults.size());
+        CalculatedPosition calculatedPosition;
+        ReferencePosition referencePosition;
+        for (BatchPositionResult batchPositionResult :
+                batchPositionResults) {
+            calculatedPosition = batchPositionResult.getCalculatedPosition();
+            latLongPosition = new Position(calculatedPosition.getX(), calculatedPosition.getY(), calculatedPosition.getZ(), calculatedPosition.isWgs84());
             pixelPosition = retrievePositionAsPixels(building, latLongPosition);
-            wifiPositionResult.setX(pixelPosition.getX());
-            wifiPositionResult.setY(pixelPosition.getY());
-            wifiPositionResult.setZ(pixelPosition.getZ());
-            wifiPositionResult.setWgs84(pixelPosition.isWgs84());
-            posiReference = wifiPositionResult.getPosiReference();
-            latLongPosition = posiReference.getReferencePosition();
+            calculatedPosition.setX(pixelPosition.getX());
+            calculatedPosition.setY(pixelPosition.getY());
+            calculatedPosition.setZ(pixelPosition.getZ());
+            calculatedPosition.setWgs84(pixelPosition.isWgs84());
+            batchPositionResult.setCalculatedPosition(calculatedPosition);
+            referencePosition = batchPositionResult.getReferencePosition();
+            latLongPosition = new Position(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(), referencePosition.isWgs84());
             pixelPosition = retrievePositionAsPixels(building, latLongPosition);
-            wifiPositionResult.setPosiReference(new PosiReference(posiReference.getPositionInSourceFile(), posiReference.getAvgNumber(),
-                    pixelPosition, posiReference.getIntervalStart(), posiReference.getIntervalEnd(), posiReference.getFloor()));
-            convertedWifiPositionsResults.add(wifiPositionResult);
+            referencePosition.setX(pixelPosition.getX());
+            referencePosition.setY(pixelPosition.getY());
+            referencePosition.setZ(pixelPosition.getZ());
+            batchPositionResult.setReferencePosition(referencePosition);
+            convertedBatchPositionResults.add(batchPositionResult);
         }
 
-        return convertedWifiPositionsResults;
+        return convertedBatchPositionResults;
 
 
     }
@@ -237,12 +243,12 @@ public class TransmissionHelper {
 
     }
 
-    public static double retrieveDistanceBetweenWgsPositions(CalculatedPosition calculatedPosition, ReferencePosition referencePosition, Building building){
+    public static double retrieveDistanceBetweenWgsPositions(CalculatedPosition calculatedPosition, ReferencePosition referencePosition, Building building) {
 
         Position southWest = building.getSouthWest();
         Position southEast = building.getSouthEast();
 
-        if(southWest != null && southEast != null){
+        if (southWest != null && southEast != null) {
             LatLongCoord position1Wrapper = new LatLongCoord(calculatedPosition.getX(), calculatedPosition.getY());
             LatLongCoord position2Wrapper = new LatLongCoord(referencePosition.getX(), referencePosition.getY());
             LatLongCoord southWestWrapper = new LatLongCoord(southWest.getX(), southWest.getY());

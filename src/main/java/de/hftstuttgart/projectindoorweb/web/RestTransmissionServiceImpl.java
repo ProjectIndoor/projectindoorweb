@@ -82,10 +82,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                     List<WifiPositionResult> retrievedWifiResults =
                             (List<WifiPositionResult>) this.positionCalculatorService.
                                     calculatePositions(evaluationFile, radioMapFiles);
-                    if(generateBatchPositionResults.isWithPixelPosition()){
-                        retrievedWifiResults = TransmissionHelper.convertCalculatedResultsToPixelPositions(retrievedWifiResults, building);
-                    }
+
                     result = TransmissionHelper.convertToBatchPositionResults(retrievedWifiResults, building);
+                    if(generateBatchPositionResults.isWithPixelPosition()){
+                        result = TransmissionHelper.convertCalculatedResultsToPixelPositions(result, building);
+                    }
 
                 }
 
