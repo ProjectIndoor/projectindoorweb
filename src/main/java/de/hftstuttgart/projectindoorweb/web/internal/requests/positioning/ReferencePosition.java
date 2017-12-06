@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReferencePosition {
 
+    private int positionId;
+
     private double x;
     private double y;
     private double z;
@@ -12,14 +14,25 @@ public class ReferencePosition {
     private boolean wgs84;
 
     @JsonCreator
-    public ReferencePosition(@JsonProperty("x") double x,
-                              @JsonProperty("y") double y,
-                              @JsonProperty("z") double z,
-                              @JsonProperty("wgs84") boolean wgs84) {
+    public ReferencePosition(@JsonProperty("positionId") int positionId,
+                             @JsonProperty("x") double x,
+                             @JsonProperty("y") double y,
+                             @JsonProperty("z") double z,
+                             @JsonProperty("wgs84") boolean wgs84) {
+
+        this.positionId = positionId;
         this.x = x;
         this.y = y;
         this.z = z;
         this.wgs84 = wgs84;
+    }
+
+    public int getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(int positionId) {
+        this.positionId = positionId;
     }
 
     public double getX() {

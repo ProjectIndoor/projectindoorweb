@@ -27,7 +27,7 @@ public class TransmissionHelper {
 
     }
 
-    public static List<BatchPositionResult> convertToBatchPositionResults(List<? extends PositionResult> positionResults) {
+    public static List<BatchPositionResult> convertToBatchPositionResults(List<? extends PositionResult> positionResults, Building building) {
 
 
         List<BatchPositionResult> result = new ArrayList<>(positionResults.size());
@@ -43,11 +43,17 @@ public class TransmissionHelper {
                 wifiPositionResult = (WifiPositionResult) positionResult;
                 if (wifiPositionResult.getPosiReference() != null) {
                     position = wifiPositionResult.getPosiReference().getReferencePosition();
-                    referencePosition = new ReferencePosition(position.getX(), position.getY(), position.getZ(), position.isWgs84());
+                    referencePosition = new ReferencePosition(wifiPositionResult.getPosiReference().getPositionInSourceFile(),
+                            position.getX(), position.getY(), position.getZ(), position.isWgs84());
                 }
             }
 
-            result.add(new BatchPositionResult(calculatedPosition, referencePosition, 0));
+            double distance = 0.0;
+            if(calculatedPosition != null && referencePosition != null){
+                distance = retrieveDistanceBetweenWgsPositions(calculatedPosition, referencePosition, building);
+            }
+
+            result.add(new BatchPositionResult(calculatedPosition, referencePosition, distance));
         }
 
         return result;
@@ -182,6 +188,7 @@ public class TransmissionHelper {
         Position latLongPosition;
         Position pixelPosition;
         List<WifiPositionResult> convertedWifiPositionsResults = new ArrayList<>(wifiPositionResults.size());
+        PosiReference posiReference;
         for (WifiPositionResult wifiPositionResult :
                 wifiPositionResults) {
             latLongPosition = new Position(wifiPositionResult.getX(), wifiPositionResult.getY(), wifiPositionResult.getZ(), wifiPositionResult.isWgs84());
@@ -190,10 +197,11 @@ public class TransmissionHelper {
             wifiPositionResult.setY(pixelPosition.getY());
             wifiPositionResult.setZ(pixelPosition.getZ());
             wifiPositionResult.setWgs84(pixelPosition.isWgs84());
-            latLongPosition = wifiPositionResult.getPosiReference().getReferencePosition();
+            posiReference = wifiPositionResult.getPosiReference();
+            latLongPosition = posiReference.getReferencePosition();
             pixelPosition = retrievePositionAsPixels(building, latLongPosition);
-            wifiPositionResult.setPosiReference(new PosiReference(0, 0,
-                    pixelPosition, 0, 0, null));
+            wifiPositionResult.setPosiReference(new PosiReference(posiReference.getPositionInSourceFile(), posiReference.getAvgNumber(),
+                    pixelPosition, posiReference.getIntervalStart(), posiReference.getIntervalEnd(), posiReference.getFloor()));
             convertedWifiPositionsResults.add(wifiPositionResult);
         }
 
@@ -226,6 +234,23 @@ public class TransmissionHelper {
                 building.getImagePixelWidth(), building.getImagePixelHeight());
 
         return new Position(positionInPixels[0], positionInPixels[1], latLongPosition.getZ(), false);
+
+    }
+
+    public static double retrieveDistanceBetweenWgsPositions(CalculatedPosition calculatedPosition, ReferencePosition referencePosition, Building building){
+
+        Position southWest = building.getSouthWest();
+        Position southEast = building.getSouthEast();
+
+        if(southWest != null && southEast != null){
+            LatLongCoord position1Wrapper = new LatLongCoord(calculatedPosition.getX(), calculatedPosition.getY());
+            LatLongCoord position2Wrapper = new LatLongCoord(referencePosition.getX(), referencePosition.getY());
+            LatLongCoord southWestWrapper = new LatLongCoord(southWest.getX(), southWest.getY());
+            LatLongCoord southEastWrapper = new LatLongCoord(southEast.getX(), southEast.getY());
+            return TransformationHelper.getDistance(position1Wrapper, position2Wrapper, southWestWrapper, southEastWrapper);
+        }
+
+        return 0.0;
 
     }
 }

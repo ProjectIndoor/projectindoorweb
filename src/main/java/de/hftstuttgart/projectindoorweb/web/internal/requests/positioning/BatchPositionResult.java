@@ -7,16 +7,16 @@ public class BatchPositionResult {
 
     private CalculatedPosition calculatedPosition;
     private ReferencePosition referencePosition;
-    private double positionDistance;
+    private double distanceInMeters;
 
     @JsonCreator
     public BatchPositionResult(@JsonProperty("calculatedPosition") CalculatedPosition calculatedPosition,
                                @JsonProperty("referencePosition") ReferencePosition referencePosition,
-                               @JsonProperty("positionDistance") double positionDistance) {
+                               @JsonProperty("distanceInMeters") double distanceInMeters) {
 
         this.calculatedPosition = calculatedPosition;
         this.referencePosition = referencePosition;
-        this.positionDistance = positionDistance;
+        this.distanceInMeters = distanceInMeters;
     }
 
     public CalculatedPosition getCalculatedPosition() {
@@ -35,11 +35,11 @@ public class BatchPositionResult {
         this.referencePosition = referencePosition;
     }
 
-    public double getPositionDistance() {
-        return positionDistance;
+    public double getDistanceInMeters() {
+        return distanceInMeters;
     }
 
-    public void setPositionDistance(double positionDistance) {
-        this.positionDistance = positionDistance;
+    public void setDistanceInMeters(double distanceInMeters) {
+        this.distanceInMeters = distanceInMeters;
     }
 }

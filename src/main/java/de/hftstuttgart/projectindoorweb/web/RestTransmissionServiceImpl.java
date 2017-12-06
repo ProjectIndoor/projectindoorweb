@@ -85,7 +85,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                     if(generateBatchPositionResults.isWithPixelPosition()){
                         retrievedWifiResults = TransmissionHelper.convertCalculatedResultsToPixelPositions(retrievedWifiResults, building);
                     }
-                    result = TransmissionHelper.convertToBatchPositionResults(retrievedWifiResults);
+                    result = TransmissionHelper.convertToBatchPositionResults(retrievedWifiResults, building);
 
                 }
 
@@ -456,7 +456,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     private BatchPositionResult createEmptyBatchPositionResult() {
         CalculatedPosition calculatedPosition = new CalculatedPosition(0, 0, 0, false);
-        ReferencePosition referencePosition = new ReferencePosition(0, 0, 0, false);
+        ReferencePosition referencePosition = new ReferencePosition(-1, 0, 0, 0, false);
         return new BatchPositionResult(calculatedPosition, referencePosition, 0);
     }
 
