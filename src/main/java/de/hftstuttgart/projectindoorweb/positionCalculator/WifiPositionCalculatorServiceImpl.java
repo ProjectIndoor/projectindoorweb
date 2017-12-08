@@ -80,6 +80,8 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         AssertParam.throwIfNull(wifiReadings, "wifiReadings");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
+        AssertParam.throwIfNull(project, "project");
+        AssertParam.throwIfNull(building, "building");
 
         List<RssiSignal> rssiSignals = new ArrayList<>(wifiReadings.length);
 
