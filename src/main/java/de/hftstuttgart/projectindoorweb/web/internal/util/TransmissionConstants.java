@@ -25,7 +25,8 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String TRANSFORMED_POINTS_FILE_PARAM = "transformedPointsFile";
 
     public static final String SAVE_NEW_PROJECT_NOTE = "Saves a new project in the database and returns its unique identifier. Returns -1 if save was not successful or given data was invalid.";
-    public static final String SAVE_CURRENT_PROJECT_NOTE = "Overrides a given project with the given project based on the given project identifier. Returns true if successful, otherwise false.";
+    public static final String SAVE_CURRENT_PROJECT_DATA_NOTE = "Overrides a given project with the given project data, based on the given project identifier. Returns true if successful, otherwise false.";
+    public static final String SAVE_CURRENT_PROJECT_NOTE = "Overrides a given project with the given project, based on the given project identifier. Returns true if successful, otherwise false.";
     public static final String DELETE_PROJECT_NOTE = "Removes a given project from the database, based on the given project identifier. Returns true if successful, otherwise false.";
     public static final String LOAD_PROJECT_NOTE = "Loads and returns a wanted project, based on the given identifier. Returns an empty project if an error occurred or the given data was invalid.";
     public static final String GET_ALL_PROJECT_NOTE = "Returns all current projects in the database in a list or an empty list if no projects are available.";

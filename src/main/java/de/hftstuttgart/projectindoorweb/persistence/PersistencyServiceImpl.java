@@ -8,6 +8,7 @@ import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
@@ -21,21 +22,36 @@ import java.util.Set;
 public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
-    public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParamaters) {
+    public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
+                                 long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers) {
 
         AssertParam.throwIfNullOrEmpty(projectName, "projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
-        AssertParam.throwIfNull(saveNewProjectParamaters, "saveNewProjectParamaters");
+        AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
+        AssertParam.throwIfNull(buildingIdentifier, "buildingIdentifier");
+        AssertParam.throwIfNull(evalFileIdentifier, "evalFileIdentifier");
+        AssertParam.throwIfNull(radioMapFileIdentifiers, "radioMapFileIdentifiers");
+
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+        RadioMapRepository radioMapRepository = (RadioMapRepository) RepositoryRegistry.getRepositoryByEntityName(RadioMap.class.getName());
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
 
-        if (calculationAlgorithm == null) {
+        Building building = buildingRepository.findOne(buildingIdentifier);
+        EvaalFile evaalFile = evaalFileRepository.findOne(evalFileIdentifier);
+        List<RadioMap> radioMaps = getAllRadioMaps(radioMapRepository, radioMapFileIdentifiers);
+
+        if (calculationAlgorithm == null || building == null || evaalFile == null ) {// TODO check if radio map files should always be filled with radio maps or if it is ok if the list is empty
             return -1;
         }
 
-        List<Parameter> parametersAsList = convertToEntityParameters(saveNewProjectParamaters);
+        List evaalFileList = new ArrayList<>(); //TODO Check if really a list of files is necessary or if implementation is not correct
+        evaalFileList.add(evaalFile);
 
-        Project newProject = new Project(projectName, calculationAlgorithm, parametersAsList);
+        List<Parameter> parametersAsList = convertToEntityParameters(saveNewProjectParameters);
+
+        Project newProject = new Project(projectName, calculationAlgorithm, parametersAsList, evaalFileList, building, radioMaps );
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
         newProject = projectRepository.save(newProject);
@@ -45,22 +61,41 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParamaters) {
+    public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParameters,
+                                 long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers) {
 
         AssertParam.throwIfNull(projectId, "projectId");
         AssertParam.throwIfNullOrEmpty(newProjectName, "newProjectName");
         AssertParam.throwIfNullOrEmpty(newAlgorithmType, "newAlgorithmType");
-        AssertParam.throwIfNull(newSaveNewProjectParamaters, "newSaveNewProjectParamaters");
+        AssertParam.throwIfNull(newSaveNewProjectParameters, "newSaveNewProjectParameters");
+        AssertParam.throwIfNull(buildingIdentifier, "buildingIdentifier");
+        AssertParam.throwIfNull(evalFileIdentifier, "evalFileIdentifier");
+        AssertParam.throwIfNull(radioMapFileIdentifiers, "radioMapFileIdentifiers");
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+        RadioMapRepository radioMapRepository = (RadioMapRepository) RepositoryRegistry.getRepositoryByEntityName(RadioMap.class.getName());
 
         Project project = projectRepository.findOne(projectId);
+        Building building = buildingRepository.findOne(buildingIdentifier);
+        EvaalFile evaalFile = evaalFileRepository.findOne(evalFileIdentifier);
+        List<RadioMap> radioMaps = getAllRadioMaps(radioMapRepository, radioMapFileIdentifiers);
+
         CalculationAlgorithm requestedAlgorithm = getAlgorithmFromText(newAlgorithmType);
 
-        if (project != null && requestedAlgorithm != null) {
+        if (project != null && requestedAlgorithm != null && building != null && evaalFile != null) {// TODO check if radio map files should always be filled with radio maps or if it is ok if the list is empty
+
+            List evaalFileList = new ArrayList<>(); //TODO Check if really a list of files is necessary or if implementation is not correct
+            evaalFileList.add(evaalFile);
+
             project.setProjectName(newProjectName);
             project.setCalculationAlgorithm(requestedAlgorithm);
-            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParamaters));
+            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParameters));
+            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParameters));
+            project.setBuilding(building);
+            project.setEvaalFiles(evaalFileList);
+            project.setRadioMaps(radioMaps);
             projectRepository.save(project);
             return true;
         }
@@ -70,7 +105,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateProject(Project project) {
+    public boolean updateProject(Project project) { //TODO Redundant? Parameters are just wrapped inside an object but data is still the same as above
 
         AssertParam.throwIfNull(project, "project");
 
@@ -356,6 +391,20 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         return calculationAlgorithm;
 
+    }
+
+
+    private List<RadioMap> getAllRadioMaps(RadioMapRepository radioMapRepository, long[] radioMapFileIdentifiers) {
+        List<RadioMap> radioMaps = new ArrayList<>();
+
+        for(long radioMapFileIdentifier : radioMapFileIdentifiers){
+            RadioMap radioMap = radioMapRepository.findOne(radioMapFileIdentifier);
+            if(radioMap != null){
+                radioMaps.add(radioMap);
+            }
+        }
+
+        return radioMaps;
     }
 
 

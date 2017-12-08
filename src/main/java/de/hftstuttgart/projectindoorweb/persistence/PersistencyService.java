@@ -33,11 +33,14 @@ public interface PersistencyService {
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);
 
-    long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParamaters);
+    long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
+                          long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers);
 
-    boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParamaters);
+    boolean updateProject(long projectId, String newProjectName, String newAlgorithmType,
+                          Set<SaveNewProjectParameters> newSaveNewProjectParameters, long buildingIdentifier,
+                          long evalFileIdentifier, long[] radioMapFileIdentifiers);
 
-    boolean updateProject(Project project);
+    boolean updateProject(Project project);//TODO Redundant? Parameters are just wrapped inside an object but data is still the same as above
 
     boolean deleteProject(long projectId);
 

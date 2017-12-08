@@ -10,7 +10,7 @@ public class GenerateBatchPositionResults {
 
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
-    private Long[] radioMapFileIdentifiers;
+    private long[] radioMapFileIdentifiers;
     private String algorithmType;
     private Set<SaveNewProjectParameters> projectParameters;
     private boolean withPixelPosition;
@@ -18,7 +18,7 @@ public class GenerateBatchPositionResults {
     @JsonCreator
     public GenerateBatchPositionResults(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                         @JsonProperty("evaluationFile") Long evalFileIdentifier,
-                                        @JsonProperty("radioMapFiles") Long[] radioMapFileIdentifiers,
+                                        @JsonProperty("radioMapFiles") long[] radioMapFileIdentifiers,
                                         @JsonProperty("algorithmType") String algorithmType,
                                         @JsonProperty("projectParameters") Set<SaveNewProjectParameters> projectParameters,
                                         @JsonProperty("withPixelPosition") boolean withPixelPosition) {
@@ -47,11 +47,11 @@ public class GenerateBatchPositionResults {
         this.evalFileIdentifier = evalFileIdentifier;
     }
 
-    public Long[] getRadioMapFileIdentifiers() {
+    public long[] getRadioMapFileIdentifiers() {
         return radioMapFileIdentifiers;
     }
 
-    public void setRadioMapFileIdentifiers(Long[] radioMapFileIdentifiers) {
+    public void setRadioMapFileIdentifiers(long[] radioMapFileIdentifiers) {
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
     }
 

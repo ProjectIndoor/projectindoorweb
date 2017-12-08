@@ -21,13 +21,21 @@ public class Project {
     @OneToMany(targetEntity = EvaalFile.class, cascade = CascadeType.ALL)
     private List<EvaalFile> evaalFiles;
 
+    @OneToOne
+    private Building building;
+
+    @OneToMany(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
+    private List<RadioMap>radioMaps;
+
     protected Project(){}
 
-    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<EvaalFile> evaalFiles) {
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<EvaalFile> evaalFiles, Building building, List<RadioMap>radioMaps) {
         this.projectName = projectName;
         this.calculationAlgorithm = calculationAlgorithm;
         this.projectParameters = projectParameters;
         this.evaalFiles = evaalFiles;
+        this.building = building;
+        this.radioMaps = radioMaps;
     }
 
     public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
@@ -72,4 +80,19 @@ public class Project {
         this.evaalFiles = evaalFiles;
     }
 
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
+    public List<RadioMap> getRadioMaps() {
+        return radioMaps;
+    }
+
+    public void setRadioMaps(List<RadioMap> radioMaps) {
+        this.radioMaps = radioMaps;
+    }
 }

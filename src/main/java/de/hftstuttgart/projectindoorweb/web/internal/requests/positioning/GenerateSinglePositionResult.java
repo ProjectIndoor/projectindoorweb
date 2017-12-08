@@ -11,7 +11,7 @@ public class GenerateSinglePositionResult {
 
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
-    private Long[] radioMapFileIdentifiers;
+    private long[] radioMapFileIdentifiers;
     private String algorithmType;
     private Set<SaveNewProjectParameters> saveNewProjectParamaters;
     private boolean withPixelPosition;
@@ -21,7 +21,7 @@ public class GenerateSinglePositionResult {
     @JsonCreator
     public GenerateSinglePositionResult(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                         @JsonProperty("evaluationFile") Long evalFileIdentifier,
-                                        @JsonProperty("radioMapFiles") Long[] radioMapFileIdentifiers,
+                                        @JsonProperty("radioMapFiles") long[] radioMapFileIdentifiers,
                                         @JsonProperty("algorithmType") String algorithmType,
                                         @JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParamaters,
                                         @JsonProperty("withPixelPosition") boolean withPixelPosition,
@@ -52,11 +52,11 @@ public class GenerateSinglePositionResult {
         this.evalFileIdentifier = evalFileIdentifier;
     }
 
-    public Long[] getRadioMapFileIdentifiers() {
+    public long[] getRadioMapFileIdentifiers() {
         return radioMapFileIdentifiers;
     }
 
-    public void setRadioMapFileIdentifiers(Long[] radioMapFileIdentifiers) {
+    public void setRadioMapFileIdentifiers(long[] radioMapFileIdentifiers) {
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
     }
 
