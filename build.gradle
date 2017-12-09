@@ -65,7 +65,7 @@ clientDependencies {
         'angular-route'('1.5.5', into: 'angular/modules')
         'angular-sanitize'('1.5.5', into: 'angular/modules')
         'angular-material'('1.1.0')
-        'openlayers'('4.5.0', transitive: false)
+        'openlayers'('3.18.1', transitive: false)
         'angular-openlayers-directive'('1.20.1', transitive: false)
     }
 }
