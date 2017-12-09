@@ -444,6 +444,49 @@ app.factory("projectService", ProjectService);
 
 // Map service
 function MapService() {
+    var lines = [];
+    // line test
+    var errorLineFeatures = {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                id: 'TESTLINE',
+                properties: {
+                    name: 'Testline'
+                },
+                geometry: {
+                    type: 'MultiPolygon',
+                    coordinates: [lines]
+                }
+            }
+        ]
+    };
+
+    //errorLineFeatures.features[0].geometry.coordinates.push(lines);
+
+    var errorLineLayer = {
+        index: 2,
+        source: {
+            type: 'GeoJSON',
+            geojson: {
+                object: errorLineFeatures
+            }
+        },
+        style: {
+            fill: {
+                color: 'rgba(255, 0, 0, 0.6)'
+            },
+            stroke: {
+                color: '#CC6666',
+                lineDash: [.1, 6],
+                width: 3
+            }
+        },
+        visible: true,
+        opacity: 1
+    };
+    var pathsLayerObject = {};
     // map service properties
     var calculatedPoints = [];
     var referencePoints = [];
@@ -481,8 +524,17 @@ function MapService() {
         }
     };
 
+    // mirror function
+    function mirrorY(originalY) {
+        return staticMap.source.imageSize[1] - originalY;
+    }
+
     // map service access functions
     return {
+        // lines
+        pathsLayer: function () {
+            return pathsLayerObject;
+        },
         // calculated points
         calcPoints: function () {
             // return copy of list
@@ -490,7 +542,7 @@ function MapService() {
         },
         addCalcPoint: function (x, y) {
             // Y needs mirroring because start of map is at bottom
-            var mirroredY = staticMap.source.imageSize[1] - y;
+            var mirroredY = mirrorY(y);
             // create a new calculated point
             var newCalc = {
                 coord: [x, mirroredY],
@@ -506,7 +558,7 @@ function MapService() {
         },
         addRefPoint: function (x, y) {
             // Y needs mirroring because start of map is at bottom
-            var mirroredY = staticMap.source.imageSize[1] - y;
+            var mirroredY = mirrorY(y);
             // create a new calculated point
             var newRef = {
                 coord: [x, mirroredY],
@@ -539,6 +591,22 @@ function MapService() {
             };
             // set view center
             mCenter.coord = [Math.floor(width / 2), Math.floor(height / 2)];
+        },
+        showLines: function () {
+            pathsLayerObject = errorLineLayer;
+        },
+        addErrorLine: function (calcX, calcY, refX, refY) {
+            var newLine = [
+                [
+                    calcX,
+                    mirrorY(calcY)
+                ],
+                [
+                    refX,
+                    mirrorY(refY)
+                ]
+            ];
+            lines.push(newLine);
         }
     };
 }
@@ -587,7 +655,6 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
 
 // controller which handles the map
 function MapController($scope, mapService) {
-
     // example map service setup
     mapService.setMap("/maps/hft_2_floor_3.png", 3688, 2304);
 
@@ -597,8 +664,11 @@ function MapController($scope, mapService) {
         mapDefaults: mapService.mapDefaults,
         map: mapService.map,
         calcPoints: mapService.calcPoints,
-        refPoints: mapService.refPoints
+        refPoints: mapService.refPoints,
+        pathsLayer: mapService.pathsLayer
     });
+
+
 }
 
 app.controller('MapCtrl', MapController);
@@ -606,9 +676,32 @@ app.controller('MapCtrl', MapController);
 // controller which handles the building import view
 function BuildingImportController($scope, uploadService, dataService) {
 
-    $scope.building = {
+    $scope.buildingCAR = {
         buildingName: "",
         numberOfFloors: 1,
+        imagePixelWidth: 1282,
+        imagePixelHeight: 818,
+        northWestAnchor: {
+            latitude: 40.313342,
+            longitude: -3.484113
+        },
+        northEastAnchor: {
+            latitude: 40.313438,
+            longitude: -3.483299
+        },
+        southEastAnchor: {
+            latitude: 40.313041,
+            longitude: -3.483226
+        },
+        southWestAnchor: {
+            latitude: 40.312959,
+            longitude: -3.484038
+        }
+    };
+
+    $scope.building = {
+        buildingName: "HFT Building 2",
+        numberOfFloors: 5,
         imagePixelWidth: 3688,
         imagePixelHeight: 2304,
         northWestAnchor: {
@@ -715,15 +808,18 @@ function AlgorithmController($scope, dataService, calculationService, mapService
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
-            for (var i = 0; i < posis.length; i++) {
+            for (var i = 0; i < posis.length; i += 3) {
                 var calcP = posis[i].calculatedPosition;
                 var refP = posis[i].referencePosition;
 
                 // add points to map
                 mapService.addCalcPoint(calcP.x, calcP.y);
                 mapService.addRefPoint(refP.x, refP.y);
+                mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
             }
         });
+
+        mapService.showLines();
     };
 }
 

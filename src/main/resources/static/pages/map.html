@@ -35,6 +35,7 @@
 </md-sidenav>
 <!-- Actual map -->
 <openlayers id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()" custom-layers="true">
+    <ol-layer ol-layer-properties="pathsLayer()"></ol-layer>
     <ol-layer ol-layer-properties="map()"></ol-layer>
     <ol-marker ng-repeat="calcPoint in calcPoints()" ol-marker-properties="calcPoint"></ol-marker>
     <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
