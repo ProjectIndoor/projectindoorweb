@@ -923,9 +923,9 @@ app.controller('EvalImportCtrl', EvaluationImportController);
 function ProjectController($scope, projectService) {
     $scope.projects = projectService.getAllProjects();
     $scope.projects = [
-        { name: 'Project 1'},
-        { name: 'Project 2'},
-        { name: 'Project 3'}
+        {name: '2017-12-01 Test'},
+        {name: '2017-12-03 CAR 2'},
+        {name: '2017-12-07 HFT Building 2'}
     ];
 }
 
