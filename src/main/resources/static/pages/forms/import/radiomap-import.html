@@ -11,15 +11,6 @@
     </md-card-title>
     <md-card-content layout="column">
         <div ng-form="radioMapForm">
-            <!-- Name field -->
-            <md-input-container flex="100">
-                <label>Name</label>
-                <input ng-model="fileName" name="fileName" required/>
-                <div ng-messages="radioMapForm.fileName.$error">
-                    <div ng-message="required">This is required.</div>
-                </div>
-            </md-input-container>
-
             <!-- Building chooser -->
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Building</label>
