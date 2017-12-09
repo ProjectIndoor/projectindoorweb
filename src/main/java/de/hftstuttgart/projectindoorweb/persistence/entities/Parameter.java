@@ -12,13 +12,13 @@ public class Parameter {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String parameterName;
-    private String paramenterValue;
+    private String parameterValue;
 
     protected Parameter(){}
 
-    public Parameter(String parameterName, String paramenterValue) {
+    public Parameter(String parameterName, String parameterValue) {
         this.parameterName = parameterName;
-        this.paramenterValue = paramenterValue;
+        this.parameterValue = parameterValue;
     }
 
     public Long getId() {
@@ -33,11 +33,11 @@ public class Parameter {
         this.parameterName = parameterName;
     }
 
-    public String getParamenterValue() {
-        return paramenterValue;
+    public String getParameterValue() {
+        return parameterValue;
     }
 
-    public void setParamenterValue(String paramenterValue) {
-        this.paramenterValue = paramenterValue;
+    public void setParameterValue(String parameterValue) {
+        this.parameterValue = parameterValue;
     }
 }

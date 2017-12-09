@@ -4,6 +4,7 @@ import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
+import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 
 import java.util.ArrayList;
@@ -14,16 +15,14 @@ import java.util.Map;
 public class EvaalFileHelper {
 
     //TODO This method is now accessed from a completely different package -- is there a more elegant way?
-    public static RadioMap mergeRadioMapsBySimilarPositions(List<RadioMap> radioMaps){
-
-
+    public static RadioMap mergeRadioMapsBySimilarPositions(Building building, List<RadioMap> radioMaps){
 
         List<RadioMapElement> result = new ArrayList<>();
         List<RadioMapElement> unmergedElements = new ArrayList<>();
 
         for (RadioMap radioMap:
                 radioMaps) {
-            radioMap = transFormRadioMapToLocalCoordinateSystem(radioMap);
+            radioMap = transFormRadioMapToLocalCoordinateSystem(building, radioMap);
             unmergedElements.addAll(radioMap.getRadioMapElements());
         }
 
@@ -51,7 +50,7 @@ public class EvaalFileHelper {
         for (RadioMapElement radioMapElement:
              result) {
             radioMapElement.getPosiReference().setReferencePosition(
-                    transformLocalToLatLong(radioMapElement.getPosiReference().getReferencePosition()));
+                    transformLocalToLatLong(building, radioMapElement.getPosiReference().getReferencePosition()));
         }
 
         return new RadioMap(result);
@@ -94,16 +93,17 @@ public class EvaalFileHelper {
 
     }
 
-    private static RadioMap transFormRadioMapToLocalCoordinateSystem(RadioMap latLongRadioMap){
+    private static RadioMap transFormRadioMapToLocalCoordinateSystem(Building building, RadioMap latLongRadioMap){
 
         List<RadioMapElement> radioMapElements = latLongRadioMap.getRadioMapElements();
         Position transformedPosition;
         Position untransformedPosition;
+        double floor;
         for (RadioMapElement radioMapElement:
              radioMapElements) {
             untransformedPosition = radioMapElement.getPosiReference().getReferencePosition();
-            transformedPosition = transformLatLongToLocal(untransformedPosition.getX(),
-                    untransformedPosition.getY(), untransformedPosition.getZ());
+            floor = untransformedPosition.getZ();
+            transformedPosition = transformLatLongToLocal(building, untransformedPosition, floor);
             radioMapElement.getPosiReference().setReferencePosition(transformedPosition);
         }
 
@@ -321,22 +321,20 @@ public class EvaalFileHelper {
 
     }
 
-    public static Position transformLatLongToLocal(double latitude, double longitude, double floor) {
+    public static Position transformLatLongToLocal(Building building, Position untransformedPosition, double floor) {
 
-        LatLongCoord untransformedPosition = new LatLongCoord(latitude, longitude);
-        //TODO: Substitute by Gerald's algorithm
-        LocXYZ transformedPosition = new LocXYZ(MyGeoMath.ll2xy(untransformedPosition, ConfigContainer.BASE_POSITION,
-                ConfigContainer.ANGLE_RAD), floor * ConfigContainer.FLOOR_HEIGHT);
-        return new Position(transformedPosition.x, transformedPosition.y, transformedPosition.z, false);
+        LatLongCoord untransformedPositionWrapper = new LatLongCoord(untransformedPosition.getX(), untransformedPosition.getY());
+        double[] transformedPoints = TransformationHelper.wgsToXY(building, untransformedPositionWrapper);
+        return new Position(transformedPoints[0], transformedPoints[1], floor * ConfigContainer.FLOOR_HEIGHT, false);
 
     }
 
-    public static Position transformLocalToLatLong(Position position){
+    public static Position transformLocalToLatLong(Building building, Position position){
 
-        LocalXYCoord localXYCoord = new LocalXYCoord(position.getX(), position.getY());
-        LatLongCoord transformedPosition = MyGeoMath.xy2ll(localXYCoord, ConfigContainer.BASE_POSITION, ConfigContainer.ANGLE_RAD);
+        LocalXYCoord positionWrapper = new LocalXYCoord(position.getX(), position.getY());
+        double[] transformedPoints = TransformationHelper.xyToWGS(building, positionWrapper);
 
-        return new Position(transformedPosition.latitude, transformedPosition.longitude, position.getZ(), true);
+        return new Position(transformedPoints[0], transformedPoints[1], position.getZ(), true);
 
     }
 

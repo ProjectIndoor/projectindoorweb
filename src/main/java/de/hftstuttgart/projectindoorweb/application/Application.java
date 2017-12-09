@@ -10,9 +10,11 @@ import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
 import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
@@ -69,12 +71,14 @@ public class Application {
     @Bean
     public CommandLineRunner initApplication(ProjectRepository projectRepository,
                                              EvaalFileRepository evaalFileRepository,
-                                             BuildingRepository buildingRepository) {
+                                             BuildingRepository buildingRepository,
+                                             RadioMapRepository radioMapRepository) {
 
         return (args) -> {
             RepositoryRegistry.registerRepository(Project.class.getName(), projectRepository);
             RepositoryRegistry.registerRepository(EvaalFile.class.getName(), evaalFileRepository);
             RepositoryRegistry.registerRepository(Building.class.getName(), buildingRepository);
+            RepositoryRegistry.registerRepository(RadioMap.class.getName(), radioMapRepository);
         };
     }
 

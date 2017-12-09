@@ -18,10 +18,14 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
 
     @Override
-    public List<WifiPositionResult> calculatePositions(EvaalFile evaluationFile, EvaalFile[] radioMapFiles) {
+    public List<WifiPositionResult> calculatePositions(Building building, Project project, EvaalFile evaluationFile,
+                                                       EvaalFile[] radioMapFiles) {
 
+        AssertParam.throwIfNull(building, "building");
+        AssertParam.throwIfNull(project, "project");
         AssertParam.throwIfNull(evaluationFile, "evaluationFile");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
+
 
         int totalNumberOfWifiBlocks = evaluationFile.getWifiBlocks().size();
 
@@ -35,7 +39,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
 
         if (ConfigContainer.MERGE_RADIOMAP_ELEMENTS) {
-            RadioMap tmp = EvaalFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
+            RadioMap tmp = EvaalFileHelper.mergeRadioMapsBySimilarPositions(building, radioMaps);
             radioMaps.clear();
             radioMaps.add(tmp);
         }
@@ -71,10 +75,13 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
     }
 
     @Override
-    public WifiPositionResult calculateSinglePosition(String[] wifiReadings, EvaalFile[] radioMapFiles) {
+    public WifiPositionResult calculateSinglePosition(Building building, Project project, String[] wifiReadings,
+                                                      EvaalFile[] radioMapFiles) {
 
         AssertParam.throwIfNull(wifiReadings, "wifiReadings");
         AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
+        AssertParam.throwIfNull(project, "project");
+        AssertParam.throwIfNull(building, "building");
 
         List<RssiSignal> rssiSignals = new ArrayList<>(wifiReadings.length);
 
@@ -84,7 +91,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         }
 
         List<RadioMap> radioMaps = collectRadioMaps(radioMapFiles);
-        RadioMap mergedRadioMap = EvaalFileHelper.mergeRadioMapsBySimilarPositions(radioMaps);
+        RadioMap mergedRadioMap = EvaalFileHelper.mergeRadioMapsBySimilarPositions(building, radioMaps);
 
         return calculateSinglePosition(rssiSignals, mergedRadioMap);
 
@@ -103,7 +110,11 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             if (ConfigContainer.CORRELATION_MODE == CorrelationMode.EUCLIDIAN) {
                 positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(radioMapElement.getRssiSignals(), rssiSignals);
             } else {
-                //TODO: Implement scalar position weight calculation
+                /*
+                * This is where the Scalar weight position calculation would have
+                * been included if it had been part of the prototype.
+                *
+                * */
             }
             referencePosition = radioMapElement.getPosiReference().getReferencePosition();
             preResults.add(new WifiPositionResult(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(),
