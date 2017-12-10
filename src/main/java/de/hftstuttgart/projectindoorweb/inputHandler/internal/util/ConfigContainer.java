@@ -8,6 +8,9 @@ public class ConfigContainer {
     public static final double FLOOR_HEIGHT = 1.0;
     public static final double SIMILAR_POSITION_THRESHOLD_METERS = 0.7;
     public static final double WIFI_POSITION_SMOOTHENER = 0.2;
+    public static final double WEIGHT_RESULT_1 = 2;
+    public static final double WEIGHT_RESULT_2 = 0.9;
+    public static final double WEIGHT_RESULT_3 = 0.9;
 
     public static final int POSI_MAX_INTERVAL_END = Integer.MAX_VALUE;
     public static final int NUM_REFERENCES_IN_WEIGHTED_MODE = 3;

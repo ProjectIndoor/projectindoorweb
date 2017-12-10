@@ -6,23 +6,20 @@ import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.ProjectParameterResolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EvaalFileHelper {
 
-    //TODO This method is now accessed from a completely different package -- is there a more elegant way?
-    public static RadioMap mergeRadioMapsBySimilarPositions(Building building, List<RadioMap> radioMaps){
+    public static RadioMap mergeRadioMapsBySimilarPositions(Building building, Project project, List<RadioMap> radioMaps){
 
         List<RadioMapElement> result = new ArrayList<>();
         List<RadioMapElement> unmergedElements = new ArrayList<>();
 
         for (RadioMap radioMap:
                 radioMaps) {
-            radioMap = transFormRadioMapToLocalCoordinateSystem(building, radioMap);
+            radioMap = transFormRadioMapToLocalCoordinateSystem(building, project, cloneRadioMap(radioMap));
             unmergedElements.addAll(radioMap.getRadioMapElements());
         }
 
@@ -30,13 +27,17 @@ public class EvaalFileHelper {
         boolean unique;
         Position a;
         Position b;
+        double similarityThreshold = (double) ProjectParameterResolver.retrieveParameterValue(project, "positionSimilarityThreshold", Double.class);
+        if(similarityThreshold < 0.0){
+            similarityThreshold = ConfigContainer.SIMILAR_POSITION_THRESHOLD_METERS;
+        }
         for (RadioMapElement outerElement: unmergedElements) {
             unique = true;
             for(int i = 0; i < result.size(); i++){
                 RadioMapElement innerElement = result.get(i);
                 a = innerElement.getPosiReference().getReferencePosition();
                 b = outerElement.getPosiReference().getReferencePosition();
-                if(MathHelper.retrievePositionDistance(a, b) <= ConfigContainer.SIMILAR_POSITION_THRESHOLD_METERS){
+                if(MathHelper.retrievePositionDistance(a, b) <= similarityThreshold){
                     unique = false;
                     result.set(i, mergeRadioMapElements(innerElement, outerElement));
                     break;
@@ -93,17 +94,21 @@ public class EvaalFileHelper {
 
     }
 
-    private static RadioMap transFormRadioMapToLocalCoordinateSystem(Building building, RadioMap latLongRadioMap){
+    private static RadioMap transFormRadioMapToLocalCoordinateSystem(Building building, Project project, RadioMap latLongRadioMap){
 
         List<RadioMapElement> radioMapElements = latLongRadioMap.getRadioMapElements();
         Position transformedPosition;
         Position untransformedPosition;
         double floor;
+        double floorHeight = (double) ProjectParameterResolver.retrieveParameterValue(project, "floorHeight", Double.class);
+        if(floorHeight < 0.0){
+            floorHeight = ConfigContainer.FLOOR_HEIGHT;
+        }
         for (RadioMapElement radioMapElement:
              radioMapElements) {
             untransformedPosition = radioMapElement.getPosiReference().getReferencePosition();
             floor = untransformedPosition.getZ();
-            transformedPosition = transformLatLongToLocal(building, untransformedPosition, floor);
+            transformedPosition = transformLatLongToLocal(building, untransformedPosition, floor, floorHeight);
             radioMapElement.getPosiReference().setReferencePosition(transformedPosition);
         }
 
@@ -321,11 +326,12 @@ public class EvaalFileHelper {
 
     }
 
-    public static Position transformLatLongToLocal(Building building, Position untransformedPosition, double floor) {
+    public static Position transformLatLongToLocal(Building building, Position untransformedPosition, double floor, double floorHeight) {
+
 
         LatLongCoord untransformedPositionWrapper = new LatLongCoord(untransformedPosition.getX(), untransformedPosition.getY());
         double[] transformedPoints = TransformationHelper.wgsToXY(building, untransformedPositionWrapper);
-        return new Position(transformedPoints[0], transformedPoints[1], floor * ConfigContainer.FLOOR_HEIGHT, false);
+        return new Position(transformedPoints[0], transformedPoints[1], floor * floorHeight, false);
 
     }
 
@@ -416,6 +422,32 @@ public class EvaalFileHelper {
         }
 
         return result;
+
+    }
+
+    public static RadioMap cloneRadioMap(RadioMap radioMapToClone){
+
+        RadioMap clonedRadioMap;
+
+        List<RadioMapElement> oldRadioMapElements = radioMapToClone.getRadioMapElements();
+        List<RadioMapElement> clonedRadioMapElements = new ArrayList<>(oldRadioMapElements.size());
+
+        PosiReference oldPosiReference;
+        PosiReference clonedPosiReference;
+        Position clonedReferencePosition;
+        for (RadioMapElement radioMapElement:
+             oldRadioMapElements) {
+            oldPosiReference = radioMapElement.getPosiReference();
+            clonedReferencePosition = new Position(oldPosiReference.getReferencePosition());
+            clonedPosiReference = new PosiReference(oldPosiReference.getPositionInSourceFile(),
+                    oldPosiReference.getAvgNumber(), clonedReferencePosition, oldPosiReference.getIntervalStart(),
+                    oldPosiReference.getIntervalEnd(), oldPosiReference.getFloor());
+            clonedRadioMapElements.add(new RadioMapElement(clonedPosiReference, radioMapElement.getRssiSignals()));
+        }
+
+
+        clonedRadioMap = new RadioMap(clonedRadioMapElements);
+        return clonedRadioMap;
 
     }
 
