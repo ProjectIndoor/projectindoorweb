@@ -30,7 +30,7 @@ public class BuildingController {
     @ApiOperation(value = "Add a new building", nickname = "building/addNewBuilding",
             notes = TransmissionConstants.ADD_NEW_BUILDING_NOTE)
     @RequestMapping(path = "/addNewBuilding", method = POST)
-    public boolean addNewBuilding(@RequestBody AddNewBuilding buildingJsonWrapper) {
+    public long addNewBuilding(@RequestBody AddNewBuilding buildingJsonWrapper) {
 
         return restTransmissionService.addNewBuilding(buildingJsonWrapper);
 

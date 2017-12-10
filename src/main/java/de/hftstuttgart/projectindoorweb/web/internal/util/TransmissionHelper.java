@@ -3,8 +3,10 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import org.hibernate.engine.jdbc.batch.spi.Batch;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +14,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TransmissionHelper {
 
@@ -207,6 +211,7 @@ public class TransmissionHelper {
             referencePosition.setX(pixelPosition.getX());
             referencePosition.setY(pixelPosition.getY());
             referencePosition.setZ(pixelPosition.getZ());
+            referencePosition.setWgs84(pixelPosition.isWgs84());
             batchPositionResult.setReferencePosition(referencePosition);
             convertedBatchPositionResults.add(batchPositionResult);
         }
@@ -257,6 +262,52 @@ public class TransmissionHelper {
         }
 
         return 0.0;
+
+    }
+
+    public static List<EvaalFile> convertArrayToMutableList(EvaalFile[] evaalFiles){
+
+        List<EvaalFile> result = new ArrayList<>(evaalFiles.length);
+
+        for(int i = 0; i < evaalFiles.length; i++){
+            result.add(i, evaalFiles[i]);
+        }
+
+        return result;
+
+    }
+
+    public static Set<SaveNewProjectParameters> convertToExternalProjectParameters(List<Parameter> parameters){
+
+        Set<SaveNewProjectParameters> result = new HashSet<>(parameters.size());
+
+        for (Parameter parameter:
+             parameters) {
+            result.add(new SaveNewProjectParameters(parameter.getParameterName(), parameter.getParameterValue()));
+        }
+
+        return result;
+
+    }
+
+    public static String convertToExternalAlgorithmType(CalculationAlgorithm algorithm){
+
+        switch (algorithm){
+            case WIFI: return "WIFI";
+            /*Currently, only WIFI mode is supported.*/
+            default: return "WIFI";
+        }
+    }
+
+    public static long[] getEvaalFileIds(List<EvaalFile> evaalFiles){
+
+        long[] result = new long[evaalFiles.size()];
+
+        for(int i = 0; i < result.length; i++){
+            result[i] = evaalFiles.get(i).getId();
+        }
+
+        return result;
 
     }
 }

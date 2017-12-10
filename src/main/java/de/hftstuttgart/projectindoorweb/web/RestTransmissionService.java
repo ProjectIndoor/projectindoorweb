@@ -21,15 +21,15 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<BatchPositionResult> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
-    long saveNewProject(SaveNewProject saveNewProject);
+    long addNewProject(AddNewProject addNewProject);
 
-    boolean saveCurrentProject(SaveCurrentProject saveCurrentProject);
+    boolean updateProject(UpdateProject updateProject);
 
-    boolean deleteSelectedProject(String projectIdentifier);
+    boolean deleteProject(String projectIdentifier);
 
     LoadSelectedProject loadSelectedProject(String projectIdentifier);
 
-    List<LoadSelectedProject> getAllProjects();
+    List<GetAllProjects> getAllProjects();
 
     List<GetAllAlgorithmTypes> getAllAlgorithmTypes();
 
@@ -39,7 +39,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<GetAlgorithmParameters> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
 
-    boolean addNewBuilding(AddNewBuilding buildingJsonWrapper);
+    long addNewBuilding(AddNewBuilding addNewBuilding);
 
     List<GetAllBuildings>getAllBuildings();
 
