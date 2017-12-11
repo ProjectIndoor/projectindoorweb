@@ -12,7 +12,7 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Building</label>
             <md-select ng-model="buildingData.selectedBuilding">
-                <md-option ng-repeat="building in buildings()" value="{{building.id}}">
+                <md-option ng-repeat="building in buildings()" ng-value="{{building}}">
                     {{building.buildingName}}
                 </md-option>
             </md-select>
@@ -20,8 +20,8 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Floor</label>
             <md-select ng-model="buildingData.selectedFloor">
-                <md-option ng-repeat="floor in getNumber(buildingData.selectedBuilding.floorCount) track by $index"
-                           value="{{$index}}">Floor {{$index}}
+                <md-option ng-repeat="floor in floors()"
+                           ng-value="{{floor}}">Floor {{floor.floorNo}}
                 </md-option>
             </md-select>
         </md-input-container>

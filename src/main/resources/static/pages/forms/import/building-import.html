@@ -154,10 +154,32 @@
                     </div>
                 </md-input-container>
             </div>
+
+            <!-- Floors -->
+            <md-subheader class="md-primary">
+                Floors
+            </md-subheader>
+            <div layout="column" ng-repeat="floor in floors">
+                <p class="md-subhead" flex="50">
+                    <label>Floor: </label>
+                    <label class="md-accent">{{floor.id}}</label>
+                </p>
+
+                <md-input-container flex="50">
+                    <label>Map url (page like stated above)</label>
+                    <input type="url" name="mapUrl" value="{{floor.mapUrl}}" required/>
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-button class="md-raised" ng-click="addFloorFields()" flex="50">Add new floor</md-button>
+                <md-button class="md-raised" ng-click="removeLastFloorField()" flex="50">Remove floor</md-button>
+            </div>
+
         </div>
+
 
     </md-card-content>
     <md-card-actions layout="row" layout-align="end center">
-        <md-button ng-click="uploadBuildingData()">Add</md-button>
+        <md-button class="md-raised md-primary" ng-click="uploadBuildingData()">Add Building</md-button>
     </md-card-actions>
 </md-card>

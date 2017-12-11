@@ -223,7 +223,7 @@ function UploadService($http, $mdToast) {
         $mdToast.show(
             $mdToast.simple()
                 .textContent(logMessage)
-                .position(pinTo )
+                .position(pinTo)
                 .hideDelay(3000)
         );
     }
@@ -256,6 +256,22 @@ function DataService($http) {
                 console.log(response);
                 // save response in cache
                 angular.copy(response.data, buildings);
+                //TODO remove fake floors
+                buildings.forEach(function (building) {
+                    building.floors = [
+                        {
+                            floorNo: 1,
+                            url: "/maps/hft_2_floor_3.png"
+                        },
+                        {
+                            floorNo: 2,
+                            url: "/maps/car.png"
+                        }
+                    ];
+                    building.imagePixelHeight = 2304;
+                    building.imagePixelWidth = 3688;
+                });
+
                 // The return value gets picked up by the then in the controller.
                 return response.data;
             });
@@ -430,7 +446,7 @@ function ProjectService($http) {
     var projectId;
     var projectName = 'DemoRun';
 
-    return{
+    return {
         getAllProjects: function () {
             var promise = $http.get(allProjUrl).then(function (response) {
                 return response.data;
@@ -676,6 +692,27 @@ app.controller('MapCtrl', MapController);
 // controller which handles the building import view
 function BuildingImportController($scope, uploadService, dataService) {
 
+    $scope.floors = [
+        {
+            id: 1,
+            mapUrl: "/maps/hft_2_floor_3.png"
+        }
+    ];
+
+    $scope.addFloorFields = function () {
+        var newFloor = {
+            id: $scope.floors.length + 1,
+            mapUrl: ""
+        };
+        $scope.floors.push(newFloor);
+    };
+
+    $scope.removeLastFloorField = function () {
+        if ($scope.floors.length > 1) {
+            $scope.floors.pop();
+        }
+    };
+
     $scope.buildingCAR = {
         buildingName: "",
         numberOfFloors: 1,
@@ -734,16 +771,22 @@ function BuildingImportController($scope, uploadService, dataService) {
 app.controller('BuildingImportCtrl', BuildingImportController);
 
 //Controller to fetch the building using the data service
-function BuildingController($scope, dataService, calculationService) {
+function BuildingController($scope, dataService, calculationService, mapService) {
     // properties
     $scope.buildingData = {
-        selectedBuilding: {},
-        selectedFloor: 0
+        selectedBuilding: null,
+        selectedFloor: null
     };
 
     // building list
     $scope.buildings = dataService.getAllBuildings;
 
+    //function to choose correct floor list
+    $scope.floors = function () {
+        if ($scope.buildingData.selectedBuilding) {
+            return $scope.buildingData.selectedBuilding.floors
+        }
+    };
 
     // enumeration function
     $scope.getNumber = function (num) {
@@ -754,12 +797,14 @@ function BuildingController($scope, dataService, calculationService) {
     dataService.loadAllBuildings().then();
 
     $scope.setBuilding = function () {
+        // update Map to new building
+        mapService.setMap($scope.buildingData.selectedFloor.url, $scope.buildingData.selectedBuilding.imagePixelWidth, $scope.buildingData.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
-        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding);
+        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
         calculationService.increaseProgress();
         // load building related evaluation files and radiomaps
-        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding);
-        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding);
+        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.id);
+        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding.id);
     };
 }
 
