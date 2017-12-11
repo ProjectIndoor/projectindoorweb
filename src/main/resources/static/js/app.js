@@ -260,12 +260,32 @@ function DataService($http) {
                 buildings.forEach(function (building) {
                     building.floors = [
                         {
+                            floorNo: 0,
+                            url: "/maps/hft_2_floor_0.png"
+                        },
+                        {
                             floorNo: 1,
-                            url: "/maps/hft_2_floor_3.png"
+                            url: "/maps/hft_2_floor_1.png"
                         },
                         {
                             floorNo: 2,
-                            url: "/maps/car.png"
+                            url: "/maps/hft_2_floor_2.png"
+                        },
+                        {
+                            floorNo: 3,
+                            url: "/maps/hft_2_floor_3.png"
+                        },
+                        {
+                            floorNo: 4,
+                            url: "/maps/hft_2_floor_4.png"
+                        },
+                        {
+                            floorNo: 5,
+                            url: "/maps/hft_2_floor_5.png"
+                        },
+                        {
+                            floorNo: 6,
+                            url: "/maps/hft_2_floor_6.png"
                         }
                     ];
                     building.imagePixelHeight = 2304;
@@ -692,24 +712,19 @@ app.controller('MapCtrl', MapController);
 // controller which handles the building import view
 function BuildingImportController($scope, uploadService, dataService) {
 
-    $scope.floors = [
-        {
-            id: 1,
-            mapUrl: "/maps/hft_2_floor_3.png"
-        }
-    ];
-
+    // add new empty floor
     $scope.addFloorFields = function () {
         var newFloor = {
-            id: $scope.floors.length + 1,
-            mapUrl: ""
+            id: $scope.building.floors.length,
+            mapUrl: null
         };
-        $scope.floors.push(newFloor);
+        $scope.building.floors.push(newFloor);
     };
 
+    // remove last added floor until empty
     $scope.removeLastFloorField = function () {
-        if ($scope.floors.length > 1) {
-            $scope.floors.pop();
+        if ($scope.building.floors.length > 0) {
+            $scope.building.floors.pop();
         }
     };
 
@@ -756,7 +771,13 @@ function BuildingImportController($scope, uploadService, dataService) {
         southWestAnchor: {
             latitude: 48.77966682484418,
             longitude: 9.1738866322615
-        }
+        },
+        floors: [
+            {
+                id: 1,
+                mapUrl: "/maps/hft_2_floor_3.png"
+            }
+        ]
     };
 
     $scope.uploadBuildingData = function () {
