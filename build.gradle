@@ -26,7 +26,7 @@ repositories {
 
 jar {
     baseName = 'projectindoorweb'
-    version =  '0.1.0'
+    version = '0.1.0'
 }
 
 configurations {
@@ -54,6 +54,12 @@ findbugs {
     sourceSets = [sourceSets.main]
 }
 
+docker {
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    buildArgs(['JAR_FILE': "${jar.archiveName}"])
+}
+
 clientDependencies {
     installDir = 'src/main/resources/static/assets/vendor'
     npm {
@@ -67,13 +73,8 @@ clientDependencies {
         'angular-material'('1.1.0')
         'openlayers'('3.18.1', transitive: false)
         'angular-openlayers-directive'('1.20.1', transitive: false)
+        'material-design-icons'('3.0.1', from: 'iconfont', transitive: false)
     }
-}
-
-docker {
-    name "${project.group}/${jar.baseName}"
-    files jar.archivePath
-    buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
 
 dependencies {
@@ -84,7 +85,7 @@ dependencies {
     compile("com.h2database:h2")
     compile "io.springfox:springfox-swagger2:2.7.0"
     compile 'io.springfox:springfox-swagger-ui:2.7.0'
-    checkstyleConfig ("com.puppycrawl.tools:checkstyle:${versions.checkstyle}"){ transitive = false }
+    checkstyleConfig("com.puppycrawl.tools:checkstyle:${versions.checkstyle}") { transitive = false }
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
