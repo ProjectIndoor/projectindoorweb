@@ -373,8 +373,17 @@ function CalculationService($http) {
     var radioMapFileIds = [1];
     var algorithmType = "WIFI";
     var projectParameters = [
-        {name: "Param1", value: "Value1"},
-        {name: "Param2", value: "Value2"}
+        {name: "mergeRadioMaps", value: true},
+        {name: "floorHeight", value: 1.0},
+        {name: "positionSimilarityThreshold", value: 0.7},
+        {name: "smoothenWifiPositions", value: true},
+        {name: "wifiPositionSmootheningFactor", value: 0.2},
+        {name: "useFixedWeights", value: true},
+        {name: "weightedModeNumReferences", value: 3},
+        {name: "weightResult1", value: 2.0},
+        {name: "weightResult2", value: 0.9},
+        {name: "weightResult3", value: 0.9},
+        {name: "correlationMode", value: "euclidian"}
     ];
     var asPixel = true;
 
@@ -443,11 +452,10 @@ function CalculationService($http) {
             var data = {
                 projectName: projectName,
                 buildingIdentifier: buildingId,
-                evaluationFile: evalFileId,
-                radioMapFiles: radioMapFileIds,
+                evalFileIdentifier: evalFileId,
+                radioMapFileIdentifiers: radioMapFileIds,
                 algorithmType: algorithmType,
-                projectParameters: projectParameters,
-                withPixelPosition: asPixel
+                projectParameters: projectParameters
             };
             var config = {
                 headers: {
@@ -494,9 +502,9 @@ function MapService() {
         features: [
             {
                 type: 'Feature',
-                id: 'TESTLINE',
+                id: 'ERRORLINES',
                 properties: {
-                    name: 'Testline'
+                    name: 'ErrorLines'
                 },
                 geometry: {
                     type: 'MultiPolygon',
@@ -547,7 +555,7 @@ function MapService() {
     var calc_marker_style = {
         image: {
             icon: {
-                anchor: [0.5, 0, 5],
+                anchor: [0.5, 0.5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
@@ -558,7 +566,7 @@ function MapService() {
     var ref_marker_style = {
         image: {
             icon: {
-                anchor: [0.5, 0, 5],
+                anchor: [0.5, 0.5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
@@ -828,11 +836,11 @@ function BuildingController($scope, dataService, calculationService, mapService)
         // update Map to new building
         mapService.setMap($scope.buildingData.selectedFloor.url, $scope.buildingData.selectedBuilding.imagePixelWidth, $scope.buildingData.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
-        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.id);
+        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.buildingId);
         calculationService.increaseProgress();
         // load building related evaluation files and radiomaps
-        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.id);
-        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding.id);
+        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.buildingId);
+        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding.buildingId);
     };
 }
 
@@ -919,7 +927,7 @@ app.directive('ngFiles', ['$parse', function ($parse) {
 // controller which handles the log import view
 function LogImportController($scope, uploadService, dataService) {
     // show file chooser on button click
-    $scope.upload = function () {
+    $scope.uploadLogClick = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
 

@@ -43,30 +43,39 @@ public class EvaalFileParser extends Parser {
 
         try {
 
-            List<String> allLines = Files.lines(super.sourceFile.toPath()).filter(s -> {
-                return isDataValid(s);
-            }).collect(Collectors.toList());
+            List<String> allLines = Files.lines(super.sourceFile.toPath())
+                    .filter(this::isDataValid).collect(Collectors.toList());
 
             this.wifiBlocks = retrieveWifiBlockListFromFileLines(allLines);
 
-            List<String> posiLines = allLines.stream().filter(s -> {
-                return isDataValidForPosi(s);
-            }).collect(Collectors.toList());
+            List<String> posiLines = allLines.stream()
+                    .filter(this::isDataValidForPosi).collect(Collectors.toList());
 
-            List<String> rssiLines = allLines.stream().filter(s -> {
-                return isDataValidForWifi(s);
-            }).collect(Collectors.toList());
+            List<String> rssiLines = allLines.stream()
+                    .filter(this::isDataValidForWifi).collect(Collectors.toList());
+
+
 
             if(posiLines != null && !posiLines.isEmpty()){
-                List<PosiReference> unshiftedPosiReferences = EvaalFileHelper.assemblePosiReferences(posiLines);
-                List<PosiReference> posiReferences = EvaalFileHelper.shiftPosiReferenceIntervals(unshiftedPosiReferences);
 
-                List<RssiSignal> rssiSignals = EvaalFileHelper.assembleRssiSignals(rssiLines);
-                radiomapElements = assembleRadiomapElements(posiReferences, rssiSignals);
+
+                List<PosiReference> unshiftedPosiReferences
+                        = EvaalFileHelper.assemblePosiReferences(posiLines);
+                List<PosiReference> posiReferences
+                        = EvaalFileHelper.shiftPosiReferenceIntervals(unshiftedPosiReferences);
+
+                List<RssiSignal> rssiSignals
+                        = EvaalFileHelper.assembleRssiSignals(rssiLines);
+                radiomapElements
+                        = assembleRadiomapElements(posiReferences, rssiSignals);
+
+
+
             }
 
             String fileName = super.sourceFile.getName();
-            return new EvaalFile(super.evaluationFile, fileName, fileName, 0, wifiBlocks, building, null, new RadioMap(radiomapElements));
+            return new EvaalFile(super.evaluationFile, fileName, fileName, 0,
+                    wifiBlocks, building, null, new RadioMap(radiomapElements));
 
 
         } catch (IOException e) {

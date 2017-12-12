@@ -22,6 +22,8 @@ public class ProjectParameterResolver {
                     return getIntValue(parameter.getParameterValue());
                 }else if(parameterValueClass.isAssignableFrom(Boolean.class)){
                     return getBooleanValue(parameter.getParameterValue());
+                }else if(parameterValueClass.isAssignableFrom(CorrelationMode.class)){
+                    return getCorrelationMode(parameter.getParameterValue());
                 }
             }
         }
@@ -36,7 +38,7 @@ public class ProjectParameterResolver {
             return Double.valueOf(parameterValue);
         }catch(NumberFormatException ex){
             ex.printStackTrace();
-            return 0.0;
+            return -1.0;
         }
 
     }
@@ -48,26 +50,33 @@ public class ProjectParameterResolver {
             return Integer.valueOf(parameterValue);
         }catch(NumberFormatException ex){
             ex.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 
-    private static boolean getBooleanValue(String parameterValue){
+    private static Boolean getBooleanValue(String parameterValue){
 
-        return Boolean.valueOf(parameterValue);
+        if(parameterValue.equalsIgnoreCase("true")){
+            return true;
+        }
+        if(parameterValue.equalsIgnoreCase("false")){
+            return false;
+        }
+
+        return null;
 
     }
 
     private static CorrelationMode getCorrelationMode(String parameterValue){
 
         switch (parameterValue.toLowerCase()){
-            case "euclidian": return CorrelationMode.EUCLIDIAN;
-            default: return CorrelationMode.EUCLIDIAN;
             /*
             * Currently (as of December 8th, 2017), our backend knows only the Euclidian correlation mode as
             * this was the only correlation mode implemented in the prototype.
             *
             * */
+            case "euclidian": return CorrelationMode.EUCLIDIAN;
+            default: return null;
         }
 
     }

@@ -16,6 +16,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -28,35 +29,43 @@ public class PersistencyServiceImpl implements PersistencyService {
         AssertParam.throwIfNullOrEmpty(projectName, "projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
         AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
-        AssertParam.throwIfNull(buildingIdentifier, "buildingIdentifier");
-        AssertParam.throwIfNull(evalFileIdentifier, "evalFileIdentifier");
-        AssertParam.throwIfNull(radioMapFileIdentifiers, "radioMapFileIdentifiers");
 
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
-        RadioMapRepository radioMapRepository = (RadioMapRepository) RepositoryRegistry.getRepositoryByEntityName(RadioMap.class.getName());
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
-
-        Building building = buildingRepository.findOne(buildingIdentifier);
-        EvaalFile evaalFile = evaalFileRepository.findOne(evalFileIdentifier);
-        List<RadioMap> radioMaps = getAllRadioMaps(radioMapRepository, radioMapFileIdentifiers);
-
-        if (calculationAlgorithm == null || building == null || evaalFile == null ) {// TODO check if radio map files should always be filled with radio maps or if it is ok if the list is empty
+        if (calculationAlgorithm == null) {
             return -1;
         }
 
-        List evaalFileList = new ArrayList<>(); //TODO Check if really a list of files is necessary or if implementation is not correct
-        evaalFileList.add(evaalFile);
-
         List<Parameter> parametersAsList = convertToEntityParameters(saveNewProjectParameters);
 
-        Project newProject = new Project(projectName, calculationAlgorithm, parametersAsList, evaalFileList, building, radioMaps );
+        Building building = buildingRepository.findOne(buildingIdentifier);
+        EvaalFile evaluationFile = evaalFileRepository.findOne(evalFileIdentifier);
+
+        EvaalFile[] evaalFiles = new EvaalFile[radioMapFileIdentifiers.length];
+        for (int i = 0; i < evaalFiles.length; i++) {
+            evaalFiles[i] = getEvaalFileForId(radioMapFileIdentifiers[i]);
+        }
+
+
+        Project projectToBeSaved;
+        if (building == null && evaluationFile == null && !TransmissionHelper.areRequestedFilesPresent(evaalFiles)) {
+            projectToBeSaved = new Project(projectName, calculationAlgorithm, parametersAsList);
+        } else {
+            List<EvaalFile> evaalFileList = Arrays.asList(evaalFiles);
+            projectToBeSaved = new Project(projectName, calculationAlgorithm, parametersAsList, building, evaluationFile, evaalFileList);
+        }
 
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
-        newProject = projectRepository.save(newProject);
+        projectToBeSaved = projectRepository.save(projectToBeSaved);
 
-        return newProject.getId();
+        if (projectToBeSaved != null) {
+            return projectToBeSaved.getId();
+        }
+
+        return -1;
+
 
     }
 
@@ -75,52 +84,41 @@ public class PersistencyServiceImpl implements PersistencyService {
         ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
-        RadioMapRepository radioMapRepository = (RadioMapRepository) RepositoryRegistry.getRepositoryByEntityName(RadioMap.class.getName());
 
-        Project project = projectRepository.findOne(projectId);
-        Building building = buildingRepository.findOne(buildingIdentifier);
-        EvaalFile evaalFile = evaalFileRepository.findOne(evalFileIdentifier);
-        List<RadioMap> radioMaps = getAllRadioMaps(radioMapRepository, radioMapFileIdentifiers);
+        Project projectToBeUpdated = projectRepository.findOne(projectId);
 
-        CalculationAlgorithm requestedAlgorithm = getAlgorithmFromText(newAlgorithmType);
+        if (projectToBeUpdated != null) {
+            CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(newAlgorithmType);
+            if (calculationAlgorithm == null) {
+                return false;
+            }
 
-        if (project != null && requestedAlgorithm != null && building != null && evaalFile != null) {// TODO check if radio map files should always be filled with radio maps or if it is ok if the list is empty
+            List<Parameter> parametersAsList = convertToEntityParameters(newSaveNewProjectParameters);
 
-            List evaalFileList = new ArrayList<>(); //TODO Check if really a list of files is necessary or if implementation is not correct
-            evaalFileList.add(evaalFile);
+            Building building = buildingRepository.findOne(buildingIdentifier);
+            List<Parameter> projectParameters = convertToEntityParameters(newSaveNewProjectParameters);
+            EvaalFile evaluationFile = evaalFileRepository.findOne(evalFileIdentifier);
 
-            project.setProjectName(newProjectName);
-            project.setCalculationAlgorithm(requestedAlgorithm);
-            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParameters));
-            project.setProjectParameters(convertToEntityParameters(newSaveNewProjectParameters));
-            project.setBuilding(building);
-            project.setEvaalFiles(evaalFileList);
-            project.setRadioMaps(radioMaps);
-            projectRepository.save(project);
-            return true;
+            EvaalFile[] evaalFiles = new EvaalFile[radioMapFileIdentifiers.length];
+            for (int i = 0; i < evaalFiles.length; i++) {
+                evaalFiles[i] = getEvaalFileForId(radioMapFileIdentifiers[i]);
+            }
+
+            if (newProjectName != null
+                    && calculationAlgorithm != null
+                    && projectParameters != null) {
+
+                List<EvaalFile> evaalFileList = TransmissionHelper.convertArrayToMutableList(evaalFiles);
+                projectToBeUpdated.setProjectName(newProjectName);
+                projectToBeUpdated.setCalculationAlgorithm(calculationAlgorithm);
+                projectToBeUpdated.setBuilding(building);
+                projectToBeUpdated.setProjectParameters(projectParameters);
+                projectToBeUpdated.setEvaluationFile(evaluationFile);
+                projectToBeUpdated.setEvaalFiles(evaalFileList);
+                return projectRepository.save(projectToBeUpdated) != null;
+            }
         }
 
-        return false;
-
-    }
-
-    @Override
-    public boolean updateProject(Project project) { //TODO Redundant? Parameters are just wrapped inside an object but data is still the same as above
-
-        AssertParam.throwIfNull(project, "project");
-
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
-
-        Project fromDatabase = projectRepository.findOne(project.getId());
-
-        if (project != null) {
-            fromDatabase.setProjectName(project.getProjectName());
-            fromDatabase.setProjectParameters(project.getProjectParameters());
-            fromDatabase.setCalculationAlgorithm(project.getCalculationAlgorithm());
-            fromDatabase.setEvaalFiles(project.getEvaalFiles());
-            projectRepository.save(fromDatabase);
-            return true;
-        }
 
         return false;
 
@@ -142,10 +140,10 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                                  BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
-                                  BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
-                                  BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel) {
+    public long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+                               BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
+                               BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
+                               BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel) {
 
         AssertParam.throwIfNullOrEmpty(buildingName, "buildingName");
         AssertParam.throwIfNull(numberOfFloors, "numberOfFloors");
@@ -164,22 +162,22 @@ public class PersistencyServiceImpl implements PersistencyService {
         }
 
 
-        if(northWestAnchor == null){
+        if (northWestAnchor == null) {
             northWestAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
                     imagePixelWidth, imagePixelHeight, "northWest");
         }
 
-        if(northEastAnchor == null){
+        if (northEastAnchor == null) {
             northEastAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
                     imagePixelWidth, imagePixelHeight, "northEast");
         }
 
-        if(southEastAnchor == null){
+        if (southEastAnchor == null) {
             southEastAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
                     imagePixelWidth, imagePixelHeight, "southEast");
         }
 
-        if(southWestAnchor == null){
+        if (southWestAnchor == null) {
             southWestAnchor = retrievePositionAnchor(buildingCenterPoint, rotationAngle, metersPerPixel,
                     imagePixelWidth, imagePixelHeight, "southWest");
         }
@@ -190,7 +188,7 @@ public class PersistencyServiceImpl implements PersistencyService {
         Position southWestPosition = TransmissionHelper.convertPositionAnchorToPosition(southWestAnchor);
 
         Position buildingCenterPosition = null;
-        if(buildingCenterPoint != null){
+        if (buildingCenterPoint != null) {
             buildingCenterPosition = new Position(buildingCenterPoint.getLatitude(), buildingCenterPoint.getLongitude(), 0.0, true);
         }
 
@@ -201,7 +199,13 @@ public class PersistencyServiceImpl implements PersistencyService {
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
 
-        return buildingToBeSaved != null;
+        if (buildingToBeSaved != null) {
+            return buildingToBeSaved.getId();
+        }
+
+        return -1;
+
+
     }
 
 
@@ -265,7 +269,7 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         Building buildingToBeUpdated = this.getBuildingById(buildingId);
 
-        if(buildingToBeUpdated != null){
+        if (buildingToBeUpdated != null) {
             buildingToBeUpdated.setBuildingName(buildingName);
             buildingToBeUpdated.setImagePixelWidth(imagePixelWidth);
             buildingToBeUpdated.setImagePixelHeight(imagePixelHeight);
@@ -348,14 +352,14 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     private BuildingPositionAnchor retrievePositionAnchor(BuildingPositionAnchor buildingCenterPoint,
-                                            double rotationAngle, double metersPerPixel,
-                                            int imagePixelWidth, int imagePixelHeight,
-                                            String corner){
+                                                          double rotationAngle, double metersPerPixel,
+                                                          int imagePixelWidth, int imagePixelHeight,
+                                                          String corner) {
 
         String capitalizedCorner = corner.toUpperCase();
 
         double[] calculatedLatLong;
-        switch(capitalizedCorner){
+        switch (capitalizedCorner) {
             case "NORTHWEST":
                 calculatedLatLong = TransformationHelper.calculateNorthWestCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
                         buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
@@ -372,14 +376,13 @@ public class PersistencyServiceImpl implements PersistencyService {
                 calculatedLatLong = TransformationHelper.calculateSouthWestCorner(new LatLongCoord(buildingCenterPoint.getLatitude(),
                         buildingCenterPoint.getLongitude()), rotationAngle, metersPerPixel, imagePixelWidth, imagePixelHeight);
                 break;
-                default:
-                    calculatedLatLong = null;
+            default:
+                calculatedLatLong = null;
         }
 
         return new BuildingPositionAnchor(calculatedLatLong[0], calculatedLatLong[1]);
 
     }
-
 
 
     private CalculationAlgorithm getAlgorithmFromText(String text) {
@@ -397,9 +400,9 @@ public class PersistencyServiceImpl implements PersistencyService {
     private List<RadioMap> getAllRadioMaps(RadioMapRepository radioMapRepository, long[] radioMapFileIdentifiers) {
         List<RadioMap> radioMaps = new ArrayList<>();
 
-        for(long radioMapFileIdentifier : radioMapFileIdentifiers){
+        for (long radioMapFileIdentifier : radioMapFileIdentifiers) {
             RadioMap radioMap = radioMapRepository.findOne(radioMapFileIdentifier);
-            if(radioMap != null){
+            if (radioMap != null) {
                 radioMaps.add(radioMap);
             }
         }

@@ -18,30 +18,35 @@ public class Project {
     @OneToMany(targetEntity = Parameter.class, cascade = CascadeType.ALL)
     private List<Parameter> projectParameters;
 
-    @OneToMany(targetEntity = EvaalFile.class, cascade = CascadeType.ALL)
-    private List<EvaalFile> evaalFiles;
-
-    @OneToOne
+    @ManyToOne(targetEntity = Building.class)
     private Building building;
 
-    @OneToMany(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
-    private List<RadioMap>radioMaps;
+    @ManyToOne(targetEntity = EvaalFile.class)
+    private EvaalFile evaluationFile;
 
-    protected Project(){}
+    @ManyToMany(targetEntity = EvaalFile.class)
+    @JoinTable(name = "project_files",
+            joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "evaal_file_id", referencedColumnName = "id"))
+    private List<EvaalFile> evaalFiles;
 
-    public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters, List<EvaalFile> evaalFiles, Building building, List<RadioMap>radioMaps) {
-        this.projectName = projectName;
-        this.calculationAlgorithm = calculationAlgorithm;
-        this.projectParameters = projectParameters;
-        this.evaalFiles = evaalFiles;
-        this.building = building;
-        this.radioMaps = radioMaps;
+    protected Project() {
     }
 
     public Project(String projectName, CalculationAlgorithm calculationAlgorithm, List<Parameter> projectParameters) {
         this.projectName = projectName;
         this.calculationAlgorithm = calculationAlgorithm;
         this.projectParameters = projectParameters;
+    }
+
+    public Project(String projectName, CalculationAlgorithm calculationAlgorithm,
+                   List<Parameter> projectParameters, Building building, EvaalFile evaluationFile, List<EvaalFile> evaalFiles) {
+        this.projectName = projectName;
+        this.calculationAlgorithm = calculationAlgorithm;
+        this.building = building;
+        this.projectParameters = projectParameters;
+        this.evaluationFile = evaluationFile;
+        this.evaalFiles = evaalFiles;
     }
 
     public Long getId() {
@@ -64,22 +69,6 @@ public class Project {
         this.calculationAlgorithm = calculationAlgorithm;
     }
 
-    public List<Parameter> getProjectParameters() {
-        return projectParameters;
-    }
-
-    public void setProjectParameters(List<Parameter> projectParameters) {
-        this.projectParameters = projectParameters;
-    }
-
-    public List<EvaalFile> getEvaalFiles() {
-        return evaalFiles;
-    }
-
-    public void setEvaalFiles(List<EvaalFile> evaalFiles) {
-        this.evaalFiles = evaalFiles;
-    }
-
     public Building getBuilding() {
         return building;
     }
@@ -88,11 +77,27 @@ public class Project {
         this.building = building;
     }
 
-    public List<RadioMap> getRadioMaps() {
-        return radioMaps;
+    public List<Parameter> getProjectParameters() {
+        return projectParameters;
     }
 
-    public void setRadioMaps(List<RadioMap> radioMaps) {
-        this.radioMaps = radioMaps;
+    public void setProjectParameters(List<Parameter> projectParameters) {
+        this.projectParameters = projectParameters;
+    }
+
+    public EvaalFile getEvaluationFile() {
+        return evaluationFile;
+    }
+
+    public void setEvaluationFile(EvaalFile evaluationFile) {
+        this.evaluationFile = evaluationFile;
+    }
+
+    public List<EvaalFile> getEvaalFiles() {
+        return evaalFiles;
+    }
+
+    public void setEvaalFiles(List<EvaalFile> evaalFiles) {
+        this.evaalFiles = evaalFiles;
     }
 }

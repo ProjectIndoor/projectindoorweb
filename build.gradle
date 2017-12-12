@@ -7,6 +7,7 @@ plugins {
     id 'pmd'
     id 'findbugs'
     id 'com.palantir.docker' version '0.13.0'
+    id "com.eriwen.gradle.js" version "2.14.1"
 }
 
 group 'de.hft-stuttgart'
@@ -27,6 +28,25 @@ repositories {
 jar {
     baseName = 'projectindoorweb'
     version = '0.1.0'
+}
+
+// JavaScript handling
+combineJs {
+    encoding = "UTF-8"
+    source = [
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/angular.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-animate.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-aria.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-messages.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-route.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-sanitize.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular-material/angular-material.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/openlayers/ol.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular-openlayers-directive/angular-openlayers-directive.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/jquery/jquery.js",
+            "${projectDir}/src/main/resources/static/js/app.js"
+    ]
+    dest = file("${projectDir}/src/main/resources/static/assets/all-indoor.js")
 }
 
 configurations {

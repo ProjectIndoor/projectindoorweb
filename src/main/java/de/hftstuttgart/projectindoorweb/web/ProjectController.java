@@ -22,24 +22,24 @@ public class ProjectController {
 
    private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
-    @ApiOperation(value = "Save a new project", nickname = "project/saveNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
+    @ApiOperation(value = "Save a new project", nickname = "project/addNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)
-    public long saveNewProject(@RequestBody SaveNewProject saveNewProject) {
-        return restTransmissionService.saveNewProject(saveNewProject);
+    public long saveNewProject(@RequestBody AddNewProject addNewProject) {
+        return restTransmissionService.addNewProject(addNewProject);
     }
 
-    @ApiOperation(value = "Save a current project", nickname = "project/saveCurrentProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
+    @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
     @RequestMapping(path = "/saveCurrentProject", method = POST)
-    public boolean saveCurrentProject(@RequestBody SaveCurrentProject saveCurrentProject) {
-        return restTransmissionService.saveCurrentProject(saveCurrentProject);
+    public boolean saveCurrentProject(@RequestBody UpdateProject updateProject) {
+        return restTransmissionService.updateProject(updateProject);
     }
 
-    @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteSelectedProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)
+    @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)
     @RequestMapping(path = "/deleteSelectedProject", method = DELETE)
     public boolean deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                  String projectIdentifier) {
-        return restTransmissionService.deleteSelectedProject(projectIdentifier);
+        return restTransmissionService.deleteProject(projectIdentifier);
     }
 
 
@@ -53,11 +53,11 @@ public class ProjectController {
 
     @ApiOperation(value = "Get all current projects", nickname = "project/getAllProjects", notes= TransmissionConstants.GET_ALL_PROJECT_NOTE)
     @RequestMapping(path = "/getAllProjects", method = GET)
-    public ResponseEntity<List<LoadSelectedProject>> getAllProjects() {
+    public ResponseEntity<List<GetAllProjects>> getAllProjects() {
 
-        List<LoadSelectedProject> result = restTransmissionService.getAllProjects();
+        List<GetAllProjects> result = restTransmissionService.getAllProjects();
 
-        return new ResponseEntity<List<LoadSelectedProject>>(result, HttpStatus.OK);
+        return new ResponseEntity<List<GetAllProjects>>(result, HttpStatus.OK);
 
     }
 

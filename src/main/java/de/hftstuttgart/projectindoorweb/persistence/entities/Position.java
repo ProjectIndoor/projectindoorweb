@@ -24,6 +24,13 @@ public class Position {
         this.wgs84 = true;
     }
 
+    public Position(Position source){
+        this.x = source.getX();
+        this.y = source.getY();
+        this.z = source.getZ();
+        this.setWgs84(source.isWgs84());
+    }
+
     public Position(double x, double y, double z, boolean wgs84) {
         this.x = x;
         this.y = y;
