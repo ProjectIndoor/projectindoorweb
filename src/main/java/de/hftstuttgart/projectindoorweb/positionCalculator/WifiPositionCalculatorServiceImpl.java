@@ -68,17 +68,20 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             }
 
             for (int block = 1; block < totalNumberOfWifiBlocks; block++) {
-                rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(evaluationFile.getWifiBlocks(), block);
+                rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(
+                        evaluationFile.getWifiBlocks(), block);
                 result = calculateSinglePosition(project, rssiSignals, radioMap);
 
                 if(smoothenWifiPositions){
-                    result = WifiMathHelper.smoothenWifiPosition(wifiPositionSmootheningFactor, result, previousResult, result.getWeight());
+                    result = WifiMathHelper.smoothenWifiPosition(wifiPositionSmootheningFactor,
+                            result, previousResult, result.getWeight());
                     previousResult = result;
                 }
 
                 if(evaluationFile.getRadioMap() != null){
                     result.setPosiReference(EvaalFileHelper
-                            .findBestPostReferenceForWifiResult(result.getRssiSignalsAppTimestamp(), evaluationFile.getRadioMap()));
+                            .findBestPostReferenceForWifiResult(result
+                                    .getRssiSignalsAppTimestamp(), evaluationFile.getRadioMap()));
                 }
 
                 wifiPositionResults.add(result);
@@ -126,8 +129,9 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         }
         for (RadioMapElement radioMapElement :
                 radioMapElements) {
+            positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(radioMapElement.getRssiSignals(), rssiSignals);
             if (correlationMode == CorrelationMode.EUCLIDIAN) {
-                positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(radioMapElement.getRssiSignals(), rssiSignals);
+
             } else {
                 /*
                 * This is where the Scalar weight position calculation would have

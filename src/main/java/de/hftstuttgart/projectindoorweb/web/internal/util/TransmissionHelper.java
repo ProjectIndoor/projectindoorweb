@@ -79,10 +79,25 @@ public class TransmissionHelper {
 
         for (Building building :
                 buildings) {
-            result.add(new GetAllBuildings(building.getId(), building.getBuildingName(), building.getBuildingFloors().size()));
+            result.add(new GetAllBuildings(building.getId(), building.getBuildingName(), building.getImagePixelWidth(),
+                    building.getImagePixelHeight(), convertToExternalFloor(building.getBuildingFloors())));
         }
 
         return result;
+    }
+
+    public static List<GetFloor> convertToExternalFloor(List<Floor> buildingFloors){
+
+        List<GetFloor> result = new ArrayList<>(buildingFloors.size());
+
+        for (Floor floor:
+             buildingFloors) {
+            result.add(new GetFloor(floor.getId(), floor.getLevel(), floor.getFloorName(), floor.getFloorMapUrl()));
+        }
+
+        return result;
+
+
     }
 
     public static List<GetEvaluationFilesForBuilding> convertToEvaluationEntries(List<EvaalFile> evaalFiles) {
@@ -142,10 +157,10 @@ public class TransmissionHelper {
         double rotationAngle = building.getRotationAngle();
         double metersPerPixel = building.getMetersPerPixel();
         List<GetSingleBuildingEvaalFile> getSingleBuildingEvaalFiles = convertToGetSingleBuildingEvaalFiles(building.getEvaalFiles());
-        List<GetSingleBuildingFloor> getSingleBuildingFloors = convertToGetSingleBuildingFloor(building.getBuildingFloors());
+        List<GetFloor> getFloorList = convertToExternalFloor(building.getBuildingFloors());
 
         return new GetSingleBuilding(buildingId, buildingName, numberOfFloors, imagePixelWidth, imagePixeHeight, northWest, northEast,
-                southEast, southWest, buildingCenterPoint, rotationAngle, metersPerPixel, getSingleBuildingEvaalFiles, getSingleBuildingFloors);
+                southEast, southWest, buildingCenterPoint, rotationAngle, metersPerPixel, getSingleBuildingEvaalFiles, getFloorList);
 
     }
 
@@ -179,7 +194,11 @@ public class TransmissionHelper {
 
     public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position) {
 
-        return new BuildingPositionAnchor(position.getX(), position.getY());
+        if(position != null){
+            return new BuildingPositionAnchor(position.getX(), position.getY());
+        }
+
+        return new BuildingPositionAnchor(-1, -1);
 
     }
 

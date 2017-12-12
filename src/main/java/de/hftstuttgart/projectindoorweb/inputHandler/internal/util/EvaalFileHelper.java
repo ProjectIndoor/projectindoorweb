@@ -264,7 +264,6 @@ public class EvaalFileHelper {
             floorId = Integer.parseInt(currentLineElements[5]);
             floor = new Floor(floorId);
             buildingId = Integer.parseInt(currentLineElements[6]);
-            //referencePosition = transformLatLongToLocal(latitude, longitude, floorId);
             referencePosition = new Position(latitude, longitude, floorId, true);
             result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd, floor));
             intervalStart = intervalEnd;
