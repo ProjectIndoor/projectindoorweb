@@ -9,8 +9,8 @@
             <i class="material-icons">insert_drive_file</i>
         </md-card-title-media>
     </md-card-title>
-    <md-card-content layout="column">
-        <div ng-form="radioMapForm">
+    <form name="radioMapForm">
+        <md-card-content layout="column">
             <!-- Building chooser -->
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Building</label>
@@ -22,21 +22,21 @@
                     <div ng-message="required">This is required.</div>
                 </div>
             </md-input-container>
-        </div>
 
-        <!-- File chooser -->
-        <md-input-container flex="100">
-            <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
-                   aria-label="logFileUpload"/>
-            <md-button class="md-button" ng-click="upload()">
-                Choose File
-            </md-button>
-            <p id="fileNameField">{{fileUploaded}}</p>
-        </md-input-container>
+            <!-- File chooser -->
+            <md-input-container flex="100">
+                <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
+                       aria-label="logFileUpload"/>
+                <md-button class="md-button" ng-click="upload()">
+                    Choose File
+                </md-button>
+                <p id="fileNameField">{{fileUploaded}}</p>
+            </md-input-container>
 
-    </md-card-content>
+        </md-card-content>
 
-    <md-card-actions layout="row" layout-align="end center">
-        <md-button ng-click="uploadFiles()">Upload</md-button>
-    </md-card-actions>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button type="submit" ng-click="uploadFiles()">Upload</md-button>
+        </md-card-actions>
+    </form>
 </md-card>

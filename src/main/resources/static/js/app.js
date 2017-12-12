@@ -163,30 +163,37 @@ function UploadService($http, $mdToast) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            // body content (log files and buildingId)
-            var formData = new FormData();
-            formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
-            formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
-
-            $http({
-                method: 'POST',
-                url: logFileUploadUrl,
-                data: formData,
-                transformRequest: function (data, headersGetterFunction) {
-                    return data;
-                },
-                headers: {
-                    'Content-Type': undefined
+            if(radioMapSet.radioMapFiles[0] == null) {
+                if(radioMapSet.buildingIdentifier != 0) {
+                    logMessage = "Please choose a file to upload";
+                    showToast(logMessage);
                 }
-            }).then(function successCallback(response) {
-                // success
-                logMessage = "Radio map uploaded successfully!";
-                showToast(logMessage);
-            }, function errorCallback(response) {
-                // failure
-                logMessage = "Error while uploading radio map data";
-                showToast(logMessage);
-            });
+            } else {
+                // body content (log files and buildingId)
+                var formData = new FormData();
+                formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
+                formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
+
+                $http({
+                    method: 'POST',
+                    url: logFileUploadUrl,
+                    data: formData,
+                    transformRequest: function (data, headersGetterFunction) {
+                        return data;
+                    },
+                    headers: {
+                        'Content-Type': undefined
+                    }
+                }).then(function successCallback(response) {
+                    // success
+                    logMessage = "Radio map uploaded successfully!";
+                    showToast(logMessage);
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while uploading radio map data";
+                    showToast(logMessage);
+                });
+            }
         },
         uploadEvaluationFile: function (evaluationSet) {
             // body content (eval files and buildingId)
@@ -252,8 +259,8 @@ function DataService($http) {
             // $http returns a promise, which has a then function, which also returns a promise
             var promise = $http.get(getBuildingsUrl).then(function (response) {
                 // The then function here is an opportunity to modify the response
-                console.log("Retrieved buildings:");
-                console.log(response);
+                /*console.log("Retrieved buildings:");
+                console.log(response);*/
                 // save response in cache
                 angular.copy(response.data, buildings);
                 //TODO remove fake floors
@@ -941,7 +948,6 @@ function LogImportController($scope, uploadService, dataService) {
 
     //Post the file and parameters
     $scope.uploadFiles = function () {
-        console.log($scope.logFileParameters);
         uploadService.uploadRadioMap($scope.logFileParameters);
     }
 }
