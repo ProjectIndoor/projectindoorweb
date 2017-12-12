@@ -549,7 +549,7 @@ function MapService() {
     var calc_marker_style = {
         image: {
             icon: {
-                anchor: [0.5, 0, 5],
+                anchor: [0.5, 0.5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
@@ -560,7 +560,7 @@ function MapService() {
     var ref_marker_style = {
         image: {
             icon: {
-                anchor: [0.5, 0, 5],
+                anchor: [0.5, 0.5],
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
