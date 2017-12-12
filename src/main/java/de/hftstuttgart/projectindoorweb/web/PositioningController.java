@@ -51,7 +51,8 @@ public class PositioningController {
     public ResponseEntity<List<BatchPositionResult>> generateBatchPositionResults(
             @RequestBody GenerateBatchPositionResults generateBatchPositionResults) {
 
-        List<BatchPositionResult> result = restTransmissionService.generatePositionResults(generateBatchPositionResults);
+        List<BatchPositionResult> result = restTransmissionService
+                .generatePositionResults(generateBatchPositionResults);
         return new ResponseEntity<List<BatchPositionResult>>(result, HttpStatus.OK);
 
     }

@@ -5,28 +5,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
 
-public class SaveCurrentProject {
+public class AddNewProject {
 
     private Set<SaveNewProjectParameters> saveNewProjectParametersSet;
     private String projectName;
     private String algorithmType;
-    private String projectIdentifier;
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
     private long[] radioMapFileIdentifiers;
 
     @JsonCreator
-    public SaveCurrentProject(@JsonProperty("saveNewProjectParametersSet")Set<SaveNewProjectParameters> saveNewProjectParametersSet,
-                              @JsonProperty("projectName")String projectName,
-                              @JsonProperty("algorithmType")String algorithmType,
-                              @JsonProperty("projectIdentifier")String projectIdentifier,
-                              @JsonProperty("buildingIdentifier") Long buildingIdentifier,
-                              @JsonProperty("evalFileIdentifier") Long evalFileIdentifier,
-                              @JsonProperty("radioMapFileIdentifiers") long[] radioMapFileIdentifiers) {
+    public AddNewProject(@JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParametersSet,
+                         @JsonProperty("projectName") String projectName,
+                         @JsonProperty("algorithmType") String algorithmType,
+                         @JsonProperty("buildingIdentifier") Long buildingIdentifier,
+                         @JsonProperty("evalFileIdentifier") Long evalFileIdentifier,
+                         @JsonProperty("radioMapFileIdentifiers") long[] radioMapFileIdentifiers) {
         this.saveNewProjectParametersSet = saveNewProjectParametersSet;
         this.projectName = projectName;
         this.algorithmType = algorithmType;
-        this.projectIdentifier = projectIdentifier;
         this.buildingIdentifier = buildingIdentifier;
         this.evalFileIdentifier = evalFileIdentifier;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
@@ -54,14 +51,6 @@ public class SaveCurrentProject {
 
     public void setAlgorithmType(String algorithmType) {
         this.algorithmType = algorithmType;
-    }
-
-    public String getProjectIdentifier() {
-        return projectIdentifier;
-    }
-
-    public void setProjectIdentifier(String projectIdentifier) {
-        this.projectIdentifier = projectIdentifier;
     }
 
     public Long getBuildingIdentifier() {

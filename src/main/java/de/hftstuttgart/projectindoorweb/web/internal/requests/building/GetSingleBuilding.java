@@ -20,7 +20,7 @@ public class GetSingleBuilding {
     private double rotationAngle;
     private double metersPerPixel;
     private List<GetSingleBuildingEvaalFile> evaalFiles;
-    private List<GetSingleBuildingFloor> buildingFloors;
+    private List<GetFloor> buildingFloors;
 
     @JsonCreator
     public GetSingleBuilding(@JsonProperty("buildingId") long buildingId,
@@ -36,7 +36,7 @@ public class GetSingleBuilding {
                              @JsonProperty("rotationAngle") double rotationAngle,
                              @JsonProperty("metersPerPixel") double metersPerPixel,
                              @JsonProperty("evaalFiles") List<GetSingleBuildingEvaalFile> evaalFiles,
-                             @JsonProperty("buildingFloors") List<GetSingleBuildingFloor> buildingFloors) {
+                             @JsonProperty("buildingFloors") List<GetFloor> buildingFloors) {
 
         this.buildingId = buildingId;
         this.buildingName = buildingName;
@@ -158,11 +158,11 @@ public class GetSingleBuilding {
         this.evaalFiles = evaalFiles;
     }
 
-    public List<GetSingleBuildingFloor> getBuildingFloors() {
+    public List<GetFloor> getBuildingFloors() {
         return buildingFloors;
     }
 
-    public void setBuildingFloors(List<GetSingleBuildingFloor> buildingFloors) {
+    public void setBuildingFloors(List<GetFloor> buildingFloors) {
         this.buildingFloors = buildingFloors;
     }
 }

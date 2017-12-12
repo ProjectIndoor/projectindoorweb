@@ -12,7 +12,7 @@ import java.util.Set;
 
 public interface PersistencyService {
 
-    boolean addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+    long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
                            BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
                            BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
                            BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
@@ -39,8 +39,6 @@ public interface PersistencyService {
     boolean updateProject(long projectId, String newProjectName, String newAlgorithmType,
                           Set<SaveNewProjectParameters> newSaveNewProjectParameters, long buildingIdentifier,
                           long evalFileIdentifier, long[] radioMapFileIdentifiers);
-
-    boolean updateProject(Project project);//TODO Redundant? Parameters are just wrapped inside an object but data is still the same as above
 
     boolean deleteProject(long projectId);
 

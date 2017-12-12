@@ -51,9 +51,9 @@ public class WifiMathHelper {
         return result;
     }
 
-    public static WifiPositionResult smoothenWifiPosition(WifiPositionResult currentResult, WifiPositionResult previousResult, double weight){
+    public static WifiPositionResult smoothenWifiPosition(double smootheningFactor, WifiPositionResult currentResult, WifiPositionResult previousResult, double weight){
 
-        double factorOld = ConfigContainer.WIFI_POSITION_SMOOTHENER;
+        double factorOld = smootheningFactor;
         double factorNew = Double.valueOf(1) - factorOld;
         double averagedAppTimestamp = (previousResult.getRssiSignalsAppTimestamp() + currentResult.getRssiSignalsAppTimestamp()) / 2;
 
