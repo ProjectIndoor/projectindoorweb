@@ -15,7 +15,8 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Building</label>
                 <md-select ng-model="logFileParameters.buildingIdentifier" required name="buildingIdentifier">
-                    <md-option ng-repeat="building in buildings()" value="{{building.id}}">{{building.buildingName}}
+                    <md-option ng-repeat="building in buildings()" value="{{building.buildingId}}">
+                        {{building.buildingName}}
                     </md-option>
                 </md-select>
                 <div ng-messages="radioMapForm.buildingIdentifier.$error">
@@ -28,7 +29,7 @@
         <md-input-container flex="100">
             <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
                    aria-label="logFileUpload"/>
-            <md-button class="md-button" ng-click="upload()">
+            <md-button class="md-button" ng-click="uploadLogClick()">
                 Choose File
             </md-button>
             <p id="fileNameField">{{fileUploaded}}</p>
