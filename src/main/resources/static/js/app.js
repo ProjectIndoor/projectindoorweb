@@ -445,11 +445,10 @@ function CalculationService($http) {
             var data = {
                 projectName: projectName,
                 buildingIdentifier: buildingId,
-                evaluationFile: evalFileId,
-                radioMapFiles: radioMapFileIds,
+                evalFileIdentifier: evalFileId,
+                radioMapFileIdentifiers: radioMapFileIds,
                 algorithmType: algorithmType,
-                projectParameters: projectParameters,
-                withPixelPosition: asPixel
+                projectParameters: projectParameters
             };
             var config = {
                 headers: {
