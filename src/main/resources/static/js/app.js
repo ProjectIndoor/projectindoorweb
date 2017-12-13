@@ -384,7 +384,8 @@ function CalculationService($http) {
         {name: "weightResult1", value: 2.0},
         {name: "weightResult2", value: 0.9},
         {name: "weightResult3", value: 0.9},
-        {name: "correlationMode", value: "euclidian"}
+        {name: "correlationMode", value: "euclidian"},
+        {name: "posiReferenceSimilarityTimeDelta", value: "3000"}
     ];
     var asPixel = true;
 
@@ -922,8 +923,11 @@ function AlgorithmController($scope, dataService, calculationService, mapService
 
                 // add points to map
                 mapService.addCalcPoint(calcP.x, calcP.y);
-                mapService.addRefPoint(refP.x, refP.y);
-                mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
+
+                if (refP != null) {
+                    mapService.addRefPoint(refP.x, refP.y);
+                    mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
+                }
             }
         });
 
