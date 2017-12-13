@@ -21,6 +21,10 @@
                         <i class="material-icons">mode_edit</i>
                     </div>
                 </md-list-item>
+                <!-- Message only visible when no projects available -->
+                <md-list-item ng-hide="projects().length">
+                    <p>No Projects available yet</p>
+                </md-list-item>
             </md-list>
         </md-card>
     </div>
