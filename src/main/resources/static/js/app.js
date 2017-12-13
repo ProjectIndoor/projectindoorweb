@@ -116,6 +116,7 @@ app.config(function ($mdThemingProvider) {
             'A700'
         ]
     });
+
     $mdThemingProvider.theme('default')
         .primaryPalette('inpurple')
         .accentPalette('inblue');
@@ -481,12 +482,23 @@ function ProjectService($http) {
     var projectId;
     var projectName = 'DemoRun';
 
+    // Cache
+    var projects = [];
+
     return {
-        getAllProjects: function () {
+        // allProjects
+        loadAllProjects: function () {
             var promise = $http.get(allProjUrl).then(function (response) {
+                // cache response copy
+                angular.copy(response.data, projects);
+
+                // return data to allow access from caller
                 return response.data;
             });
             return promise;
+        },
+        getAllProjects: function () {
+            return [].concat(projects);
         }
     }
 }
@@ -1001,12 +1013,11 @@ app.controller('EvalImportCtrl', EvaluationImportController);
 
 //Controller to handle the projects
 function ProjectController($scope, projectService) {
-    $scope.projects = projectService.getAllProjects();
-    $scope.projects = [
-        {name: '2017-12-01 Test'},
-        {name: '2017-12-03 CAR 2'},
-        {name: '2017-12-07 HFT Building 2'}
-    ];
+    // load list of projects when calling controller
+    projectService.loadAllProjects();
+
+    // assign loaded project list to scope var
+    $scope.projects = projectService.getAllProjects;
 }
 
 app.controller('ProjectCtrl', ProjectController);
