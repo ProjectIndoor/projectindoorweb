@@ -11,6 +11,7 @@ public class ConfigContainer {
     public static final double WEIGHT_RESULT_1 = 2;
     public static final double WEIGHT_RESULT_2 = 0.9;
     public static final double WEIGHT_RESULT_3 = 0.9;
+    public static final double POSI_REFERENCE_MAX_TIME_DELTA_MILLIS = 3000;
 
     public static final int POSI_MAX_INTERVAL_END = Integer.MAX_VALUE;
     public static final int NUM_REFERENCES_IN_WEIGHTED_MODE = 3;
@@ -18,6 +19,7 @@ public class ConfigContainer {
     public static final boolean MERGE_RADIOMAP_ELEMENTS = false;
     public static final boolean USE_FIXED_WEIGHTS = true;
     public static final boolean SMOOTHEN_WIFI_POSITIONS = true;
+    public static final boolean USE_SHIFTED_POSI_REFERENCES = false;
 
     public static final CorrelationMode CORRELATION_MODE = CorrelationMode.EUCLIDIAN;
 

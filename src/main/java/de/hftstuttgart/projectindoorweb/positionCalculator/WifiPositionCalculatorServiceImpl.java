@@ -41,7 +41,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
         Boolean mergeRadioMapElements = (Boolean) ProjectParameterResolver
                 .retrieveParameterValue(project, "mergeRadioMaps", Boolean.class);
-        if(mergeRadioMapElements == null){
+        if (mergeRadioMapElements == null) {
             mergeRadioMapElements = ConfigContainer.MERGE_RADIOMAP_ELEMENTS;
         }
 
@@ -52,7 +52,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         }
 
         Double wifiPositionSmootheningFactor = (Double) ProjectParameterResolver.retrieveParameterValue(project, "wifiPositionSmootheningFactor", Double.class);
-        if(wifiPositionSmootheningFactor == null || wifiPositionSmootheningFactor < 0.0){
+        if (wifiPositionSmootheningFactor == null || wifiPositionSmootheningFactor < 0.0) {
             wifiPositionSmootheningFactor = ConfigContainer.WIFI_POSITION_SMOOTHENER;
         }
         for (RadioMap radioMap :
@@ -60,10 +60,10 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(evaluationFile.getWifiBlocks(), 0);
             previousResult = calculateSinglePosition(project, rssiSignals, radioMap);
             Boolean smoothenWifiPositions = (Boolean) ProjectParameterResolver.retrieveParameterValue(project, "smoothenWifiPositions", Boolean.class);
-            if(smoothenWifiPositions == null){
+            if (smoothenWifiPositions == null) {
                 smoothenWifiPositions = ConfigContainer.SMOOTHEN_WIFI_POSITIONS;
             }
-            if(!smoothenWifiPositions){
+            if (!smoothenWifiPositions) {
                 wifiPositionResults.add(previousResult);
             }
 
@@ -72,16 +72,26 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
                         evaluationFile.getWifiBlocks(), block);
                 result = calculateSinglePosition(project, rssiSignals, radioMap);
 
-                if(smoothenWifiPositions){
+                if (smoothenWifiPositions) {
                     result = WifiMathHelper.smoothenWifiPosition(wifiPositionSmootheningFactor,
                             result, previousResult, result.getWeight());
                     previousResult = result;
                 }
 
-                if(evaluationFile.getRadioMap() != null){
+                if (evaluationFile.getRadioMap() != null) {
+                    Double maximumConfiguredTimeDelta = (Double) ProjectParameterResolver.retrieveParameterValue(project,
+                            "posiReferenceSimilarityTimeDelta", Double.class);
+                    if (maximumConfiguredTimeDelta == null || maximumConfiguredTimeDelta < 0.0) {
+                        maximumConfiguredTimeDelta = ConfigContainer.POSI_REFERENCE_MAX_TIME_DELTA_MILLIS;
+                    }
+                    Boolean useShiftedPosiReferences = (Boolean) ProjectParameterResolver.retrieveParameterValue(project,
+                            "useShiftedPosiReferences", Boolean.class);
+                    if (useShiftedPosiReferences == null) {
+                        useShiftedPosiReferences = ConfigContainer.USE_SHIFTED_POSI_REFERENCES;
+                    }
                     result.setPosiReference(EvaalFileHelper
-                            .findBestPostReferenceForWifiResult(result
-                                    .getRssiSignalsAppTimestamp(), evaluationFile.getRadioMap()));
+                            .findBestPostReferenceForWifiResult(result.getRssiSignalsAppTimestamp(),
+                                    maximumConfiguredTimeDelta, useShiftedPosiReferences, evaluationFile.getRadioMap()));
                 }
 
                 wifiPositionResults.add(result);
@@ -124,7 +134,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         double wifiBlockAppTimestamp = rssiSignals.get(0).getAppTimestamp();
         Position referencePosition;
         CorrelationMode correlationMode = (CorrelationMode) ProjectParameterResolver.retrieveParameterValue(project, "correlationMode", CorrelationMode.class);
-        if(correlationMode == null){
+        if (correlationMode == null) {
             correlationMode = ConfigContainer.CORRELATION_MODE;
         }
         for (RadioMapElement radioMapElement :
@@ -147,26 +157,26 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         Collections.sort(preResults);
 
         Boolean useFixedWeights = (Boolean) ProjectParameterResolver.retrieveParameterValue(project, "useFixedWeights", Boolean.class);
-        if(useFixedWeights == null){
+        if (useFixedWeights == null) {
             useFixedWeights = ConfigContainer.USE_FIXED_WEIGHTS;
         }
         Integer numRefsFromUser = (Integer) ProjectParameterResolver.retrieveParameterValue(project, "weightedModeNumReferences", Integer.class);
-        if(numRefsFromUser == null ||numRefsFromUser < 0){
+        if (numRefsFromUser == null || numRefsFromUser < 0) {
             numRefsFromUser = ConfigContainer.NUM_REFERENCES_IN_WEIGHTED_MODE;
         }
         int numRefs = useFixedWeights ? 3 : numRefsFromUser;
         preResults = preResults.subList(0, numRefs);
 
         Double weightResult1 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult1", Double.class);
-        if(weightResult1 == null || weightResult1 < 0.0){
+        if (weightResult1 == null || weightResult1 < 0.0) {
             weightResult1 = ConfigContainer.WEIGHT_RESULT_1;
         }
         Double weightResult2 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult2", Double.class);
-        if(weightResult2 == null || weightResult2 < 0.0){
+        if (weightResult2 == null || weightResult2 < 0.0) {
             weightResult2 = ConfigContainer.WEIGHT_RESULT_2;
         }
         Double weightResult3 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult3", Double.class);
-        if(weightResult3 == null || weightResult3 < 0.0){
+        if (weightResult3 == null || weightResult3 < 0.0) {
             weightResult3 = ConfigContainer.WEIGHT_RESULT_3;
         }
         if (useFixedWeights) {
@@ -198,7 +208,6 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
 
     }
-
 
 
     private List<RadioMap> collectRadioMaps(EvaalFile[] radioMapFiles) {

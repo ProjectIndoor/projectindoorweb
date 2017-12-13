@@ -2,7 +2,6 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
-import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocalXYCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
@@ -133,7 +132,7 @@ public class EvaalFileHelper {
 
         return new PosiReference(-1, a.getAvgNumber() + b.getAvgNumber(),
                 new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z, false),
-                -1, -1, null);
+                -1, -1, -1, -1,null);
 
     }
 
@@ -221,8 +220,8 @@ public class EvaalFileHelper {
 
         List<RssiSignal> result = new ArrayList<>();
 
-        double intervalStart = posiReference.getIntervalStart();
-        double intervalEnd = posiReference.getIntervalEnd();
+        double intervalStart = posiReference.getShiftedIntervalStart();
+        double intervalEnd = posiReference.getShiftedIntervalEnd();
 
         for (RssiSignal rssiReading : rssiReadings) {
             if (rssiReading.getAppTimestamp() >= intervalStart && rssiReading.getAppTimestamp() < intervalEnd) {
@@ -242,8 +241,10 @@ public class EvaalFileHelper {
 
         List<PosiReference> result = new ArrayList<>(posiLines.size());
         String[] currentLineElements;
-        double intervalEnd;
-        double intervalStart = 0;
+        double originalIntervalStart = 0;
+        double originalIntervalEnd;
+        double shiftedIntervalStart = 0;
+        double shiftedIntervalEnd = 0;
         int positionInSourceFile;
         int avgNumber = 1;
         double latitude;
@@ -255,7 +256,7 @@ public class EvaalFileHelper {
 
         for (int i = 0; i < posiLines.size(); i++) {
             currentLineElements = posiLines.get(i).split(";");
-            intervalEnd = Double.parseDouble(currentLineElements[1]);
+            originalIntervalEnd = Double.parseDouble(currentLineElements[1]);
             positionInSourceFile = Integer.parseInt(currentLineElements[2]);
             latitude = Double.parseDouble(currentLineElements[3]);
             longitude = Double.parseDouble(currentLineElements[4]);
@@ -263,8 +264,9 @@ public class EvaalFileHelper {
             floor = new Floor(floorId);
             buildingId = Integer.parseInt(currentLineElements[6]);
             referencePosition = new Position(latitude, longitude, floorId, true);
-            result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, intervalStart, intervalEnd, floor));
-            intervalStart = intervalEnd;
+            result.add(new PosiReference(positionInSourceFile, avgNumber, referencePosition, originalIntervalStart,
+                    originalIntervalEnd, shiftedIntervalStart, shiftedIntervalEnd, floor));
+            originalIntervalStart = originalIntervalEnd;
         }
 
         return result;
@@ -279,20 +281,20 @@ public class EvaalFileHelper {
         current = unshiftedPosiReferences.get(0);
         next = unshiftedPosiReferences.get(1);
 
-        double formerIntervalEnd = (current.getIntervalEnd() + next.getIntervalEnd()) / 2;
-        current.setIntervalEnd(formerIntervalEnd);
+        double formerIntervalEnd = (current.getOriginalIntervalEnd() + next.getOriginalIntervalEnd()) / 2;
+        current.setShiftedIntervalEnd(formerIntervalEnd);
 
         for (int i = 1; i < unshiftedPosiReferences.size() - 1; i++) {
             current = unshiftedPosiReferences.get(i);
-            current.setIntervalStart(formerIntervalEnd);
+            current.setShiftedIntervalStart(formerIntervalEnd);
             next = unshiftedPosiReferences.get(i + 1);
-            formerIntervalEnd = (current.getIntervalEnd() + next.getIntervalEnd()) / 2;
-            current.setIntervalEnd(formerIntervalEnd);
+            formerIntervalEnd = (current.getOriginalIntervalEnd() + next.getOriginalIntervalEnd()) / 2;
+            current.setShiftedIntervalEnd(formerIntervalEnd);
         }
 
         current = unshiftedPosiReferences.get(unshiftedPosiReferences.size() - 1);
-        current.setIntervalStart(formerIntervalEnd);
-        current.setIntervalEnd(ConfigContainer.POSI_MAX_INTERVAL_END);
+        current.setShiftedIntervalStart(formerIntervalEnd);
+        current.setShiftedIntervalEnd(ConfigContainer.POSI_MAX_INTERVAL_END);
 
         List<PosiReference> shiftedPosiReferences = new ArrayList<>(unshiftedPosiReferences);
         return shiftedPosiReferences;
@@ -405,16 +407,40 @@ public class EvaalFileHelper {
 
     }
 
-    public static PosiReference findBestPostReferenceForWifiResult(double resultAppTimestamp, RadioMap radioMap) {
+    public static PosiReference findBestPostReferenceForWifiResult(double resultAppTimestamp, double maximumConfiguredTimeDelta,
+                                                                   boolean useShiftedPosiReferences, RadioMap radioMap) {
 
         PosiReference result = null;
         PosiReference candidate;
+        double timeDelta;
+        double intervalStart;
+        double intervalEnd;
+        double timeDeltaToStart;
+        double timeDeltaToEnd;
+        double smallestEncounteredTimeDelta = Double.MAX_VALUE;
+        maximumConfiguredTimeDelta /= 1000;
         for (RadioMapElement radioMapElement :
                 radioMap.getRadioMapElements()) {
             candidate = radioMapElement.getPosiReference();
-            if (candidate.getIntervalStart() <= resultAppTimestamp && resultAppTimestamp < candidate.getIntervalEnd()) {
-                result = candidate;
-                break;
+            if(useShiftedPosiReferences){
+                intervalStart = candidate.getShiftedIntervalStart();
+                intervalEnd = candidate.getShiftedIntervalEnd();
+            }else{
+                intervalStart = candidate.getOriginalIntervalStart();
+                intervalEnd = candidate.getOriginalIntervalEnd();
+            }
+            timeDeltaToStart = Math.abs(intervalStart - resultAppTimestamp);
+            timeDeltaToEnd = Math.abs(intervalEnd - resultAppTimestamp);
+            if(timeDeltaToEnd >= timeDeltaToStart){
+                timeDelta = timeDeltaToStart;
+            }else{
+                timeDelta = timeDeltaToEnd;
+            }
+            if (timeDelta <= maximumConfiguredTimeDelta) {
+                if(timeDelta < smallestEncounteredTimeDelta){
+                    smallestEncounteredTimeDelta = timeDelta;
+                    result = candidate;
+                }
             }
         }
 
@@ -437,8 +463,10 @@ public class EvaalFileHelper {
             oldPosiReference = radioMapElement.getPosiReference();
             clonedReferencePosition = new Position(oldPosiReference.getReferencePosition());
             clonedPosiReference = new PosiReference(oldPosiReference.getPositionInSourceFile(),
-                    oldPosiReference.getAvgNumber(), clonedReferencePosition, oldPosiReference.getIntervalStart(),
-                    oldPosiReference.getIntervalEnd(), oldPosiReference.getFloor());
+                    oldPosiReference.getAvgNumber(), clonedReferencePosition,
+                    oldPosiReference.getOriginalIntervalStart(), oldPosiReference.getOriginalIntervalEnd(),
+                    oldPosiReference.getShiftedIntervalStart(), oldPosiReference.getShiftedIntervalEnd(),
+                    oldPosiReference.getFloor());
             clonedRadioMapElements.add(new RadioMapElement(clonedPosiReference, radioMapElement.getRssiSignals()));
         }
 
