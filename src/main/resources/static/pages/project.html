@@ -13,9 +13,12 @@
             </md-card-title>
 
             <md-list>
-                <md-list-item ng-repeat="project in projects()" ng-click="goToPerson(person.name, $event)"
-                              class="noright">
-                    <p>{{ project.projectName }}</p>
+                <md-list-item ng-repeat="project in projects()" ng-click="showProjectInfo(project.projectId)"
+                              class="md-2-line noright">
+                    <div class="md-list-item-text">
+                        <h3>{{ project.projectName }}</h3>
+                        <p>{{ project.buildingName }}</p>
+                    </div>
                     <div class="layout-margin">
                         <i class="material-icons">visibility</i>
                         <i class="material-icons">mode_edit</i>

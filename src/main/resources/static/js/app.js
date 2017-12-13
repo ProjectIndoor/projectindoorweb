@@ -164,8 +164,8 @@ function UploadService($http, $mdToast) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            if(radioMapSet.radioMapFiles[0] == null) {
-                if(radioMapSet.buildingIdentifier != 0) {
+            if (radioMapSet.radioMapFiles[0] == null) {
+                if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
                     showToast(logMessage);
                 }
@@ -478,6 +478,8 @@ app.factory("calculationService", CalculationService);
 function ProjectService($http) {
     //api endpoints
     var allProjUrl = '/project/getAllProjects';
+    var projInfoUrl = '/project/loadSelectedProject';
+
     // project properties
     var projectId;
     var projectName = 'DemoRun';
@@ -499,6 +501,19 @@ function ProjectService($http) {
         },
         getAllProjects: function () {
             return [].concat(projects);
+        },
+        // single project info
+        loadProjectInfo: function (projectId) {
+            var config = {
+                params: {
+                    projectIdentifier: projectId
+                }
+            };
+            var promise = $http.get(projInfoUrl, config).then(function (response) {
+                // return data to allow access from caller
+                return response.data;
+            });
+            return promise;
         }
     }
 }
@@ -1012,15 +1027,67 @@ function EvaluationImportController($scope, dataService, uploadService) {
 app.controller('EvalImportCtrl', EvaluationImportController);
 
 //Controller to handle the projects
-function ProjectController($scope, projectService) {
+function ProjectController($scope, $mdPanel, projectService) {
+    //load md panel
+    var mdPanel = $mdPanel;
+
     // load list of projects when calling controller
     projectService.loadAllProjects();
 
     // assign loaded project list to scope var
     $scope.projects = projectService.getAllProjects;
+
+    $scope.showProjectInfo = function (projectId) {
+        // setup panel position
+        var position = mdPanel.newPanelPosition()
+            .absolute()
+            .center();
+
+        // setup panel config
+        var config = {
+            attachTo: angular.element(document.body),
+            templateUrl: '/pages/panels/project.panel.html',
+            hasBackdrop: true,
+            panelClass: 'project-dialog',
+            position: position,
+            controller: ProjectDialogController,
+            controllerAs: 'ctrl',
+            trapFocus: true,
+            zIndex: 150,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            focusOnOpen: true
+        };
+
+        // retrieve project information and display it in a dialog
+        projectService.loadProjectInfo(projectId).then(function (data) {
+            config.locals = {
+                "project": data
+            };
+            mdPanel.open(config);
+        });
+    }
 }
 
 app.controller('ProjectCtrl', ProjectController);
+
+/**
+ * ----------------------------------------------
+ * Panel controllers
+ * ----------------------------------------------
+ */
+
+function ProjectDialogController(mdPanelRef) {
+    var panelRef = mdPanelRef;
+
+    this.closeDialog = function () {
+        panelRef && panelRef.close().then(function () {
+            panelRef.destroy();
+        });
+    };
+}
+
+app.controller('ProjectDialogCtrl', ProjectDialogController);
 
 /**
  * ----------------------------------------------
