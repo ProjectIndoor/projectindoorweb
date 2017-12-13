@@ -15,8 +15,11 @@ public class PosiReference {
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position referencePosition;
 
-    private double intervalStart;
-    private double intervalEnd;
+    private double originalIntervalStart;
+    private double originalIntervalEnd;
+
+    private double shiftedIntervalStart;
+    private double shiftedIntervalEnd;
 
     @ManyToOne(targetEntity = Floor.class, cascade = CascadeType.ALL)
     private Floor floor;
@@ -24,13 +27,15 @@ public class PosiReference {
     protected PosiReference(){}
 
     public PosiReference(int positionInSourceFile, int avgNumber, Position referencePosition,
-                         double intervalStart, double intervalEnd, Floor floor) {
-
+                         double originalIntervalStart, double originalIntervalEnd, double shiftedIntervalStart,
+                         double shiftedIntervalEnd, Floor floor) {
         this.positionInSourceFile = positionInSourceFile;
         this.avgNumber = avgNumber;
         this.referencePosition = referencePosition;
-        this.intervalStart = intervalStart;
-        this.intervalEnd = intervalEnd;
+        this.originalIntervalStart = originalIntervalStart;
+        this.originalIntervalEnd = originalIntervalEnd;
+        this.shiftedIntervalStart = shiftedIntervalStart;
+        this.shiftedIntervalEnd = shiftedIntervalEnd;
         this.floor = floor;
     }
 
@@ -62,20 +67,36 @@ public class PosiReference {
         this.referencePosition = referencePosition;
     }
 
-    public double getIntervalStart() {
-        return intervalStart;
+    public double getOriginalIntervalStart() {
+        return originalIntervalStart;
     }
 
-    public void setIntervalStart(double intervalStart) {
-        this.intervalStart = intervalStart;
+    public void setOriginalIntervalStart(double originalIntervalStart) {
+        this.originalIntervalStart = originalIntervalStart;
     }
 
-    public double getIntervalEnd() {
-        return intervalEnd;
+    public double getOriginalIntervalEnd() {
+        return originalIntervalEnd;
     }
 
-    public void setIntervalEnd(double intervalEnd) {
-        this.intervalEnd = intervalEnd;
+    public void setOriginalIntervalEnd(double originalIntervalEnd) {
+        this.originalIntervalEnd = originalIntervalEnd;
+    }
+
+    public double getShiftedIntervalStart() {
+        return shiftedIntervalStart;
+    }
+
+    public void setShiftedIntervalStart(double shiftedIntervalStart) {
+        this.shiftedIntervalStart = shiftedIntervalStart;
+    }
+
+    public double getShiftedIntervalEnd() {
+        return shiftedIntervalEnd;
+    }
+
+    public void setShiftedIntervalEnd(double shiftedIntervalEnd) {
+        this.shiftedIntervalEnd = shiftedIntervalEnd;
     }
 
     public Floor getFloor() {

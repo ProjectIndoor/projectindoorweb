@@ -55,12 +55,15 @@ public class TransmissionHelper {
                 }
             }
 
-            double distance = 0.0;
+            double distance = -1.0;
             if (calculatedPosition != null && referencePosition != null) {
                 distance = retrieveDistanceBetweenWgsPositions(calculatedPosition, referencePosition, building);
             }
 
             result.add(new BatchPositionResult(calculatedPosition, referencePosition, distance));
+            if(referencePosition != null){
+                referencePosition = null;
+            }
         }
 
         return result;
@@ -86,12 +89,12 @@ public class TransmissionHelper {
         return result;
     }
 
-    public static List<GetFloor> convertToExternalFloor(List<Floor> buildingFloors){
+    public static List<GetFloor> convertToExternalFloor(List<Floor> buildingFloors) {
 
         List<GetFloor> result = new ArrayList<>(buildingFloors.size());
 
-        for (Floor floor:
-             buildingFloors) {
+        for (Floor floor :
+                buildingFloors) {
             result.add(new GetFloor(floor.getId(), floor.getLevel(), floor.getFloorName(), floor.getFloorMapUrl()));
         }
 
@@ -194,7 +197,7 @@ public class TransmissionHelper {
 
     public static BuildingPositionAnchor convertToBuildingPositionAnchor(Position position) {
 
-        if(position != null){
+        if (position != null) {
             return new BuildingPositionAnchor(position.getX(), position.getY());
         }
 
@@ -209,7 +212,7 @@ public class TransmissionHelper {
     }
 
     public static List<BatchPositionResult> convertCalculatedResultsToPixelPositions(List<BatchPositionResult> batchPositionResults,
-                                                                                    Building building) {
+                                                                                     Building building) {
 
         Position latLongPosition;
         Position pixelPosition;
@@ -227,13 +230,16 @@ public class TransmissionHelper {
             calculatedPosition.setWgs84(pixelPosition.isWgs84());
             batchPositionResult.setCalculatedPosition(calculatedPosition);
             referencePosition = batchPositionResult.getReferencePosition();
-            latLongPosition = new Position(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(), referencePosition.isWgs84());
-            pixelPosition = retrievePositionAsPixels(building, latLongPosition);
-            referencePosition.setX(pixelPosition.getX());
-            referencePosition.setY(pixelPosition.getY());
-            referencePosition.setZ(pixelPosition.getZ());
-            referencePosition.setWgs84(pixelPosition.isWgs84());
-            batchPositionResult.setReferencePosition(referencePosition);
+            if (referencePosition != null) {
+                latLongPosition = new Position(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(), referencePosition.isWgs84());
+                pixelPosition = retrievePositionAsPixels(building, latLongPosition);
+                referencePosition.setX(pixelPosition.getX());
+                referencePosition.setY(pixelPosition.getY());
+                referencePosition.setZ(pixelPosition.getZ());
+                referencePosition.setWgs84(pixelPosition.isWgs84());
+                batchPositionResult.setReferencePosition(referencePosition);
+            }
+
             convertedBatchPositionResults.add(batchPositionResult);
         }
 
@@ -286,11 +292,11 @@ public class TransmissionHelper {
 
     }
 
-    public static List<EvaalFile> convertArrayToMutableList(EvaalFile[] evaalFiles){
+    public static List<EvaalFile> convertArrayToMutableList(EvaalFile[] evaalFiles) {
 
         List<EvaalFile> result = new ArrayList<>(evaalFiles.length);
 
-        for(int i = 0; i < evaalFiles.length; i++){
+        for (int i = 0; i < evaalFiles.length; i++) {
             result.add(i, evaalFiles[i]);
         }
 
@@ -298,12 +304,12 @@ public class TransmissionHelper {
 
     }
 
-    public static Set<SaveNewProjectParameters> convertToExternalProjectParameters(List<Parameter> parameters){
+    public static Set<SaveNewProjectParameters> convertToExternalProjectParameters(List<Parameter> parameters) {
 
         Set<SaveNewProjectParameters> result = new HashSet<>(parameters.size());
 
-        for (Parameter parameter:
-             parameters) {
+        for (Parameter parameter :
+                parameters) {
             result.add(new SaveNewProjectParameters(parameter.getParameterName(), parameter.getParameterValue()));
         }
 
@@ -311,20 +317,22 @@ public class TransmissionHelper {
 
     }
 
-    public static String convertToExternalAlgorithmType(CalculationAlgorithm algorithm){
+    public static String convertToExternalAlgorithmType(CalculationAlgorithm algorithm) {
 
-        switch (algorithm){
-            case WIFI: return "WIFI";
+        switch (algorithm) {
+            case WIFI:
+                return "WIFI";
             /*Currently, only WIFI mode is supported.*/
-            default: return "WIFI";
+            default:
+                return "WIFI";
         }
     }
 
-    public static long[] getEvaalFileIds(List<EvaalFile> evaalFiles){
+    public static long[] getEvaalFileIds(List<EvaalFile> evaalFiles) {
 
         long[] result = new long[evaalFiles.size()];
 
-        for(int i = 0; i < result.length; i++){
+        for (int i = 0; i < result.length; i++) {
             result[i] = evaalFiles.get(i).getId();
         }
 
@@ -332,7 +340,7 @@ public class TransmissionHelper {
 
     }
 
-    public static String getFormattedNowTimestamp(){
+    public static String getFormattedNowTimestamp() {
 
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd_HH:mm:ss"));
 
