@@ -9,8 +9,8 @@
             <i class="material-icons">home</i>
         </md-card-title-media>
     </md-card-title>
-    <md-card-content layout="column">
-        <div ng-form="buildingForm">
+    <form name="buildingForm">
+        <md-card-content layout="column">
             <div layout="row">
                 <md-input-container flex="100">
                     <label>Name of building</label>
@@ -94,7 +94,7 @@
                 <md-input-container flex="50">
                     <label>NE Longitude</label>
                     <input type="number" ng-model="building.northEastAnchor.longitude" name="northEastLongitude"
-                           required min="-90" max="90"/>
+                           required min="-180" max="180"/>
                     <div ng-messages="buildingForm.northEastLongitude.$error">
                         <div ng-message="required">This is required.</div>
                         <div ng-message="min">Minimum value should be -180</div>
@@ -120,7 +120,7 @@
                 <md-input-container flex="50">
                     <label>SE Longitude</label>
                     <input type="number" ng-model="building.southEastAnchor.longitude" name="southEastLongitude"
-                           required min="-90" max="90"/>
+                           required min="-180" max="180"/>
                     <div ng-messages="buildingForm.southEastLongitude.$error">
                         <div ng-message="required">This is required.</div>
                         <div ng-message="min">Minimum value should be -180</div>
@@ -174,12 +174,9 @@
                 <md-button class="md-raised" ng-click="addFloorFields()" flex="50">Add new floor</md-button>
                 <md-button class="md-raised" ng-click="removeLastFloorField()" flex="50">Remove floor</md-button>
             </div>
-
-        </div>
-
-
-    </md-card-content>
-    <md-card-actions layout="row" layout-align="end center">
-        <md-button class="md-raised md-primary" ng-click="uploadBuildingData()">Add Building</md-button>
-    </md-card-actions>
+        </md-card-content>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button type="submit" class="md-raised md-primary" ng-click="buildingForm.$valid && uploadBuildingData()">Add Building</md-button>
+        </md-card-actions>
+    </form>
 </md-card>
