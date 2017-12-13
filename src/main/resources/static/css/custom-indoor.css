@@ -90,3 +90,16 @@
     color: red;
     text-align: center;
 }
+
+/* angular material style additions */
+@media (min-width: 960px) {
+    md-toast.md-center {
+        margin-left: auto;
+        margin-right: auto;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        padding: 0px;
+    }
+}
+

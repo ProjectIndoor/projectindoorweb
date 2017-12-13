@@ -225,7 +225,7 @@ function UploadService($http, $mdToast) {
 
     // private functions
     function showToast(logMessage) {
-        var pinTo = "top right";
+        var pinTo = "bottom center";
 
         $mdToast.show(
             $mdToast.simple()
