@@ -12,7 +12,7 @@ public class ProjectParameterResolver {
 
         List<Parameter> projectParameters = project.getProjectParameters();
 
-        double result = 0.0;
+        Object result = null;
         for (Parameter parameter:
              projectParameters) {
             if(parameter.getParameterName().equalsIgnoreCase(parameterName)){

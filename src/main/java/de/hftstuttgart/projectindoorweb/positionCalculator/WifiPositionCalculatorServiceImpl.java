@@ -51,8 +51,8 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             radioMaps.add(tmp);
         }
 
-        double wifiPositionSmootheningFactor = (double) ProjectParameterResolver.retrieveParameterValue(project, "wifiPositionSmootheningFactor", Double.class);
-        if(wifiPositionSmootheningFactor < 0.0){
+        Double wifiPositionSmootheningFactor = (Double) ProjectParameterResolver.retrieveParameterValue(project, "wifiPositionSmootheningFactor", Double.class);
+        if(wifiPositionSmootheningFactor == null || wifiPositionSmootheningFactor < 0.0){
             wifiPositionSmootheningFactor = ConfigContainer.WIFI_POSITION_SMOOTHENER;
         }
         for (RadioMap radioMap :
@@ -150,24 +150,24 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         if(useFixedWeights == null){
             useFixedWeights = ConfigContainer.USE_FIXED_WEIGHTS;
         }
-        int numRefsFromUser = (int) ProjectParameterResolver.retrieveParameterValue(project, "weightedModeNumReferences", Integer.class);
-        if(numRefsFromUser < 0){
+        Integer numRefsFromUser = (Integer) ProjectParameterResolver.retrieveParameterValue(project, "weightedModeNumReferences", Integer.class);
+        if(numRefsFromUser == null ||numRefsFromUser < 0){
             numRefsFromUser = ConfigContainer.NUM_REFERENCES_IN_WEIGHTED_MODE;
         }
         int numRefs = useFixedWeights ? 3 : numRefsFromUser;
         preResults = preResults.subList(0, numRefs);
 
-        double weightResult1 = (double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult1", Double.class);
-        if(weightResult1 < 0.0){
+        Double weightResult1 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult1", Double.class);
+        if(weightResult1 == null || weightResult1 < 0.0){
             weightResult1 = ConfigContainer.WEIGHT_RESULT_1;
         }
-        double weightResult2 = (double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult2", Double.class);
-        if(weightResult1 < 0.0){
-            weightResult1 = ConfigContainer.WEIGHT_RESULT_2;
+        Double weightResult2 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult2", Double.class);
+        if(weightResult2 == null || weightResult2 < 0.0){
+            weightResult2 = ConfigContainer.WEIGHT_RESULT_2;
         }
-        double weightResult3 = (double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult3", Double.class);
-        if(weightResult1 < 0.0){
-            weightResult1 = ConfigContainer.WEIGHT_RESULT_3;
+        Double weightResult3 = (Double) ProjectParameterResolver.retrieveParameterValue(project, "weightResult3", Double.class);
+        if(weightResult3 == null || weightResult3 < 0.0){
+            weightResult3 = ConfigContainer.WEIGHT_RESULT_3;
         }
         if (useFixedWeights) {
             preResults.get(0).setWeight(weightResult1);
