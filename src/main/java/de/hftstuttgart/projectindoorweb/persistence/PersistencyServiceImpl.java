@@ -28,7 +28,7 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNullOrEmpty(projectName, "projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
-        AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
+        //AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
 
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
@@ -341,9 +341,11 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         List<Parameter> parametersAsList = new ArrayList<>();
 
-        for (SaveNewProjectParameters parameter :
-                saveNewProjectParamaters) {
-            parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
+        if (saveNewProjectParamaters != null) {
+            for (SaveNewProjectParameters parameter :
+                    saveNewProjectParamaters) {
+                parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
+            }
         }
 
         return parametersAsList;
