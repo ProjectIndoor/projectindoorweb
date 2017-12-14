@@ -11,61 +11,64 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Algorithm Type</label>
-            <md-select ng-model="algo.type">
-                <md-option value="a1">
-                    RadioMap WIFI
+            <md-select ng-model="choosenAlgorithm">
+                <md-option ng-repeat="algorithm in availableAlgorithms()" ng-value="{{algorithm}}">
+                    {{algorithm.niceName}}
                 </md-option>
             </md-select>
         </md-input-container>
     </md-card-content>
-    <md-divider></md-divider>
 
-    <!-- Parameters -->
-    <md-subheader class="md-primary">Parameters</md-subheader>
-    <!-- Radiomap chooser -->
-    <md-input-container style="margin: 16px">
-        <label>Radiomaps</label>
-        <md-select ng-model="algorithmParameters.radiomaps" multiple>
-            <md-option ng-repeat="rMap in availableRadiomaps()" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
-            </md-option>
-        </md-select>
-    </md-input-container>
+    <!-- Parameters (only show when parameter is selected) -->
+    <div layout="column" ng-show="choosenAlgorithm">
+        <md-divider></md-divider>
+        <md-subheader class="md-primary">Parameters</md-subheader>
+        <!-- Radiomap chooser -->
+        <md-input-container style="margin: 16px">
+            <label>Radiomaps</label>
+            <md-select ng-model="algorithmParameters.radiomaps" multiple>
+                <md-option ng-repeat="rMap in availableRadiomaps()" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
+                </md-option>
+            </md-select>
+        </md-input-container>
 
-    <!-- Additional Parameters (button toggles if they should be visible) -->
-    <md-button
-            ng-click="collapseProjParams = !collapseProjParams"
-            ng-class="{true: 'md-primary', false: ''}[!collapseProjParams]">
-        {{!collapseProjParams && 'Show more' || 'Show less'}} parameters
-    </md-button>
+        <!-- Additional Parameters (button toggles if they should be visible) -->
+        <md-button ng-show="choosenAlgorithm"
+                   ng-click="collapseProjParams = !collapseProjParams"
+                   ng-class="{true: 'md-primary', false: ''}[!collapseProjParams]">
+            {{!collapseProjParams && 'Show more' || 'Show less'}} parameters
+        </md-button>
 
-    <!-- Project parameters (load dynamically) -->
-    <md-input-container ng-show="collapseProjParams" ng-repeat="projParam in algorithmParameters.projectParameters" style="margin: 16px">
-        <!-- Display appropriate control depending on type -->
-        <div ng-switch on="projParam.type">
-            <!-- Boolean (Checkbox) -->
-            <div ng-switch-when="boolean">
-                <md-switch ng-model="projParam.value">{{projParam.name}}
-                </md-switch>
+        <!-- Project parameters (load dynamically) -->
+        <md-input-container ng-show="collapseProjParams" ng-repeat="projParam in choosenAlgorithm.projectParameters"
+                            style="margin: 16px">
+            <!-- Display appropriate control depending on type -->
+            <div ng-switch on="projParam.type">
+                <!-- Boolean (Checkbox) -->
+                <div ng-switch-when="boolean">
+                    <md-switch ng-model="projParam.value">{{projParam.name}}
+                    </md-switch>
+                </div>
+                <!-- Double (number with any step) -->
+                <div ng-switch-when="double">
+                    <label>{{projParam.name}}</label>
+                    <input type="number" step="any" ng-model="projParam.value">
+                </div>
+                <!-- Int (number with step 1) -->
+                <div ng-switch-when="int">
+                    <label>{{projParam.name}}</label>
+                    <input type="number" step="1" ng-model="projParam.value">
+                </div>
+                <!-- Other (text field) -->
+                <div ng-switch-default>
+                    <label>{{projParam.name}}</label>
+                    <input ng-model="projParam.value">
+                </div>
             </div>
-            <!-- Double (number with any step) -->
-            <div ng-switch-when="double">
-                <label>{{projParam.name}}</label>
-                <input type="number" step="any" ng-model="projParam.value">
-            </div>
-            <!-- Int (number with step 1) -->
-            <div ng-switch-when="int">
-                <label>{{projParam.name}}</label>
-                <input type="number" step="1" ng-model="projParam.value">
-            </div>
-            <!-- Other (text field) -->
-            <div ng-switch-default>
-                <label>{{projParam.name}}</label>
-                <input ng-model="projParam.value">
-            </div>
-        </div>
-    </md-input-container>
+        </md-input-container>
 
-    <md-card-actions layout="row" layout-align="end center">
-        <md-button ng-click="calculatePos()" class="md-accent">Calculate</md-button>
-    </md-card-actions>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button ng-click="calculatePos()" class="md-accent">Calculate</md-button>
+        </md-card-actions>
+    </div>
 </md-card>
