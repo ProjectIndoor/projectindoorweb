@@ -10,16 +10,16 @@ public class GetAllAlgorithmTypes {
     private String className;
     private String niceName;
 
-    private List<GetAlgorithmParameters> getAlgorithmParameters;
+    private List<GetAlgorithmParameters> applicableParameters;
 
 
     @JsonCreator
     public GetAllAlgorithmTypes(@JsonProperty("className") String className, @JsonProperty("niceName") String niceName,
-                                @JsonProperty("getAlgorithmParameters") List<GetAlgorithmParameters>
-                                        getAlgorithmParameters) {
+                                @JsonProperty("applicableParameters") List<GetAlgorithmParameters>
+                                        applicableParameters) {
         this.className = className;
         this.niceName = niceName;
-        this.getAlgorithmParameters = getAlgorithmParameters;
+        this.applicableParameters = applicableParameters;
     }
 
     public String getClassName() {
@@ -30,7 +30,7 @@ public class GetAllAlgorithmTypes {
         return niceName;
     }
 
-    public List<GetAlgorithmParameters> getGetAlgorithmParameters() {
-        return getAlgorithmParameters;
+    public List<GetAlgorithmParameters> getApplicableParameters() {
+        return applicableParameters;
     }
 }

@@ -339,7 +339,8 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
-        result.add(new GetAllAlgorithmTypes(WifiPositionCalculatorServiceImpl.class.getName(), "WIFI", ParameterHelper.getInstance().getParametersForAlgorithmType("WIFI")));
+        result.add(new GetAllAlgorithmTypes(WifiPositionCalculatorServiceImpl.class.getName(), "WIFI",
+                ParameterHelper.getInstance().getParametersForAlgorithmType("WIFI")));
         return result;
     }
 
