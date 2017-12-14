@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
+    /*Evaal file processing and generaring position results*/
     boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile);
 
     List<BatchPositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
@@ -21,6 +22,12 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<BatchPositionResult> getPositionResultsForProjectIdentifier(String positionIdentifier);
 
+    List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier);
+
+    List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
+
+
+    /*Projects*/
     long addNewProject(AddNewProject addNewProject);
 
     boolean updateProject(UpdateProject updateProject);
@@ -31,17 +38,22 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<GetAllProjects> getAllProjects();
 
+    /*Algorithms and parameters*/
     List<GetAllAlgorithmTypes> getAllAlgorithmTypes();
 
-    List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier);
+    List<GetAlgorithmParameters> getAllParameters();
 
-    List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
+    List<GetAlgorithmParameters> getParametersForAlgorithm(String algorithmType);
 
+
+    /*Buildings*/
     long addNewBuilding(AddNewBuilding addNewBuilding);
 
-    List<GetAllBuildings>getAllBuildings();
+    List<GetAllBuildings> getAllBuildings();
 
     GetSingleBuilding getSingleBuilding(String buildingIdentifier);
 
     boolean updateBuilding(UpdateBuilding updateBuilding);
+
+
 }

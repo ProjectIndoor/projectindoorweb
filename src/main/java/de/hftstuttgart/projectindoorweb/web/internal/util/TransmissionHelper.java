@@ -61,7 +61,7 @@ public class TransmissionHelper {
             }
 
             result.add(new BatchPositionResult(calculatedPosition, referencePosition, distance));
-            if(referencePosition != null){
+            if (referencePosition != null) {
                 referencePosition = null;
             }
         }

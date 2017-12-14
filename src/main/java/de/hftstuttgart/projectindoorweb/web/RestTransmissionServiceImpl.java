@@ -5,9 +5,11 @@ import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+import de.hftstuttgart.projectindoorweb.positionCalculator.WifiPositionCalculatorServiceImpl;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
+import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -337,9 +339,21 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
-        //TODO implement when ready
+        result.add(new GetAllAlgorithmTypes(WifiPositionCalculatorServiceImpl.class.getName(), "WIFI", ParameterHelper.getInstance().getParametersForAlgorithmType("WIFI")));
         return result;
     }
+
+
+    @Override
+    public List<GetAlgorithmParameters> getAllParameters() {
+        return ParameterHelper.getInstance().getAllParameters();
+    }
+
+    @Override
+    public List<GetAlgorithmParameters> getParametersForAlgorithm(String algorithmType) {
+        return ParameterHelper.getInstance().getParametersForAlgorithmType(algorithmType);
+    }
+
 
     @Override
     public List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier) {
@@ -516,7 +530,6 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
 
         return saveNewProjectParamaters;
-
 
     }
 }

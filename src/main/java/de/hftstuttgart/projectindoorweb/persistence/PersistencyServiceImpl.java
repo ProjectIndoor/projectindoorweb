@@ -1,6 +1,5 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
@@ -11,9 +10,10 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectReposito
 import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
+import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -337,13 +337,15 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
 
-    private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters) {
+    private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParameters) {
 
         List<Parameter> parametersAsList = new ArrayList<>();
 
-        if (saveNewProjectParamaters != null) {
+        GetAlgorithmParameters getAlgorithmParameters;
+        if (saveNewProjectParameters != null) {
             for (SaveNewProjectParameters parameter :
-                    saveNewProjectParamaters) {
+                    saveNewProjectParameters) {
+                getAlgorithmParameters = ParameterHelper.getInstance().getParameterByInternalName(parameter.getName());
                 parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
             }
         }

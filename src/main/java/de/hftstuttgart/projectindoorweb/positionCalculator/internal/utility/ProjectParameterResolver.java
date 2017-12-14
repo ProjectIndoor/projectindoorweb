@@ -6,6 +6,7 @@ import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationM
 
 import java.util.List;
 
+
 public class ProjectParameterResolver {
 
     public static Object retrieveParameterValue(Project project, String parameterName, Class<? extends Object> parameterValueClass){

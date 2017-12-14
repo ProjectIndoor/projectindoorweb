@@ -32,6 +32,7 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String GET_ALL_PROJECT_NOTE = "Returns all current projects in the database in a list or an empty list if no projects are available.";
     public static final String GET_ALL_ALGORITHMS_NOTE = "Returns all current algorithm types in a list that are currently available or an empty list if none are available.";
     public static final String GET_PARAMETERS_FOR_ALGORITHM_NOTE = "Returns a list of parameters which are currently associated with the given algorithm identifier. Returns an empty list if nothing has been found or if the given data is invalid.";
+    public static final String GET_ALL_PARAMETERS_NOTE = "Returns a list of all parameters available to be specified in a Project.";
 
     public static final String GENERATE_RADIOMAPS_NOTE = "Generates a radio map. Returns true if generation was successful, otherwise false. Parameter transformed points file must not be null but can be empty";
     public static final String GENERATE_POSITIONRESULTS_NOTE = "Generates and returns position results. Returns a list of generated position results or an empty list if generation was not successful or given parameters were invalid.";

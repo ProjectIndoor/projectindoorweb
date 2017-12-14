@@ -17,14 +17,14 @@ public class LoadSelectedProject {
 
     @JsonCreator
     public LoadSelectedProject(@JsonProperty("projectIdentifier") Long projectIdentifier,
-                               @JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParametersSet,
+                               @JsonProperty("projectParameters") Set<SaveNewProjectParameters> projectParameters,
                                @JsonProperty("projectName") String projectName,
                                @JsonProperty("algorithmType") String algorithmType,
                                @JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                @JsonProperty("evalFileIdentifier") Long evalFileIdentifier,
                                @JsonProperty("radioMapFileIdentifiers") long[] radioMapFileIdentifiers) {
         this.projectIdentifier = projectIdentifier;
-        this.saveNewProjectParametersSet = saveNewProjectParametersSet;
+        this.saveNewProjectParametersSet = projectParameters;
         this.projectName = projectName;
         this.algorithmType = algorithmType;
         this.buildingIdentifier = buildingIdentifier;
