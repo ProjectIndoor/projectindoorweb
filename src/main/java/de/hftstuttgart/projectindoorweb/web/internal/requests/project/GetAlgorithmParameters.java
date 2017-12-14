@@ -6,13 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GetAlgorithmParameters {
 
     private String name;
-
-    private String type; //Why type? No value?
+    private String type;
+    private Object defaultValue;
 
     @JsonCreator
-    public GetAlgorithmParameters(@JsonProperty("name")String name, @JsonProperty("type")String type) {
+    public GetAlgorithmParameters(@JsonProperty("name")String name, @JsonProperty("type")String type,
+                                          @JsonProperty("defaultValue")Object defaultValue) {
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -21,5 +23,9 @@ public class GetAlgorithmParameters {
 
     public String getType() {
         return type;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 }

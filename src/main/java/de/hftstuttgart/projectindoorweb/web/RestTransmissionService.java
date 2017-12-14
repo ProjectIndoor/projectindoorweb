@@ -37,8 +37,6 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
 
-    List<GetAlgorithmParameters> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier);
-
     long addNewBuilding(AddNewBuilding addNewBuilding);
 
     List<GetAllBuildings>getAllBuildings();
