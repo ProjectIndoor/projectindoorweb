@@ -454,11 +454,11 @@ function CalculationService($http) {
     var createProjectUrl = '/project/saveNewProject';
 
     // properties
-    var buildingId = 1;
-    var evalFileId = 1;
-    var radioMapFileIds = [1];
-    var algorithmType = "WIFI";
-    var projectParameters = [];
+    var buildingId;
+    var evalFileId;
+    var radioMapFileIds;
+    var algorithmType;
+    var projectParameters;
     var asPixel = true;
 
     // workflow progress
@@ -466,6 +466,15 @@ function CalculationService($http) {
 
     return {
         // set and get progress
+        isEvalSet: function () {
+            return evalFileId;
+        },
+        isBuildingSet: function () {
+            return buildingId;
+        },
+        isAlgorithmReady: function () {
+            return buildingId && evalFileId && radioMapFileIds && algorithmType && projectParameters;
+        },
         flowProgress: function () {
             return workflowProgress;
         },
@@ -546,6 +555,15 @@ function CalculationService($http) {
                 return response.data;
             });
             return promise;
+        },
+        loadDataFromProject: function (project) {
+            console.log("Load project");
+            console.log(project);
+            algorithmType = project.algorithmType;
+            buildingId = project.buildingIdentifier;
+            evalFileId = project.evalFileIdentifier;
+            radioMapFileIds = project.radioMapFileIdentifiers;
+            projectParameters = project.saveNewProjectParametersSet;
         }
     }
 }
@@ -804,9 +822,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
     };
 
     // decide when to hide/show project interface
-    $scope.projectHide = function () {
-        return calculationService.flowProgress() < 2;
-    };
+    $scope.projectShow = calculationService.isAlgorithmReady;
 });
 
 // controller which handles the map
@@ -959,9 +975,7 @@ function TrackController($scope, dataService, calculationService) {
     };
 
     // hide if not needed yet
-    $scope.trackHide = function () {
-        return calculationService.flowProgress() < 1;
-    };
+    $scope.trackShow = calculationService.isBuildingSet;
 
     $scope.evalFiles = dataService.getCurrentEvalFiles;
 
@@ -975,9 +989,7 @@ app.controller('TrackCtrl', TrackController);
 
 function AlgorithmController($scope, dataService, calculationService, mapService) {
     // decide when to hide/show
-    $scope.algoHide = function () {
-        return calculationService.flowProgress() < 2;
-    };
+    $scope.algoShow = calculationService.isEvalSet;
 
     // load algorithms from server
     dataService.loadAllAlgorithms();
@@ -1167,8 +1179,13 @@ app.controller('ProjectCtrl', ProjectController);
  * ----------------------------------------------
  */
 
-function ProjectDialogController(mdPanelRef) {
+function ProjectDialogController(mdPanelRef, calculationService) {
     var panelRef = mdPanelRef;
+
+    // function to load project into calculation Service
+    this.loadProject = function(){
+        calculationService.loadDataFromProject(this.project);
+    };
 
     this.closeDialog = function () {
         panelRef && panelRef.close().then(function () {
