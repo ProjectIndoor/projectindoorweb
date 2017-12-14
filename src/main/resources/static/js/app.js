@@ -905,7 +905,74 @@ function AlgorithmController($scope, dataService, calculationService, mapService
     // controller model
     $scope.algorithmParameters = {
         // selected radiomaps
-        radiomaps: []
+        radiomaps: [],
+        projectParameters: [
+            {
+                name: "mergeRadioMaps",
+                type: "boolean",
+                value: false
+            },
+            {
+                name: "smoothenWifiPositions",
+                type: "boolean",
+                value: true
+            },
+            {
+                name: "useShiftedPosiReferences",
+                type: "boolean",
+                value: false
+            },
+            {
+                name: "useFixedWeights",
+                type: "boolean",
+                value: true
+            },
+            {
+                name: "floorHeight",
+                type: "double",
+                value: 1.0
+            },
+            {
+                name: "positionSimilarityThreshold",
+                type: "double",
+                value: 0.7
+            },
+            {
+                name: "wifiPositionSmootheningFactor",
+                type: "double",
+                value: 0.2
+            },
+            {
+                name: "weightedModeNumReferences",
+                type: "int",
+                value: 3
+            },
+            {
+                name: "weightResult1",
+                type: "double",
+                value: 2.0
+            },
+            {
+                name: "weightResult2",
+                type: "double",
+                value: 0.9
+            },
+            {
+                name: "weightResult3",
+                type: "double",
+                value: 0.9
+            },
+            {
+                name: "posiReferenceSimilarityTimeDelta",
+                type: "double",
+                value: 2000
+            },
+            {
+                name: "correlationMode",
+                type: "string",
+                value: "euclidian"
+            }
+        ]
     };
 
     // available radiomaps for selected building
