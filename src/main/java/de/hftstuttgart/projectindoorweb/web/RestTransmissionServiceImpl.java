@@ -349,8 +349,8 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean deleteFloor(String floorIdentifier) {
-        if (AssertParam.isNullOrEmpty(floorIdentifier)) {
+    public boolean deleteBuilding(String buildingIdentifier) {
+        if (AssertParam.isNullOrEmpty(buildingIdentifier)) {
             return false;
         }
         //TODO implement when ready

@@ -49,4 +49,5 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String ADD_NEW_BUILDING_NOTE = "Adds a new building to the database and returns its unique identifier or -1 if given data was invalid.";
     public static final String ADD_FLOOR_TO_BUILDING_NOTE = "Adds a floor to a given building";
     public static final String DELETE_FLOOR_NOTE = "Removes a given floor from the database, based on the given floor identifier. Returns true if successful, otherwise false.";
+    public static final String DELETE_BUILDING_NOTE = "Removes a given building from the database, based on the given building identifier. Returns true if successful, otherwise false.";
 }

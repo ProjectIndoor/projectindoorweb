@@ -57,5 +57,5 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile);
 
-    boolean deleteFloor(String floorIdentifier);
+    boolean deleteBuilding(String buildingIdentifier);
 }

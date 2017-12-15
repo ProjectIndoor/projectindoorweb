@@ -65,6 +65,15 @@ public class BuildingController {
 
     }
 
+    @ApiOperation(value = "Deletes a selected building with a given building identifier",
+            nickname = "project/deleteBuilding", notes = TransmissionConstants.DELETE_BUILDING_NOTE)
+    @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE)
+    public boolean deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                                  String buildingIdentifier) {
+        return restTransmissionService.deleteBuilding(buildingIdentifier);
+    }
+
     @ApiOperation(value = "Add a new floor to a given building", nickname = "building/addFloorToBuilding",
             notes = TransmissionConstants.ADD_FLOOR_TO_BUILDING_NOTE)
     @RequestMapping(path = "/addFloorToBuilding", method = POST)
@@ -81,14 +90,4 @@ public class BuildingController {
                                                MultipartFile floorMapFile) {
         return restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
     }
-
-    @ApiOperation(value = "Delete a selected floor with a given floor identifier within a building",
-            nickname = "project/deleteFloor", notes = TransmissionConstants.DELETE_FLOOR_NOTE)
-    @RequestMapping(path = "/deleteSelectedFloor", method = DELETE)
-    public boolean deleteSelectedFloor(@RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                                 String floorIdentifier) {
-        return restTransmissionService.deleteFloor(floorIdentifier);
-    }
-
 }
