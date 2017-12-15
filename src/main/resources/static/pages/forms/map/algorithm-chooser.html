@@ -11,7 +11,7 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Algorithm Type</label>
-            <md-select ng-model="choosenAlgorithm">
+            <md-select ng-model="choosenAlgorithm" ng-model-options="{trackBy: '$value.niceName'}">
                 <md-option ng-repeat="algorithm in availableAlgorithms()" ng-value="{{algorithm}}">
                     {{algorithm.niceName}}
                 </md-option>
@@ -26,7 +26,7 @@
         <!-- Radiomap chooser -->
         <md-input-container style="margin: 16px">
             <label>Radiomaps</label>
-            <md-select ng-model="algorithmParameters.radiomaps" multiple>
+            <md-select ng-model="radiomaps" multiple>
                 <md-option ng-repeat="rMap in availableRadiomaps()" value="{{rMap.id}}">{{rMap.radioMapSourceFileName}}
                 </md-option>
             </md-select>
@@ -40,29 +40,19 @@
         </md-button>
 
         <!-- Project parameters (load dynamically) -->
-        <md-input-container ng-show="collapseProjParams" ng-repeat="projParam in choosenAlgorithm.projectParameters"
+        <md-input-container ng-show="collapseProjParams" ng-repeat="projParam in choosenAlgorithm.applicableParameters"
                             style="margin: 16px">
             <!-- Display appropriate control depending on type -->
-            <div ng-switch on="projParam.type">
+            <div ng-switch on="projParam.valueDataType">
                 <!-- Boolean (Checkbox) -->
-                <div ng-switch-when="boolean">
-                    <md-switch ng-model="projParam.value">{{projParam.name}}
+                <div ng-switch-when="Boolean">
+                    <md-switch ng-init="projParam.value = checkLoadedBooleanValue(projParam)" ng-model="projParam.value">{{projParam.prettyName}}
                     </md-switch>
-                </div>
-                <!-- Double (number with any step) -->
-                <div ng-switch-when="double">
-                    <label>{{projParam.name}}</label>
-                    <input type="number" step="any" ng-model="projParam.value">
-                </div>
-                <!-- Int (number with step 1) -->
-                <div ng-switch-when="int">
-                    <label>{{projParam.name}}</label>
-                    <input type="number" step="1" ng-model="projParam.value">
                 </div>
                 <!-- Other (text field) -->
                 <div ng-switch-default>
-                    <label>{{projParam.name}}</label>
-                    <input ng-model="projParam.value">
+                    <label>{{projParam.prettyName}}</label>
+                    <input ng-init="projParam.value = checkLoadedParamValue(projParam.name) || projParam.defaultValue" ng-model="projParam.value">
                 </div>
             </div>
         </md-input-container>

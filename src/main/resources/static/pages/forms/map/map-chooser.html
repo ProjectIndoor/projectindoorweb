@@ -11,7 +11,7 @@
     <md-card-content>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Building</label>
-            <md-select ng-model="buildingData.selectedBuilding">
+            <md-select ng-model="selectedBuilding" ng-model-options="{trackBy: '$value.buildingId'}">
                 <md-option ng-repeat="building in buildings()" ng-value="{{building}}">
                     {{building.buildingName}}
                 </md-option>
@@ -19,7 +19,7 @@
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
             <label>Floor</label>
-            <md-select ng-model="buildingData.selectedFloor">
+            <md-select ng-model="selectedFloor">
                 <md-option ng-repeat="floor in floors()"
                            ng-value="{{floor}}">Floor {{floor.floorNo}}
                 </md-option>

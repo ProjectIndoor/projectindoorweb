@@ -350,76 +350,15 @@ function DataService($http) {
                 angular.copy(response.data, algorithms);
 
                 //TODO remove fake parameters
-                algorithms.forEach(function (algo) {
-                   algo.projectParameters = [
-                       {
-                           name: "mergeRadioMaps",
-                           type: "boolean",
-                           value: false
-                       },
-                       {
-                           name: "smoothenWifiPositions",
-                           type: "boolean",
-                           value: true
-                       },
-                       {
-                           name: "useShiftedPosiReferences",
-                           type: "boolean",
-                           value: false
-                       },
-                       {
-                           name: "useFixedWeights",
-                           type: "boolean",
-                           value: true
-                       },
-                       {
-                           name: "floorHeight",
-                           type: "double",
-                           value: 1.0
-                       },
-                       {
-                           name: "positionSimilarityThreshold",
-                           type: "double",
-                           value: 0.7
-                       },
-                       {
-                           name: "wifiPositionSmootheningFactor",
-                           type: "double",
-                           value: 0.2
-                       },
-                       {
-                           name: "weightedModeNumReferences",
-                           type: "int",
-                           value: 3
-                       },
-                       {
-                           name: "weightResult1",
-                           type: "double",
-                           value: 2.0
-                       },
-                       {
-                           name: "weightResult2",
-                           type: "double",
-                           value: 0.9
-                       },
-                       {
-                           name: "weightResult3",
-                           type: "double",
-                           value: 0.9
-                       },
-                       {
-                           name: "posiReferenceSimilarityTimeDelta",
-                           type: "double",
-                           value: 2000
-                       },
-                       {
-                           name: "correlationMode",
-                           type: "string",
-                           value: "euclidian"
-                       }
-                   ]
-                });
-
+                /*
+                algo.projectParameters = [
+                    {
+                        name: "mergeRadioMaps",
+                        type: "boolean",
+                        value: false
+                    }
+                 ]
+                 */
                 return response.data;
             });
             return promise;
@@ -454,8 +393,8 @@ function CalculationService($http) {
     var createProjectUrl = '/project/saveNewProject';
 
     // properties
-    var buildingId;
-    var evalFileId;
+    var currentBuilding;
+    var evalFile;
     var radioMapFileIds;
     var algorithmType;
     var projectParameters;
@@ -467,57 +406,58 @@ function CalculationService($http) {
     return {
         // set and get progress
         isEvalSet: function () {
-            return evalFileId;
+            return evalFile;
         },
         isBuildingSet: function () {
-            return buildingId;
+            return currentBuilding;
         },
         isAlgorithmReady: function () {
-            return buildingId && evalFileId && radioMapFileIds && algorithmType && projectParameters;
-        },
-        flowProgress: function () {
-            return workflowProgress;
-        },
-        increaseProgress: function () {
-            workflowProgress++;
-        },
-        decreaseProgress: function () {
-            workflowProgress--;
+            return currentBuilding && evalFile && radioMapFileIds && algorithmType && projectParameters;
         },
         // set and get building
         getCurrentBuilding: function () {
-            return buildingId;
+            return currentBuilding;
         },
-        setCalculationBuilding: function (bId) {
-            buildingId = bId;
-            console.log("Building Changed: " + buildingId);
+        setCalculationBuilding: function (building) {
+            currentBuilding = building;
+            console.log("Building Changed: " + currentBuilding);
         },
         // set and get eval file
         getEvalFile: function () {
-            return evalFileId;
+            return evalFile;
         },
-        setEvalFile: function (evId) {
-            evalFileId = evId;
-            console.log("Eval File Changed: " + evalFileId);
+        setEvalFile: function (evalF) {
+            evalFile = evalF;
+            console.log("Eval File Changed: " + evalFile);
         },
         // set and get radiomaps
         getRadiomaps: function () {
-            return [].concat(radioMapFileIds);
+            if(radioMapFileIds){
+                return [].concat(radioMapFileIds);
+            }
         },
         setRadiomaps: function (radiomapIds) {
             radioMapFileIds = radiomapIds;
             console.log("Radiomaps Changed: " + radioMapFileIds);
         },
+        // set and get algorithm
+        getAlgorithmAndParameters: function () {
+            var currentAlgorithm = {
+                niceName: algorithmType,
+                projectParameters: projectParameters
+            };
+            return currentAlgorithm;
+        },
         setAlgorithmAndParameters: function (choosenAlgorithm) {
             algorithmType = choosenAlgorithm.niceName;
             console.log("Algorithm set: " + algorithmType);
-            projectParameters = choosenAlgorithm.projectParameters;
+            projectParameters = choosenAlgorithm.applicableParameters;
         },
         // API calls
         generatePositions: function () {
             var data = {
-                buildingIdentifier: buildingId,
-                evaluationFile: evalFileId,
+                buildingIdentifier: currentBuilding.buildingId,
+                evaluationFile: evalFile.id,
                 radioMapFiles: radioMapFileIds,
                 algorithmType: algorithmType,
                 projectParameters: projectParameters,
@@ -539,8 +479,8 @@ function CalculationService($http) {
         saveCurrentProject: function (projectName) {
             var data = {
                 projectName: projectName,
-                buildingIdentifier: buildingId,
-                evalFileIdentifier: evalFileId,
+                buildingIdentifier: currentBuilding.buildingId,
+                evalFileIdentifier: evalFile.id,
                 radioMapFileIdentifiers: radioMapFileIds,
                 algorithmType: algorithmType,
                 projectParameters: projectParameters
@@ -560,8 +500,8 @@ function CalculationService($http) {
             console.log("Load project");
             console.log(project);
             algorithmType = project.algorithmType;
-            buildingId = project.buildingIdentifier;
-            evalFileId = project.evalFileIdentifier;
+            currentBuilding.buildingId = project.buildingIdentifier;
+            evalFile.id = project.evalFileIdentifier;
             radioMapFileIds = project.radioMapFileIdentifiers;
             projectParameters = project.saveNewProjectParametersSet;
         }
@@ -929,19 +869,17 @@ app.controller('BuildingImportCtrl', BuildingImportController);
 
 //Controller to fetch the building using the data service
 function BuildingController($scope, dataService, calculationService, mapService) {
-    // properties
-    $scope.buildingData = {
-        selectedBuilding: null,
-        selectedFloor: null
-    };
+    // properties (initialize from calculation service)
+    $scope.selectedBuilding = calculationService.getCurrentBuilding();
+    $scope.selectedFloor = null;
 
     // building list
     $scope.buildings = dataService.getAllBuildings;
 
     //function to choose correct floor list
     $scope.floors = function () {
-        if ($scope.buildingData.selectedBuilding) {
-            return $scope.buildingData.selectedBuilding.floors
+        if ($scope.selectedBuilding) {
+            return $scope.selectedBuilding.floors
         }
     };
 
@@ -955,13 +893,12 @@ function BuildingController($scope, dataService, calculationService, mapService)
 
     $scope.setBuilding = function () {
         // update Map to new building
-        mapService.setMap($scope.buildingData.selectedFloor.url, $scope.buildingData.selectedBuilding.imagePixelWidth, $scope.buildingData.selectedBuilding.imagePixelHeight);
+        mapService.setMap($scope.selectedFloor.url, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
-        calculationService.setCalculationBuilding($scope.buildingData.selectedBuilding.buildingId);
-        calculationService.increaseProgress();
+        calculationService.setCalculationBuilding($scope.selectedBuilding);
         // load building related evaluation files and radiomaps
-        dataService.loadEvalFilesForBuilding($scope.buildingData.selectedBuilding.buildingId);
-        dataService.loadRadiomapsForBuilding($scope.buildingData.selectedBuilding.buildingId);
+        dataService.loadEvalFilesForBuilding($scope.selectedBuilding.buildingId);
+        dataService.loadRadiomapsForBuilding($scope.selectedBuilding.buildingId);
     };
 }
 
@@ -970,9 +907,7 @@ app.controller('BuildingCtrl', BuildingController);
 // Track chooser controller
 function TrackController($scope, dataService, calculationService) {
     // properties
-    $scope.trackData = {
-        selectedTrack: 0
-    };
+    $scope.trackData = calculationService.getEvalFile();
 
     // hide if not needed yet
     $scope.trackShow = calculationService.isBuildingSet;
@@ -980,8 +915,7 @@ function TrackController($scope, dataService, calculationService) {
     $scope.evalFiles = dataService.getCurrentEvalFiles;
 
     $scope.setEvaluationFile = function () {
-        calculationService.setEvalFile($scope.trackData.selectedTrack);
-        calculationService.increaseProgress();
+        calculationService.setEvalFile($scope.trackData);
     };
 }
 
@@ -994,23 +928,54 @@ function AlgorithmController($scope, dataService, calculationService, mapService
     // load algorithms from server
     dataService.loadAllAlgorithms();
 
-    // choosen algorithm
-    $scope.choosenAlgorithm;
-    $scope.algorithmParameters = {
-        // selected radiomaps
-        radiomaps: []
-    };
+    // choosen algorithm (initialize from calculation service)
+    $scope.choosenAlgorithm = calculationService.getAlgorithmAndParameters();
+
+    // choosen radio maps
+    $scope.radiomaps = calculationService.getRadiomaps();
 
     // available radiomaps for selected building
     $scope.availableRadiomaps = dataService.getCurrentRadiomaps;
 
-    // available algorithms
-    $scope.availableAlgorithms = dataService.getAllAlgorithmTypes;
+    // check if loaded value is available
+    $scope.checkLoadedParamValue = function (paramName) {
+        //check if an value is available for this name
+        if ($scope.choosenAlgorithm.projectParameters) {
+            var param = $scope.choosenAlgorithm.projectParameters.find(function (pParams) {
+                return pParams.name == paramName && pParams.value;
+            });
+            return param.value;
+        }
+    };
 
+    // handle strings received by API
+    $scope.checkIntegerParamValue = function (paramValue) {
+        return parseInt(paramValue);
+    };
+    $scope.checkFloatParamValue = function (paramValue) {
+        return parseFloat(paramValue);
+    };
+    $scope.checkLoadedBooleanValue = function (projParam) {
+        var lValue = $scope.checkLoadedParamValue(projParam.name) || projParam.defaultValue;
+        return 'true' === lValue;
+    };
+
+    // available algorithms (inject loaded parameters if available)
+    $scope.availableAlgorithms = function () {
+        // load available algorithms
+        var availAlgos = dataService.getAllAlgorithmTypes();
+        // inject currently loaded/choosen algorithm
+        availAlgos.forEach(function (algo) {
+            if (algo.niceName == $scope.choosenAlgorithm.niceName) {
+                algo.projectParameters = $scope.choosenAlgorithm.projectParameters;
+            }
+        });
+        return availAlgos;
+    };
 
     // action for calculation button
     $scope.calculatePos = function () {
-        calculationService.setRadiomaps($scope.algorithmParameters.radiomaps);
+        calculationService.setRadiomaps($scope.radiomaps);
         calculationService.setAlgorithmAndParameters($scope.choosenAlgorithm);
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
@@ -1183,7 +1148,7 @@ function ProjectDialogController(mdPanelRef, calculationService) {
     var panelRef = mdPanelRef;
 
     // function to load project into calculation Service
-    this.loadProject = function(){
+    this.loadProject = function () {
         calculationService.loadDataFromProject(this.project);
     };
 
