@@ -123,6 +123,10 @@ app.config(function ($mdThemingProvider) {
     // add a palette variation for the toolbar
     var whiteMap = $mdThemingProvider.extendPalette('inpurple', {'500': '#ffffff', 'contrastDefaultColor': 'dark'});
     $mdThemingProvider.definePalette('inwhite', whiteMap);
+
+    // register the custom themes
+    $mdThemingProvider.theme('success-toast');
+    $mdThemingProvider.theme('error-toast');
 });
 
 // ------------- Application run
@@ -155,11 +159,11 @@ function UploadService($http, $mdToast) {
                 }
             }).then(function (response) {
                 logMessage = "Building Data uploaded successfully!";
-                showToast(logMessage);
+                showToast(logMessage, "success-toast");
                 return response.data;
             }, function errorCallback(response) {
                 logMessage = "Error while uploading Building Data";
-                showToast(logMessage);
+                showToast(logMessage, "error-toast");
             });
             return promise;
         },
@@ -167,7 +171,7 @@ function UploadService($http, $mdToast) {
             if (radioMapSet.radioMapFiles[0] == null) {
                 if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
-                    showToast(logMessage);
+                    showToast(logMessage, "default");
                 }
             } else {
                 // body content (log files and buildingId)
@@ -188,44 +192,51 @@ function UploadService($http, $mdToast) {
                 }).then(function successCallback(response) {
                     // success
                     logMessage = "Radio map uploaded successfully!";
-                    showToast(logMessage);
+                    showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while uploading radio map data";
-                    showToast(logMessage);
+                    showToast(logMessage, "error-toast");
                 });
             }
         },
         uploadEvaluationFile: function (evaluationSet) {
-            // body content (eval files and buildingId)
-            var formData = new FormData();
-            formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
-            formData.append('evalFiles', evaluationSet.evalFiles[0]);
-
-            $http({
-                method: 'POST',
-                url: evalFileUploadUrl,
-                data: formData,
-                transformRequest: function (data, headersGetterFunction) {
-                    return data;
-                },
-                headers: {
-                    'Content-Type': undefined
+            if (evaluationSet.evalFiles[0] == null) {
+                if (evaluationSet.buildingIdentifier != 0) {
+                    logMessage = "Please choose a file to upload";
+                    showToast(logMessage, "default");
                 }
-            }).then(function successCallback(response) {
-                // success
-                logMessage = "Evaluation file uploaded successfully!";
-                showToast(logMessage);
-            }, function errorCallback(response) {
-                // failure
-                logMessage = "Error while uploading evaluation data";
-                showToast(logMessage);
-            });
+            } else {
+                // body content (eval files and buildingId)
+                var formData = new FormData();
+                formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
+                formData.append('evalFiles', evaluationSet.evalFiles[0]);
+
+                $http({
+                    method: 'POST',
+                    url: evalFileUploadUrl,
+                    data: formData,
+                    transformRequest: function (data, headersGetterFunction) {
+                        return data;
+                    },
+                    headers: {
+                        'Content-Type': undefined
+                    }
+                }).then(function successCallback(response) {
+                    // success
+                    logMessage = "Evaluation file uploaded successfully!";
+                    showToast(logMessage, "success-toast");
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while uploading evaluation data";
+                    showToast(logMessage, "error-toast");
+                });
+            }
         }
     };
 
     // private functions
-    function showToast(logMessage) {
+    function showToast(logMessage, customTheme) {
         var pinTo = "bottom center";
 
         $mdToast.show(
@@ -233,6 +244,7 @@ function UploadService($http, $mdToast) {
                 .textContent(logMessage)
                 .position(pinTo)
                 .hideDelay(3000)
+                .theme(customTheme)
         );
     }
 }
