@@ -349,16 +349,6 @@ function DataService($http) {
                 // save response in cache
                 angular.copy(response.data, algorithms);
 
-                //TODO remove fake parameters
-                /*
-                algo.projectParameters = [
-                    {
-                        name: "mergeRadioMaps",
-                        type: "boolean",
-                        value: false
-                    }
-                 ]
-                 */
                 return response.data;
             });
             return promise;
@@ -616,10 +606,21 @@ function MapService() {
         visible: true,
         opacity: 1
     };
+
+    // map object hide cache
+    var loadedNoRefPos = [];
+    var loadedCalcPos = [];
+    var loadedRefs = [];
+    var emptyPoints = [];
+    var emptyPathsLayer = {};
+
+    // map objects
     var pathsLayerObject = {};
+    var calculatedPoints = loadedCalcPos;
+    var noRefCalculatedPoints = emptyPoints;
+    var referencePoints = loadedRefs;
+
     // map service properties
-    var calculatedPoints = [];
-    var referencePoints = [];
     var staticMap = {};
     var mDefaults = {
         interactions: {
@@ -679,7 +680,35 @@ function MapService() {
                 projection: 'pixel',
                 style: calc_marker_style
             };
-            calculatedPoints.push(newCalc)
+            loadedCalcPos.push(newCalc)
+        },
+        hideCalcPoints: function () {
+            calculatedPoints = emptyPoints;
+        },
+        showCalcPoints: function () {
+            calculatedPoints = loadedCalcPos;
+        },
+        // calculated points
+        noRefCalcPoints: function () {
+            // return copy of list
+            return [].concat(noRefCalculatedPoints);
+        },
+        addNoRefCalcPoint: function (x, y) {
+            // Y needs mirroring because start of map is at bottom
+            var mirroredY = mirrorY(y);
+            // create a new calculated point
+            var newCalc = {
+                coord: [x, mirroredY],
+                projection: 'pixel',
+                style: calc_marker_style
+            };
+            loadedNoRefPos.push(newCalc)
+        },
+        hideNoRefCalcPoints: function () {
+            noRefCalculatedPoints = emptyPoints;
+        },
+        showNoRefCalcPoints: function () {
+            noRefCalculatedPoints = loadedNoRefPos;
         },
         // reference points
         refPoints: function () {
@@ -695,7 +724,13 @@ function MapService() {
                 projection: 'pixel',
                 style: ref_marker_style
             };
-            referencePoints.push(newRef)
+            loadedRefs.push(newRef)
+        },
+        hideRefPoints: function () {
+            referencePoints = emptyPoints;
+        },
+        showRefPoints: function () {
+            referencePoints = loadedRefs;
         },
         // Access map, defaults and center
         map: function () {
@@ -722,8 +757,14 @@ function MapService() {
             // set view center
             mCenter.coord = [Math.floor(width / 2), Math.floor(height / 2)];
         },
-        showLines: function () {
+        displayLines: function () {
             pathsLayerObject = errorLineLayer;
+        },
+        showLines: function () {
+            pathsLayerObject.visible = true;
+        },
+        hideLines: function () {
+            pathsLayerObject.visible = false;
         },
         addErrorLine: function (calcX, calcY, refX, refY) {
             var newLine = [
@@ -756,10 +797,54 @@ app.controller('NavToolbarCtrl', function ($scope, $timeout) {
 });
 
 // controller which handles map configuration panel
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calculationService) {
+app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calculationService, mapService) {
     // Logic to open/hide sidebar
     $scope.toggleLeft = buildToggler('left');
     $scope.toggleRight = buildToggler('right');
+
+    $scope.markerShow = {
+        showRefVal: true,
+        showPosVal: true,
+        showNoRefPosVal: false,
+        get showNoRefPos() {
+            return this.showNoRefPosVal;
+        },
+        set showNoRefPos(show) {
+            this.showNoRefPosVal = show;
+            if (show) {
+                mapService.showNoRefCalcPoints();
+            } else {
+                mapService.hideNoRefCalcPoints();
+            }
+            console.log("Show noRefPos:" + show);
+        },
+        get showRef() {
+            return this.showRefVal;
+        },
+        set showRef(show) {
+            this.showRefVal = show;
+            if (show) {
+                mapService.showRefPoints();
+                mapService.showLines();
+            } else {
+                mapService.hideRefPoints();
+                mapService.hideLines();
+            }
+            console.log("Show refPos:" + show);
+        },
+        get showPos() {
+            return this.showPosVal;
+        },
+        set showPos(show) {
+            this.showPosVal = show;
+            if (show) {
+                mapService.showCalcPoints();
+            } else {
+                mapService.hideCalcPoints();
+            }
+            console.log("Show calcPos:" + show);
+        }
+    };
 
     function buildToggler(componentId) {
         return function () {
@@ -791,6 +876,7 @@ function MapController($scope, mapService) {
         map: mapService.map,
         calcPoints: mapService.calcPoints,
         refPoints: mapService.refPoints,
+        noRefCalcPoints: mapService.noRefCalcPoints,
         pathsLayer: mapService.pathsLayer
     });
 
@@ -1000,21 +1086,23 @@ function AlgorithmController($scope, dataService, calculationService, mapService
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
-            for (var i = 0; i < posis.length; i += 3) {
+            for (var i = 0; i < posis.length; i++) {
                 var calcP = posis[i].calculatedPosition;
                 var refP = posis[i].referencePosition;
 
-                // add points to map
-                mapService.addCalcPoint(calcP.x, calcP.y);
-
+                // if no reference is available put points in a separate list
                 if (refP != null) {
+                    mapService.addCalcPoint(calcP.x, calcP.y);
                     mapService.addRefPoint(refP.x, refP.y);
                     mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
+                } else {
+                    mapService.addNoRefCalcPoint(calcP.x, calcP.y)
                 }
+
             }
         });
 
-        mapService.showLines();
+        mapService.displayLines();
     };
 }
 

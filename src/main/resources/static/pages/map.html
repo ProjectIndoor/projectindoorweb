@@ -9,6 +9,9 @@
 
     <md-content ng-controller="MapSettingsCtrl" layout-margin>
 
+        <!-- Toolbar view settings -->
+        <div ng-include="'pages/forms/map/view-settings.html'"></div>
+
         <!-- Toolbar map chooser -->
         <div ng-include="'pages/forms/map/map-chooser.html'"></div>
 
@@ -39,4 +42,5 @@
     <ol-layer ol-layer-properties="map()"></ol-layer>
     <ol-marker ng-repeat="calcPoint in calcPoints()" ol-marker-properties="calcPoint"></ol-marker>
     <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
+    <ol-marker ng-repeat="noRefCalcPoint in noRefCalcPoints()" ol-marker-properties="noRefCalcPoint"></ol-marker>
 </openlayers>
