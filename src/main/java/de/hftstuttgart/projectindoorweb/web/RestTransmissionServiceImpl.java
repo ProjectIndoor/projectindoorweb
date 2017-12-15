@@ -11,6 +11,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -356,6 +357,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
         //TODO implement when ready
         return true;
+    }
+
+    @Override
+    public ClassPathResource getFloorMap(String floorIdentifier) {
+        if (AssertParam.isNullOrEmpty(floorIdentifier)) {
+            return null; // return null if invalid parameter. Has been documented in the REST interface documentation.
+        }
+
+        return null;  //TODO implement when ready
     }
 
     @Override

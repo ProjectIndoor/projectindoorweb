@@ -1,12 +1,10 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -57,6 +55,8 @@ public interface RestTransmissionService { //If too many methods get introduced,
     boolean updateBuilding(UpdateBuilding updateBuilding);
 
     boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile);
+
+    ClassPathResource getFloorMap(String floorIdentifier);
 
     boolean deleteBuilding(String buildingIdentifier);
 }

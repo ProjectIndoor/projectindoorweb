@@ -52,4 +52,5 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String DELETE_FLOOR_NOTE = "Removes a given floor from the database, based on the given floor identifier. Returns true if successful, otherwise false.";
     public static final String DELETE_BUILDING_NOTE = "Removes a given building from the database, based on the given building identifier. Returns true if successful, otherwise false.";
     public static final String DELETE_EVAAL_FILE_NOTE = "Removes a given evaal file from the database, based on the given evaal file identifier. Returns true if successful, otherwise false.";
+    public static final String GET_FLOOR_MAP_NOTE = "Returns an image which belongs to the given floor identifier. Returns NULL if given data was invalid or nothing has been found or an IOException was thrown";
 }

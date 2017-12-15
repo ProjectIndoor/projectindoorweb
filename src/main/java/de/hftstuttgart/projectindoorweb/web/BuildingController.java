@@ -1,13 +1,13 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -65,6 +66,30 @@ public class BuildingController {
 
     }
 
+    @ApiOperation(value = "Retrieves the floor image file of the given floor identifier", nickname = "building/getFloorMap",
+            notes = TransmissionConstants.GET_FLOOR_MAP_NOTE)
+    @RequestMapping(path = "/getFloorMap", method = GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<InputStreamResource> getFloorMap(
+            @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                    String floorIdentifier) {
+
+        ClassPathResource result = restTransmissionService.getFloorMap(floorIdentifier);
+
+        try {
+
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(new InputStreamResource(result.getInputStream()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
     @ApiOperation(value = "Deletes a selected building with a given building identifier",
             nickname = "project/deleteBuilding", notes = TransmissionConstants.DELETE_BUILDING_NOTE)
     @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE)
@@ -79,15 +104,15 @@ public class BuildingController {
     @RequestMapping(path = "/addFloorToBuilding", method = POST)
     public boolean addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                               String buildingIdentifier,
-                                   @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
-                                           defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                           String floorIdentifier,
-                                   @RequestParam(value = TransmissionConstants.FLOOR_NAME_PARAM,
-                                           defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                               String floorName,
-                                   @RequestParam (value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
-                                               MultipartFile floorMapFile) {
+                                              String buildingIdentifier,
+                                      @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
+                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                              String floorIdentifier,
+                                      @RequestParam(value = TransmissionConstants.FLOOR_NAME_PARAM,
+                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                              String floorName,
+                                      @RequestParam(value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
+                                              MultipartFile floorMapFile) {
         return restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
     }
 }
