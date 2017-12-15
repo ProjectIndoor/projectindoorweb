@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -63,5 +65,30 @@ public class BuildingController {
 
     }
 
+    @ApiOperation(value = "Add a new floor to a given building", nickname = "building/addFloorToBuilding",
+            notes = TransmissionConstants.ADD_FLOOR_TO_BUILDING_NOTE)
+    @RequestMapping(path = "/addFloorToBuilding", method = POST)
+    public boolean addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                               String buildingIdentifier,
+                                   @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
+                                           defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                           String floorIdentifier,
+                                   @RequestParam(value = TransmissionConstants.FLOOR_NAME_PARAM,
+                                           defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                               String floorName,
+                                   @RequestParam (value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
+                                               MultipartFile floorMapFile) {
+        return restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
+    }
+
+    @ApiOperation(value = "Delete a selected floor with a given floor identifier within a building",
+            nickname = "project/deleteFloor", notes = TransmissionConstants.DELETE_FLOOR_NOTE)
+    @RequestMapping(path = "/deleteSelectedFloor", method = DELETE)
+    public boolean deleteSelectedFloor(@RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                                 String floorIdentifier) {
+        return restTransmissionService.deleteFloor(floorIdentifier);
+    }
 
 }

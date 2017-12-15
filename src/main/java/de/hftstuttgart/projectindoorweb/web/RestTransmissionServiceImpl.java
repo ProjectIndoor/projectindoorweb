@@ -339,6 +339,25 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
+    public boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile) {
+        if (AssertParam.isNullOrEmpty(buildingIdentifier) || AssertParam.isNullOrEmpty(floorIdentifier) ||
+                AssertParam.isNullOrEmpty(floorName) || floorMapFile == null) {
+            return false;
+        }
+        //TODO implement when ready
+        return true;
+    }
+
+    @Override
+    public boolean deleteFloor(String floorIdentifier) {
+        if (AssertParam.isNullOrEmpty(floorIdentifier)) {
+            return false;
+        }
+        //TODO implement when ready
+        return true;
+    }
+
+    @Override
     public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
         ParameterHelper helper = ParameterHelper.getInstance();
