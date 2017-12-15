@@ -400,6 +400,12 @@ function CalculationService($http) {
     var projectParameters;
     var asPixel = true;
 
+    // loaded projectInfo
+    var loadedProject = {
+        projectName: "",
+        loadedProjectId: null
+    };
+
     // workflow progress
     var workflowProgress = 0;
 
@@ -453,6 +459,15 @@ function CalculationService($http) {
             console.log("Algorithm set: " + algorithmType);
             projectParameters = choosenAlgorithm.applicableParameters;
         },
+        // set and get loaded project
+        getCurrentProject: function () {
+            return loadedProject;
+        },
+        setCalculationProject: function (project) {
+            loadedProject.projectName = project.projectName;
+            loadedProject.projectId = project.projectId;
+            console.log("Building Changed: " + currentBuilding);
+        },
         // API calls
         generatePositions: function () {
             var data = {
@@ -476,9 +491,9 @@ function CalculationService($http) {
             });
             return promise;
         },
-        saveCurrentProject: function (projectName) {
+        saveCurrentProject: function (project) {
             var data = {
-                projectName: projectName,
+                projectName: project.projectName,
                 buildingIdentifier: currentBuilding.buildingId,
                 evalFileIdentifier: evalFile.id,
                 radioMapFileIdentifiers: radioMapFileIds,
@@ -504,6 +519,7 @@ function CalculationService($http) {
             evalFile.id = project.evalFileIdentifier;
             radioMapFileIds = project.radioMapFileIdentifiers;
             projectParameters = project.saveNewProjectParametersSet;
+            this.setCalculationProject(project);
         }
     }
 }
@@ -753,9 +769,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
 
     // project settings
     // properties
-    $scope.projectData = {
-        projectName: ""
-    };
+    $scope.projectData = calculationService.getCurrentProject();
 
     $scope.saveProject = function () {
         calculationService.saveCurrentProject($scope.projectData.projectName);
