@@ -16,6 +16,8 @@ public interface RestTransmissionService { //If too many methods get introduced,
     /*Evaal file processing and generating position results*/
     boolean processEvaalFiles(String buildingId, boolean evaluationFiles, MultipartFile[] radioMapFiles, MultipartFile transformedPointsFile);
 
+    boolean deleteEvaalFile(String evaalFileIdentifier);
+
     List<BatchPositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
 
     SinglePositionResult getPositionForWifiReading(GenerateSinglePositionResult generateSinglePositionResult);
@@ -25,7 +27,6 @@ public interface RestTransmissionService { //If too many methods get introduced,
     List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier);
 
     List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
-
 
     /*Projects*/
     long addNewProject(AddNewProject addNewProject);

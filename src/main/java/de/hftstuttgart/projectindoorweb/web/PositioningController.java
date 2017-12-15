@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -44,6 +45,14 @@ public class PositioningController {
                                     @RequestParam (value = TransmissionConstants.EVAL_FILE_PARAM)
                                     MultipartFile[] evalFiles) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+    }
+
+    @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
+    @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE)
+    public boolean deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
+            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                                 String evaalFileIdentifier) {
+        return restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)

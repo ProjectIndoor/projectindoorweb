@@ -49,6 +49,16 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
+    public boolean deleteEvaalFile(String evaalFileIdentifier) {
+        if (AssertParam.isNullOrEmpty(evaalFileIdentifier)) {
+            return false;
+        }
+
+        //TODO implement when ready
+        return true;
+    }
+
+    @Override
     public List<BatchPositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults) {
 
         List<BatchPositionResult> result = new ArrayList<>();
