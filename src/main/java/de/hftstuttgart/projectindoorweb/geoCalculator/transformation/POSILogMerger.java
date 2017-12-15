@@ -47,7 +47,8 @@ public class POSILogMerger {
                 && line.split(";").length == 5;
     }
 
-    public static List<String> combineReferencePointsWithPOSILines(List<String> POSILines, String referenceFile, Building b, int width, int height)
+    public static List<String> combineReferencePointsWithPOSILines(List<String> POSILines, String referenceFile,
+                                                                   Building b, int width, int height)
     {
 
         List<XYPoint> Points = readValuesFromFile(referenceFile);

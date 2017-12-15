@@ -1,17 +1,17 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 public interface PersistencyService {
 
+    /*Buildings and Floors*/
     long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
                            BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
                            BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
@@ -25,6 +25,12 @@ public interface PersistencyService {
                            Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
                            double rotationAngle, double metersPerPixel);
 
+    boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException;
+
+    File getFloorMapByFloorId(long floorId) throws IOException;
+
+
+    /*Evaal files*/
     boolean saveEvaalFiles(List<EvaalFile> evaalFiles);
 
     EvaalFile getEvaalFileForId(long evaalFileId);
@@ -33,6 +39,8 @@ public interface PersistencyService {
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);
 
+
+    /*Projects*/
     long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
                           long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers);
 

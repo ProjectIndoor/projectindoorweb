@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -74,7 +76,7 @@ public class BuildingController {
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                     String floorIdentifier) {
 
-        ClassPathResource result = restTransmissionService.getFloorMap(floorIdentifier);
+        File result = restTransmissionService.getFloorMap(floorIdentifier);
 
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -85,7 +87,7 @@ public class BuildingController {
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.IMAGE_JPEG)
-                    .body(new InputStreamResource(result.getInputStream()));
+                    .body(new InputStreamResource(new FileInputStream(result)));
 
         } catch (IOException e) {
             e.printStackTrace();

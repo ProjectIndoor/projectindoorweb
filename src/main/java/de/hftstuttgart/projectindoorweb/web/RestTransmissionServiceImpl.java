@@ -11,7 +11,6 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -351,21 +350,55 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     @Override
     public boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile) {
+
         if (AssertParam.isNullOrEmpty(buildingIdentifier) || AssertParam.isNullOrEmpty(floorIdentifier) ||
                 AssertParam.isNullOrEmpty(floorName) || floorMapFile == null) {
             return false;
         }
-        //TODO implement when ready
-        return true;
+
+        try{
+            long buildingId = Long.valueOf(buildingIdentifier);
+            Building buildingFromDatabase = this.persistencyService.getBuildingById(buildingId);
+
+            if(buildingFromDatabase != null){
+
+                long floorId = Long.valueOf(floorIdentifier);
+                Floor floor;
+                if((floor = TransmissionHelper.getBuildingFloorById(floorId, buildingFromDatabase)) != null){
+
+                    File floorMapLocalFile = TransmissionHelper.convertMultipartFileToLocalFile(floorMapFile);
+                    return this.persistencyService.updateBuildingFloor(buildingFromDatabase, floor, floorMapLocalFile);
+                }
+            }
+
+
+        }catch(NumberFormatException | IOException e){
+            e.printStackTrace();
+        }
+
+        return false;
+
+
     }
 
     @Override
-    public ClassPathResource getFloorMap(String floorIdentifier) {
+    public File getFloorMap(String floorIdentifier) {
         if (AssertParam.isNullOrEmpty(floorIdentifier)) {
-            return null; // return null if invalid parameter. Has been documented in the REST interface documentation.
+            return null;
         }
 
-        return null;  //TODO implement when ready
+        try{
+            long floorId = Long.valueOf(floorIdentifier);
+            return this.persistencyService.getFloorMapByFloorId(floorId);
+
+
+        }catch(NumberFormatException ex){
+            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override

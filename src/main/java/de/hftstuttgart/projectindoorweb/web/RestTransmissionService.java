@@ -7,6 +7,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
@@ -56,7 +57,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile);
 
-    ClassPathResource getFloorMap(String floorIdentifier);
+    File getFloorMap(String floorIdentifier);
 
     boolean deleteBuilding(String buildingIdentifier);
 }
