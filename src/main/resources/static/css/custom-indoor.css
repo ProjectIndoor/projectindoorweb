@@ -125,5 +125,13 @@
         transform: translateX(-50%);
         padding: 0px;
     }
+
+    md-toast.md-success-toast-theme .md-toast-content {
+        background-color: #93DB70;
+    }
+
+    md-toast.md-error-toast-theme .md-toast-content {
+            background-color: #FF6666;
+        }
 }
 
