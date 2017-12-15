@@ -393,8 +393,8 @@ function CalculationService($http) {
     var createProjectUrl = '/project/saveNewProject';
 
     // properties
-    var currentBuilding;
-    var evalFile;
+    var currentBuilding = {};
+    var evalFile = {};
     var radioMapFileIds;
     var algorithmType;
     var projectParameters;
@@ -406,10 +406,10 @@ function CalculationService($http) {
     return {
         // set and get progress
         isEvalSet: function () {
-            return evalFile;
+            return !angular.equals(evalFile, {});
         },
         isBuildingSet: function () {
-            return currentBuilding;
+            return !angular.equals(currentBuilding, {});
         },
         isAlgorithmReady: function () {
             return currentBuilding && evalFile && radioMapFileIds && algorithmType && projectParameters;
@@ -432,7 +432,7 @@ function CalculationService($http) {
         },
         // set and get radiomaps
         getRadiomaps: function () {
-            if(radioMapFileIds){
+            if (radioMapFileIds) {
                 return [].concat(radioMapFileIds);
             }
         },
@@ -873,6 +873,12 @@ function BuildingController($scope, dataService, calculationService, mapService)
     $scope.selectedBuilding = calculationService.getCurrentBuilding();
     $scope.selectedFloor = null;
 
+    // when building is set by loaded project also load files
+    if (calculationService.isBuildingSet()) {
+        dataService.loadEvalFilesForBuilding($scope.selectedBuilding.buildingId);
+        dataService.loadRadiomapsForBuilding($scope.selectedBuilding.buildingId);
+    }
+
     // building list
     $scope.buildings = dataService.getAllBuildings;
 
@@ -942,7 +948,7 @@ function AlgorithmController($scope, dataService, calculationService, mapService
         //check if an value is available for this name
         if ($scope.choosenAlgorithm.projectParameters) {
             var param = $scope.choosenAlgorithm.projectParameters.find(function (pParams) {
-                return pParams.name == paramName && pParams.value;
+                return pParams.name == paramName && pParams.value !== undefined;
             });
             return param.value;
         }
