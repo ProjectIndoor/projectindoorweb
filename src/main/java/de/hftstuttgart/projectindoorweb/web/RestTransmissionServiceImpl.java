@@ -321,10 +321,12 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         String buildingName = updateBuilding.getBuildingName();
         int imagePixelWidth = updateBuilding.getImagePixelWidth();
         int imagePixelHeight = updateBuilding.getImagePixelHeight();
+
         Position northWest = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getNorthWest());
         Position northEast = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getNorthEast());
         Position southEast = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getSouthEast());
         Position southWest = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getSouthWest());
+
         Position buildingCenterPoint = TransmissionHelper.convertPositionAnchorToPosition(updateBuilding.getBuildingCenterPoint());
         double rotationAngle = updateBuilding.getRotationAngle();
         double metersPerPixel = updateBuilding.getMetersPerPixel();
@@ -339,8 +341,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Override
     public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
-        result.add(new GetAllAlgorithmTypes(WifiPositionCalculatorServiceImpl.class.getName(), "WIFI",
-                ParameterHelper.getInstance().getParametersForAlgorithmType("WIFI")));
+        ParameterHelper helper = ParameterHelper.getInstance();
+
+        GetAllAlgorithmTypes getAllAlgorithmTypes = new GetAllAlgorithmTypes(
+                WifiPositionCalculatorServiceImpl.class.getName(),
+                "WIFI",
+                helper.getParametersForAlgorithmType("WIFI"));
+
+        result.add(getAllAlgorithmTypes);
+
         return result;
     }
 
@@ -352,7 +361,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     @Override
     public List<GetAlgorithmParameters> getParametersForAlgorithm(String algorithmType) {
-        return ParameterHelper.getInstance().getParametersForAlgorithmType(algorithmType);
+
+        ParameterHelper helper = ParameterHelper.getInstance();
+        List<GetAlgorithmParameters> result = new ArrayList<>();
+
+        if (AssertParam.isNullOrEmpty(algorithmType)) {
+            return result;
+        }
+
+        result = helper.getParametersForAlgorithmType(algorithmType);
+
+        return result;
     }
 
 

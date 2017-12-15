@@ -340,12 +340,12 @@ public class PersistencyServiceImpl implements PersistencyService {
     private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParameters) {
 
         List<Parameter> parametersAsList = new ArrayList<>();
+        ParameterHelper helper = ParameterHelper.getInstance();
 
-        GetAlgorithmParameters getAlgorithmParameters;
         if (saveNewProjectParameters != null) {
             for (SaveNewProjectParameters parameter :
                     saveNewProjectParameters) {
-                getAlgorithmParameters = ParameterHelper.getInstance().getParameterByInternalName(parameter.getName());
+                GetAlgorithmParameters getAlgorithmParameters = helper.getParameterByInternalName(parameter.getName());
                 parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
             }
         }
