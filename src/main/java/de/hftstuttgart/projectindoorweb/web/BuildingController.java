@@ -76,6 +76,10 @@ public class BuildingController {
 
         ClassPathResource result = restTransmissionService.getFloorMap(floorIdentifier);
 
+        if (result == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         try {
 
             return ResponseEntity
