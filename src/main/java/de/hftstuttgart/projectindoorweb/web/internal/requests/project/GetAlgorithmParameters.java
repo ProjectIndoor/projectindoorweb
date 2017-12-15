@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GetAlgorithmParameters {
 
-    private String internalName;
+    private String name;
     private String prettyName;
     private String defaultValue;
     private String valueDataType;
@@ -13,14 +13,14 @@ public class GetAlgorithmParameters {
     private String[] applicableForAlgorithms;
 
     @JsonCreator
-    public GetAlgorithmParameters(@JsonProperty("internalName") String internalName,
+    public GetAlgorithmParameters(@JsonProperty("name") String name,
                                   @JsonProperty("prettyName") String prettyName,
                                   @JsonProperty("defaultValue") String defaultValue,
                                   @JsonProperty("valueDataType") String valueDataType,
                                   @JsonProperty("description") String description,
                                   @JsonProperty("applicableForAlgorithms") String[] applicableForAlgorithms) {
 
-        this.internalName = internalName;
+        this.name = name;
         this.prettyName = prettyName;
         this.defaultValue = defaultValue;
         this.valueDataType = valueDataType;
@@ -28,12 +28,12 @@ public class GetAlgorithmParameters {
         this.applicableForAlgorithms = applicableForAlgorithms;
     }
 
-    public String getInternalName() {
-        return internalName;
+    public String getName() {
+        return name;
     }
 
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPrettyName() {
