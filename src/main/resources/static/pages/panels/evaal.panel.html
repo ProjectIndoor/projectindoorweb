@@ -1,0 +1,35 @@
+<div role="dialog" aria-label="View Evaal File" layout="column" layout-align="center center">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{ ctrl.evaal.fileName }}</h2>
+        </div>
+    </md-toolbar>
+
+    <div class="project-dialog-content">
+        <md-list>
+            <md-list-item>
+                <p>Evaal File Name:</p>
+                <p class="md-secondary">{{ ctrl.evaal.evaluationEntryName }}</p>
+            </md-list-item>
+
+            <md-list-item>
+                <p>Evaal File Id:</p>
+                <p class="md-secondary">{{ ctrl.evaal.id }}</p>
+            </md-list-item>
+
+            <md-list-item>
+                <p>Type:</p>
+                <p class="md-secondary">{{ ctrl.evaal.type }}</p>
+            </md-list-item>
+        </md-list>
+    </div>
+
+    <div layout="row" class="dialog-button">
+        <md-button flex ng-click="ctrl.closeDialog()">
+            Delete
+        </md-button>
+        <md-button md-autofocus flex class="md-primary" ng-click="ctrl.closeDialog()">
+            Close
+        </md-button>
+    </div>
+</div>

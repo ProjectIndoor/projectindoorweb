@@ -1,0 +1,41 @@
+<div role="dialog" aria-label="View building" layout="column" layout-align="center center">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{ ctrl.building.buildingName }}</h2>
+        </div>
+    </md-toolbar>
+
+    <div class="project-dialog-content">
+        <md-list>
+            <md-list-item>
+                <p>Building Name:</p>
+                <p class="md-secondary">{{ ctrl.building.buildingName }}</p>
+            </md-list-item>
+
+            <md-list-item>
+                <p>Building Id:</p>
+                <p class="md-secondary">{{ ctrl.building.buildingId }}</p>
+            </md-list-item>
+
+            <md-subheader class="md-no-sticky">Expected image size</md-subheader>
+            <md-list-item>
+                <p>Image Width:</p>
+                <p class="md-secondary">{{ ctrl.building.imagePixelWidth }}</p>
+            </md-list-item>
+            <md-list-item>
+                <p>Image Height:</p>
+                <p class="md-secondary">{{ ctrl.building.imagePixelHeight }}</p>
+            </md-list-item>
+        </md-list>
+    </div>
+
+    <div layout="row" class="dialog-button">
+        <md-button flex ng-click="ctrl.closeDialog()">
+            Delete
+        </md-button>
+        <md-button md-autofocus flex class="md-primary" ng-click="ctrl.closeDialog()">
+            Close
+        </md-button>
+    </div>
+</div>
+

@@ -353,6 +353,24 @@ function DataService($http) {
             });
             return promise;
         },
+        loadAllEvaals: function () {
+            //TODO replace with all evaal files
+            var config = {
+                params: {
+                    buildingIdentifier: 1
+                }
+            };
+            var promise = $http.get(getEvalFilesUrl, config).then(function (response) {
+                console.log("Retrieved eval files:");
+                console.log(response);
+
+                // save response in cache
+                angular.copy(response.data, evalFiles);
+
+                return response.data;
+            });
+            return promise;
+        },
         // access functions
         getCurrentEvalFiles: function () {
             // return a copy of evalFiles
@@ -369,6 +387,10 @@ function DataService($http) {
         getAllAlgorithmTypes: function () {
             // return a copy of algorithms
             return [].concat(algorithms);
+        },
+        getAllEvaals: function () {
+            //TODO replace with all evaal files
+            return [].concat(evalFiles);
         }
     }
 
@@ -1201,7 +1223,7 @@ function EvaluationImportController($scope, dataService, uploadService) {
 
 app.controller('EvalImportCtrl', EvaluationImportController);
 
-//Controller to handle the projects
+//Controller to handle the project edit view
 function ProjectController($scope, $mdPanel, projectService) {
     //load md panel
     var mdPanel = $mdPanel;
@@ -1246,6 +1268,92 @@ function ProjectController($scope, $mdPanel, projectService) {
 
 app.controller('ProjectCtrl', ProjectController);
 
+//Controller to handle the building edit view
+function BuildingEditController($scope, $mdPanel, dataService) {
+    //load md panel
+    var mdPanel = $mdPanel;
+
+    // load list of buildings when calling controller
+    dataService.loadAllBuildings();
+
+    // assign loaded buildings list to scope var
+    $scope.buildings = dataService.getAllBuildings;
+
+    $scope.showBuildingInfo = function (building) {
+        // setup panel position
+        var position = mdPanel.newPanelPosition()
+            .absolute()
+            .center();
+
+        // setup panel config
+        var config = {
+            attachTo: angular.element(document.body),
+            templateUrl: '/pages/panels/building.panel.html',
+            hasBackdrop: true,
+            panelClass: 'project-dialog',
+            position: position,
+            controller: BuildingDialogController,
+            controllerAs: 'ctrl',
+            trapFocus: true,
+            zIndex: 150,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            focusOnOpen: true,
+            locals: {
+                "building": building
+            }
+        };
+
+        // show building info panel
+        mdPanel.open(config);
+    }
+}
+
+app.controller('BuildingEditCtrl', BuildingEditController);
+
+//Controller to handle the evaal edit view
+function EvaalEditController($scope, $mdPanel, dataService) {
+    //load md panel
+    var mdPanel = $mdPanel;
+
+    // load list of evaals when calling controller
+    dataService.loadAllEvaals();
+
+    // assign loaded evaal files list to scope var
+    $scope.evaalFiles = dataService.getAllEvaals;
+
+    $scope.showEvaalInfo = function (evaalFile) {
+        // setup panel position
+        var position = mdPanel.newPanelPosition()
+            .absolute()
+            .center();
+
+        // setup panel config
+        var config = {
+            attachTo: angular.element(document.body),
+            templateUrl: '/pages/panels/evaal.panel.html',
+            hasBackdrop: true,
+            panelClass: 'project-dialog',
+            position: position,
+            controller: EvaalDialogController,
+            controllerAs: 'ctrl',
+            trapFocus: true,
+            zIndex: 150,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            focusOnOpen: true,
+            locals: {
+                "evaal": evaalFile
+            }
+        };
+
+        // show evaal info panel
+        mdPanel.open(config);
+    }
+}
+
+app.controller('EvaalEditCtrl', EvaalEditController);
+
 /**
  * ----------------------------------------------
  * Panel controllers
@@ -1268,6 +1376,30 @@ function ProjectDialogController(mdPanelRef, calculationService) {
 }
 
 app.controller('ProjectDialogCtrl', ProjectDialogController);
+
+function BuildingDialogController(mdPanelRef) {
+    var panelRef = mdPanelRef;
+
+    this.closeDialog = function () {
+        panelRef && panelRef.close().then(function () {
+            panelRef.destroy();
+        });
+    };
+}
+
+app.controller('BuildingDialogCtrl', BuildingDialogController);
+
+function EvaalDialogController(mdPanelRef) {
+    var panelRef = mdPanelRef;
+
+    this.closeDialog = function () {
+        panelRef && panelRef.close().then(function () {
+            panelRef.destroy();
+        });
+    };
+}
+
+app.controller('EvaalDialogCtrl', EvaalDialogController);
 
 /**
  * ----------------------------------------------
