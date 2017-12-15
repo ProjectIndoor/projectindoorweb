@@ -71,12 +71,24 @@ public class ProjectController {
 
     }
 
-    @ApiOperation(value = "Get a list of parameters which are used by a given algorithm", nickname = "project/getAlgorithmParameterListForAlgorithmId", notes = TransmissionConstants.GET_PARAMETERS_FOR_ALGORITHM_NOTE)
-    @RequestMapping(path = "/getAlgorithmParameterListForAlgorithmId", method = GET)
-    public ResponseEntity<List<GetAlgorithmParameters>> getAlgorithmParameterListForAlgorithmId(@RequestParam(value = TransmissionConstants.ALGORITHM_IDENTIFIER_PARAM,
-            defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)String algorithmIdentifier) {
+    @ApiOperation(value = "Get all available parameters", nickname = "project/getAllParameters", notes = TransmissionConstants.GET_ALL_PARAMETERS_NOTE)
+    @RequestMapping(path = "/getAllParameters", method = GET)
+    public ResponseEntity<List<GetAlgorithmParameters>> getAllParameters() {
 
-        List<GetAlgorithmParameters> result = restTransmissionService.getAlgorithmParameterListForAlgorithmId(algorithmIdentifier);
+        List<GetAlgorithmParameters> result = restTransmissionService.getAllParameters();
+
+        return new ResponseEntity<List<GetAlgorithmParameters>>(result, HttpStatus.OK);
+
+    }
+
+    @ApiOperation(value = "Get all parameters applicable to given algorithm", nickname = "project/getParametersForAlgorithm",
+            notes = TransmissionConstants.GET_PARAMETERS_FOR_ALGORITHM_NOTE)
+    @RequestMapping(path = "/getParametersForAlgorithm", method = GET)
+    public ResponseEntity<List<GetAlgorithmParameters>> getParametersForAlgorithm(
+            @RequestParam(value = TransmissionConstants.ALGORITHM_TYPE_PARAM,
+                    defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String algorithmType) {
+
+        List<GetAlgorithmParameters> result = restTransmissionService.getParametersForAlgorithm(algorithmType);
 
         return new ResponseEntity<List<GetAlgorithmParameters>>(result, HttpStatus.OK);
 

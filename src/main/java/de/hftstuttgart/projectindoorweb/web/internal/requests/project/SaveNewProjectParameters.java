@@ -9,7 +9,8 @@ public class SaveNewProjectParameters {
     private String value;
 
     @JsonCreator
-    public SaveNewProjectParameters(@JsonProperty("name") String name, @JsonProperty("value") String value) {
+    public SaveNewProjectParameters(@JsonProperty("name") String name,
+                                    @JsonProperty("value") String value) {
         this.name = name;
         this.value = value;
     }
@@ -21,4 +22,5 @@ public class SaveNewProjectParameters {
     public String getValue() {
         return value;
     }
+
 }

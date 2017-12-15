@@ -16,7 +16,7 @@ public class ConfigContainer {
     public static final int POSI_MAX_INTERVAL_END = Integer.MAX_VALUE;
     public static final int NUM_REFERENCES_IN_WEIGHTED_MODE = 3;
 
-    public static final boolean MERGE_RADIOMAP_ELEMENTS = false;
+    public static final boolean MERGE_RADIOMAP_ELEMENTS = true;
     public static final boolean USE_FIXED_WEIGHTS = true;
     public static final boolean SMOOTHEN_WIFI_POSITIONS = true;
     public static final boolean USE_SHIFTED_POSI_REFERENCES = false;

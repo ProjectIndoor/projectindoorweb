@@ -5,9 +5,11 @@ import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
+import de.hftstuttgart.projectindoorweb.positionCalculator.WifiPositionCalculatorServiceImpl;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
+import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,7 +135,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             Set<SaveNewProjectParameters> saveNewProjectParameters = generateSinglePositionResult.getSaveNewProjectParamaters();
             Long evalFileId = generateSinglePositionResult.getEvalFileIdentifier();
 
-            if(evalFileId == null){
+            if (evalFileId == null) {
                 evalFileId = -1L;
             }
 
@@ -244,17 +246,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                 String algorithmType = TransmissionHelper.convertToExternalAlgorithmType(project.getCalculationAlgorithm());
                 Building building = project.getBuilding();
                 long buildingIdentifier = -1;
-                if(building != null){
+                if (building != null) {
                     buildingIdentifier = project.getBuilding().getId();
                 }
                 EvaalFile evaluationFile = project.getEvaluationFile();
                 long evaluationFileIdentidier = -1;
-                if(evaluationFile != null){
-                  evaluationFileIdentidier = project.getEvaluationFile().getId();
+                if (evaluationFile != null) {
+                    evaluationFileIdentidier = project.getEvaluationFile().getId();
                 }
                 long[] radioMapFileIdentifiers = new long[]{-1};
                 List<EvaalFile> evalFiles = project.getEvaalFiles();
-                if(evalFiles != null && !evalFiles.isEmpty()){
+                if (evalFiles != null && !evalFiles.isEmpty()) {
                     radioMapFileIdentifiers = TransmissionHelper.getEvaalFileIds(project.getEvaalFiles());
                 }
                 return new LoadSelectedProject(projectId, saveNewProjectParameters, projectName, algorithmType,
@@ -335,15 +337,24 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {//TODO use reflection instead if viable
+    public List<GetAllAlgorithmTypes> getAllAlgorithmTypes() {
         List<GetAllAlgorithmTypes> result = new ArrayList<>();
-
-        GetAllAlgorithmTypes wifiAlgorithm = new GetAllAlgorithmTypes("WifiPositionCalculatorServiceImpl", "WIFI");
-
-        result.add(wifiAlgorithm);
-
+        result.add(new GetAllAlgorithmTypes(WifiPositionCalculatorServiceImpl.class.getName(), "WIFI",
+                ParameterHelper.getInstance().getParametersForAlgorithmType("WIFI")));
         return result;
     }
+
+
+    @Override
+    public List<GetAlgorithmParameters> getAllParameters() {
+        return ParameterHelper.getInstance().getAllParameters();
+    }
+
+    @Override
+    public List<GetAlgorithmParameters> getParametersForAlgorithm(String algorithmType) {
+        return ParameterHelper.getInstance().getParametersForAlgorithmType(algorithmType);
+    }
+
 
     @Override
     public List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding(String buildingIdentifier) {
@@ -362,7 +373,6 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                 List<EvaalFile> evaalFiles = this.persistencyService.getEvaluationFilesForBuilding(building);
                 result = TransmissionHelper.convertToEvaluationEntries(evaalFiles);
             }
-
 
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
@@ -397,15 +407,6 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return result;
         }
 
-    }
-
-    @Override
-    public List<GetAlgorithmParameters> getAlgorithmParameterListForAlgorithmId(String algorithmIdentifier) {
-        List<GetAlgorithmParameters> result = new ArrayList<>();
-        if (AssertParam.isNullOrEmpty(algorithmIdentifier)) {
-            return result;
-        }
-        return result;//TODO implement when ready
     }
 
     @Override
@@ -510,7 +511,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         String buildingName = "";
         for (Project project :
                 projects) {
-            if(project.getBuilding() != null){
+            if (project.getBuilding() != null) {
                 buildingName = project.getBuilding().getBuildingName();
             }
             result.add(new GetAllProjects(project.getId(), project.getProjectName(), buildingName));
@@ -531,8 +532,5 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         return saveNewProjectParamaters;
 
-
     }
-
-
 }
