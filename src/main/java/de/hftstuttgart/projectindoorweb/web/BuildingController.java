@@ -70,7 +70,7 @@ public class BuildingController {
 
     @ApiOperation(value = "Retrieves the floor image file of the given floor identifier", nickname = "building/getFloorMap",
             notes = TransmissionConstants.GET_FLOOR_MAP_NOTE)
-    @RequestMapping(path = "/getFloorMap", method = GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(path = "/getFloorMap", method = GET, produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<InputStreamResource> getFloorMap(
             @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
@@ -86,7 +86,7 @@ public class BuildingController {
 
             return ResponseEntity
                     .ok()
-                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentType(MediaType.IMAGE_PNG)
                     .body(new InputStreamResource(new FileInputStream(result)));
 
         } catch (IOException e) {

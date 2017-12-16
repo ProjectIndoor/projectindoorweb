@@ -356,23 +356,23 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return false;
         }
 
-        try{
+        try {
             long buildingId = Long.valueOf(buildingIdentifier);
             Building buildingFromDatabase = this.persistencyService.getBuildingById(buildingId);
 
-            if(buildingFromDatabase != null){
+            if (buildingFromDatabase != null) {
 
                 long floorId = Long.valueOf(floorIdentifier);
-                Floor floor;
-                if((floor = TransmissionHelper.getBuildingFloorById(floorId, buildingFromDatabase)) != null){
+                Floor floor = TransmissionHelper.getBuildingFloorById(floorId, buildingFromDatabase);
+
+                if (floor != null) {
 
                     File floorMapLocalFile = TransmissionHelper.convertMultipartFileToLocalFile(floorMapFile);
                     return this.persistencyService.updateBuildingFloor(buildingFromDatabase, floor, floorMapLocalFile);
                 }
             }
 
-
-        }catch(NumberFormatException | IOException e){
+        } catch (NumberFormatException | IOException e) {
             e.printStackTrace();
         }
 
@@ -387,15 +387,12 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return null;
         }
 
-        try{
+        try {
             long floorId = Long.valueOf(floorIdentifier);
             return this.persistencyService.getFloorMapByFloorId(floorId);
 
-
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException | IOException ex) {
             ex.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return null;
