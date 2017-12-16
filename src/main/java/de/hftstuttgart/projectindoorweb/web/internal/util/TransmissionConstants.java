@@ -16,10 +16,15 @@ public class TransmissionConstants { //TODO move to config container file and mo
 
     public static final String BUILDING_IDENTIFIER_PARAM = "buildingIdentifier";
     public static final String BUILDING_NAME_PARAM = "buildingName";
+
     public static final String NUMBER_OF_FLOORS_PARAM = "numberOfFloors";
+    public static final String FLOOR_IDENTIFIER_PARAM = "floorIdentifier";
+    public static final String FLOOR_NAME_PARAM = "floorName";
+    public static final String FLOOR_MAP_FILE_PARAM = "floorMapFile";
 
     public static final String RADIOMAP_FILES_PARAM = "radioMapFiles";
     public static final String EVAL_FILE_PARAM = "evalFiles";
+    public static final String EVAAL_FILE_IDENTIFIER_PARAM = "evaalFileIdentifier";
     public static final String WITH_PIXEL_POSITION_PARAM = "withPixelPosition";
 
     public static final String TRANSFORMED_POINTS_FILE_PARAM = "transformedPointsFile";
@@ -43,4 +48,9 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String GET_POSITIONRESULTS_NOTE = "Returns a list of position results which are associated with a given project identifier.";
     public static final String GET_EVALUATIONENTRIES_NOTE = "Returns a list of evaluation entries which are associated with a given building identifier.";
     public static final String ADD_NEW_BUILDING_NOTE = "Adds a new building to the database and returns its unique identifier or -1 if given data was invalid.";
+    public static final String ADD_FLOOR_TO_BUILDING_NOTE = "Adds a floor to a given building";
+    public static final String DELETE_FLOOR_NOTE = "Removes a given floor from the database, based on the given floor identifier. Returns true if successful, otherwise false.";
+    public static final String DELETE_BUILDING_NOTE = "Removes a given building from the database, based on the given building identifier. Returns true if successful, otherwise false.";
+    public static final String DELETE_EVAAL_FILE_NOTE = "Removes a given evaal file from the database, based on the given evaal file identifier. Returns true if successful, otherwise false.";
+    public static final String GET_FLOOR_MAP_NOTE = "Returns an image which belongs to the given floor identifier. Returns NULL if given data was invalid or nothing has been found or an IOException was thrown";
 }

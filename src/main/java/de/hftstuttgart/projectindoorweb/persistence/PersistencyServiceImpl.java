@@ -4,10 +4,7 @@ import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
@@ -15,12 +12,25 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewPro
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 public class PersistencyServiceImpl implements PersistencyService {
+
+    // TODO Is there a more elegant way to place these constants?
+    public static final String LOCAL_RESOURCE_DIR = "./src/main/resources/static";
+    public static final String LOCAL_MAPS_DIR = "floor_maps";
+    public static final OpenOption[] FILE_OPEN_OPTIONS = new StandardOpenOption[]{StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE};
+    public static final String IMAGE_TARGET_FILE_ENDING = "jpg";
 
     @Override
     public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
@@ -291,6 +301,62 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
+    public boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException {
+
+        Path localFolderPath = Paths.get(String.format("%s/%s/%s", LOCAL_RESOURCE_DIR, LOCAL_MAPS_DIR,
+                building.getBuildingName()));
+
+        if (!Files.exists(localFolderPath)) {
+            Files.createDirectory(localFolderPath);
+
+        }
+
+        boolean fileWriteSuccess = true;
+        String localTargetFileName = replaceFileEnding(floorMapFile, IMAGE_TARGET_FILE_ENDING);
+        Path localFilePath = Paths.get(String.format("%s/%s/%s/%s", LOCAL_RESOURCE_DIR, LOCAL_MAPS_DIR,
+                building.getBuildingName(), localTargetFileName));
+        File localFile = new File(localFilePath.toUri());
+        if (!Files.exists(localFilePath)) {
+            OutputStream outputStream = new FileOutputStream(localFilePath.toFile());
+            BufferedImage bufferedImage = ImageIO.read(floorMapFile);
+            fileWriteSuccess = ImageIO.write(bufferedImage, IMAGE_TARGET_FILE_ENDING, outputStream);
+        }
+
+        if (fileWriteSuccess) {
+            String separator = File.separator;
+            String cleanFloorMapUrl = String.format("%s%s%s%s%s", LOCAL_MAPS_DIR, separator, building.getBuildingName(),
+                    separator, localFile.getName());
+            floor.setFloorMapUrl(cleanFloorMapUrl);
+        }
+
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        return fileWriteSuccess && buildingRepository.save(building) != null;
+
+    }
+
+    @Override
+    public File getFloorMapByFloorId(long floorId) throws IOException {
+
+        FloorRepository floorRepository = (FloorRepository) RepositoryRegistry.getRepositoryByEntityName(Floor.class.getName());
+        Floor floorFromDatabase = floorRepository.findOne(floorId);
+
+        if (floorFromDatabase != null) {
+            String separator = File.separator;
+            Path localFilePath = Paths.get(String.format("%s%s%s", LOCAL_RESOURCE_DIR, separator,
+                    floorFromDatabase.getFloorMapUrl()));
+            if (Files.exists(localFilePath)) {
+                File result = localFilePath.toFile();
+                File someTest = new File("./src/main/resources/static/floor_maps/CAR/CAR_R1.gif");
+                return result;
+            }
+        }
+
+        return null;
+
+    }
+
+
+    @Override
     public boolean saveEvaalFiles(List<EvaalFile> evaalFiles) {
 
         AssertParam.throwIfNull(evaalFiles, "evaalFiles");
@@ -340,12 +406,12 @@ public class PersistencyServiceImpl implements PersistencyService {
     private List<Parameter> convertToEntityParameters(Set<SaveNewProjectParameters> saveNewProjectParameters) {
 
         List<Parameter> parametersAsList = new ArrayList<>();
+        ParameterHelper helper = ParameterHelper.getInstance();
 
-        GetAlgorithmParameters getAlgorithmParameters;
         if (saveNewProjectParameters != null) {
             for (SaveNewProjectParameters parameter :
                     saveNewProjectParameters) {
-                getAlgorithmParameters = ParameterHelper.getInstance().getParameterByInternalName(parameter.getName());
+                GetAlgorithmParameters getAlgorithmParameters = helper.getParameterByInternalName(parameter.getName());
                 parametersAsList.add(new Parameter(parameter.getName(), parameter.getValue()));
             }
         }
@@ -412,6 +478,15 @@ public class PersistencyServiceImpl implements PersistencyService {
         }
 
         return radioMaps;
+    }
+
+    private String replaceFileEnding(File file, String newFileEnding) {
+
+        String fileName = file.getName();
+        fileName = fileName.substring(0, fileName.lastIndexOf("."));
+
+        return String.format("%s.%s", fileName, newFileEnding);
+
     }
 
 

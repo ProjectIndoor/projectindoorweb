@@ -346,4 +346,21 @@ public class TransmissionHelper {
 
 
     }
+
+    public static Floor getBuildingFloorById(long floorId, Building building){
+
+        List<Floor> buildingFloors = building.getBuildingFloors();
+
+        for (Floor floor:
+             buildingFloors) {
+            if(floor.getId() - floorId == 0){
+                return floor;
+            }
+        }
+
+        return null;
+
+    }
+
+
 }
