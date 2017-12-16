@@ -361,6 +361,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean deleteBuilding(long buildingId) {
 
+        AssertParam.throwIfNull(buildingId, "buildingId");
+
         BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingRepository.delete(buildingId);
         Building deletedBuilding = buildingRepository.findOne(buildingId);
@@ -417,6 +419,9 @@ public class PersistencyServiceImpl implements PersistencyService {
 
     @Override
     public boolean deleteEvaalFile(long evaalFileId) {
+
+        AssertParam.throwIfNull(evaalFileId, "evaalFileId");
+
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
         evaalFileRepository.delete(evaalFileId);
         EvaalFile deletedEvaalFile = evaalFileRepository.findOne(evaalFileId);
