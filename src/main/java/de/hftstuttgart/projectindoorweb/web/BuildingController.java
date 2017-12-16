@@ -70,7 +70,8 @@ public class BuildingController {
 
     @ApiOperation(value = "Retrieves the floor image file of the given floor identifier", nickname = "building/getFloorMap",
             notes = TransmissionConstants.GET_FLOOR_MAP_NOTE)
-    @RequestMapping(path = "/getFloorMap", method = GET, produces = MediaType.IMAGE_PNG_VALUE)
+    @RequestMapping(path = TransmissionConstants.GET_FLOOR_MAP_REST_URL,
+            method = GET, produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<InputStreamResource> getFloorMap(
             @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)

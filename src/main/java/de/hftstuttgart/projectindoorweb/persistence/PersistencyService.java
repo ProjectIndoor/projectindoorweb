@@ -29,6 +29,8 @@ public interface PersistencyService {
 
     File getFloorMapByFloorId(long floorId) throws IOException;
 
+    boolean deleteBuilding(long buildingId);
+
 
     /*Evaal files*/
     boolean saveEvaalFiles(List<EvaalFile> evaalFiles);
@@ -38,6 +40,8 @@ public interface PersistencyService {
     List<EvaalFile> getEvaluationFilesForBuilding(Building building);
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);
+
+    boolean deleteEvaalFile(long evaalFileId);
 
 
     /*Projects*/

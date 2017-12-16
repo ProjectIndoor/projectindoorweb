@@ -11,6 +11,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingP
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
+import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 
 import javax.imageio.ImageIO;
@@ -322,9 +323,13 @@ public class PersistencyServiceImpl implements PersistencyService {
             fileWriteSuccess = ImageIO.write(bufferedImage, PersistencyConstants.IMAGE_TARGET_FILE_ENDING, outputStream);
         }
 
+
         if (fileWriteSuccess) {
-            String cleanFloorMapUrl = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator,
+            String cleanFloorMapPath = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator,
                     building.getBuildingName(), separator, localFile.getName());
+            floor.setFloorMapPath(cleanFloorMapPath);
+            String cleanFloorMapUrl = String.format("building%s?%s=%d", TransmissionConstants.GET_FLOOR_MAP_REST_URL,
+                    TransmissionConstants.FLOOR_IDENTIFIER_PARAM, floor.getId());
             floor.setFloorMapUrl(cleanFloorMapUrl);
         }
 
@@ -342,15 +347,24 @@ public class PersistencyServiceImpl implements PersistencyService {
         if (floorFromDatabase != null) {
             String separator = File.separator;
             Path localFilePath = Paths.get(String.format("%s%s%s", PersistencyConstants.LOCAL_RESOURCE_DIR, separator,
-                    floorFromDatabase.getFloorMapUrl()));
+                    floorFromDatabase.getFloorMapPath()));
             if (Files.exists(localFilePath)) {
                 File result = localFilePath.toFile();
-                File someTest = new File("./src/main/resources/static/floor_maps/CAR/CAR_R1.gif");
                 return result;
             }
         }
 
         return null;
+
+    }
+
+    @Override
+    public boolean deleteBuilding(long buildingId) {
+
+        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
+        buildingRepository.delete(buildingId);
+        Building deletedBuilding = buildingRepository.findOne(buildingId);
+        return deletedBuilding == null;
 
     }
 
@@ -399,6 +413,14 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         return evaalFileRepository.findByRecordedInBuildingAndEvaluationFileFalse(building);
 
+    }
+
+    @Override
+    public boolean deleteEvaalFile(long evaalFileId) {
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+        evaalFileRepository.delete(evaalFileId);
+        EvaalFile deletedEvaalFile = evaalFileRepository.findOne(evaalFileId);
+        return deletedEvaalFile == null;
     }
 
 
