@@ -287,7 +287,7 @@ function UploadService($http, $mdToast) {
 app.factory("uploadService", UploadService);
 
 // Data service (retrieve data from server e.g. get Buildings)
-function DataService($http) {
+function DataService($http, $mdToast) {
     // API endpoints
     var getBuildingsUrl = '/building/getAllBuildings';
     var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
@@ -320,32 +320,46 @@ function DataService($http) {
                 buildings.forEach(function (building) {
                     building.floors = [
                         {
-                            floorNo: 0,
-                            url: "/maps/hft_2_floor_0.png"
+                            floorId: 1,
+                            floorLevel: 0,
+                            floorName: "EG",
+                            floorMapUrl: "building/getFloorMap?floorIdentifier=1"
                         },
                         {
-                            floorNo: 1,
-                            url: "/maps/hft_2_floor_1.png"
+                            floorId: 2,
+                            floorLevel: 1,
+                            floorName: "",
+                            floorMapUrl: "/maps/hft_2_floor_1.png"
                         },
                         {
-                            floorNo: 2,
-                            url: "/maps/hft_2_floor_2.png"
+                            floorId: 3,
+                            floorLevel: 2,
+                            floorName: "",
+                            floorMapUrl: "/maps/hft_2_floor_2.png"
                         },
                         {
-                            floorNo: 3,
-                            url: "/maps/hft_2_floor_3.png"
+                            floorId: 4,
+                            floorLevel: 3,
+                            floorName: "",
+                            floorMapUrl: "/maps/hft_2_floor_3.png"
                         },
                         {
-                            floorNo: 4,
-                            url: "/maps/hft_2_floor_4.png"
+                            floorId: 5,
+                            floorLevel: 4,
+                            floorName: "",
+                            floorMapUrl: "/maps/hft_2_floor_4.png"
                         },
                         {
-                            floorNo: 5,
-                            url: "/maps/hft_2_floor_5.png"
+                            floorId: 6,
+                            floorLevel: 5,
+                            floorName: "",
+                            floorMapUrl: ""
                         },
                         {
-                            floorNo: 6,
-                            url: "/maps/car.png"
+                            floorId: 7,
+                            floorLevel: 6,
+                            floorName: "",
+                            floorMapUrl: "/maps/car.png"
                         }
                     ];
                 });
@@ -427,9 +441,17 @@ function DataService($http) {
                     buildingIdentifier: buildingId
                 }
             };
-            var promise = $http.delete(deleteBuildingUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteBuildingUrl, config)
+                .then(function (response) {
+                    logMessage = "Building deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting building:" + buildingId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         deleteEvaalFile: function (evaalFileId) {
@@ -438,9 +460,17 @@ function DataService($http) {
                     evaalFileIdentifier: evaalFileId
                 }
             };
-            var promise = $http.delete(deleteEvaalUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteEvaalUrl, config)
+                .then(function (response) {
+                    logMessage = "Evaal entry deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting evaal entry:" + evaalFileId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         deleteProject: function (projectId) {
@@ -449,9 +479,17 @@ function DataService($http) {
                     projectIdentifier: projectId
                 }
             };
-            var promise = $http.delete(deleteProjectUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteProjectUrl, config)
+                .then(function (response) {
+                    logMessage = "Project deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting project:" + projectId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         // access functions
@@ -475,6 +513,19 @@ function DataService($http) {
             //TODO replace with all evaal files
             return [].concat(evalFiles);
         }
+    };
+
+    // private functions
+    function showToast(logMessage, customTheme) {
+        var pinTo = "bottom center";
+
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(logMessage)
+                .position(pinTo)
+                .hideDelay(3000)
+                .theme(customTheme)
+        );
     }
 
 }
@@ -1094,6 +1145,11 @@ function BuildingController($scope, dataService, calculationService, mapService)
         }
     };
 
+    //function to use either floor name or level
+    $scope.resolveNameOrLevel = function (floor) {
+        return floor.floorName || floor.floorLevel;
+    };
+
     // enumeration function
     $scope.getNumber = function (num) {
         return new Array(num);
@@ -1104,7 +1160,7 @@ function BuildingController($scope, dataService, calculationService, mapService)
 
     $scope.setBuilding = function () {
         // update Map to new building
-        mapService.setMap($scope.selectedFloor.url, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
+        mapService.setMap($scope.selectedFloor.floorMapUrl, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
         calculationService.setCalculationBuilding($scope.selectedBuilding);
         // load building related evaluation files and radiomaps
