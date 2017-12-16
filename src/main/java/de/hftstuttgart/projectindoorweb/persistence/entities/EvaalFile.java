@@ -20,10 +20,10 @@ public class EvaalFile {
     @OneToMany(targetEntity = WifiBlock.class, cascade = CascadeType.ALL)
     private Map<Integer, WifiBlock> wifiBlocks;
 
-    @ManyToOne(targetEntity = Building.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Building.class)
     private Building recordedInBuilding;
 
-    @ManyToOne(targetEntity = Phone.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Phone.class)
     private Phone recordedByPhone;
 
     @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
