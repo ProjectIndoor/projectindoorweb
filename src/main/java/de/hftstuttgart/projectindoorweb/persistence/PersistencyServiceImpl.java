@@ -4,6 +4,7 @@ import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.internal.util.PersistencyConstants;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
@@ -25,12 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 public class PersistencyServiceImpl implements PersistencyService {
-
-    // TODO Is there a more elegant way to place these constants?
-    public static final String LOCAL_RESOURCE_DIR = "./src/main/resources/static";
-    public static final String LOCAL_MAPS_DIR = "floor_maps";
-    public static final OpenOption[] FILE_OPEN_OPTIONS = new StandardOpenOption[]{StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE};
-    public static final String IMAGE_TARGET_FILE_ENDING = "jpg";
 
     @Override
     public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
@@ -303,7 +298,11 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException {
 
-        Path localFolderPath = Paths.get(String.format("%s/%s/%s", LOCAL_RESOURCE_DIR, LOCAL_MAPS_DIR,
+        AssertParam.throwIfNull(building, "building");
+        AssertParam.throwIfNull(floor, "floor");
+        AssertParam.throwIfNull(floorMapFile, "floorMapFile");
+
+        Path localFolderPath = Paths.get(String.format("%s/%s/%s", PersistencyConstants.LOCAL_RESOURCE_DIR, PersistencyConstants.LOCAL_MAPS_DIR,
                 building.getBuildingName()));
 
         if (!Files.exists(localFolderPath)) {
@@ -312,19 +311,19 @@ public class PersistencyServiceImpl implements PersistencyService {
         }
 
         boolean fileWriteSuccess = true;
-        String localTargetFileName = replaceFileEnding(floorMapFile, IMAGE_TARGET_FILE_ENDING);
-        Path localFilePath = Paths.get(String.format("%s/%s/%s/%s", LOCAL_RESOURCE_DIR, LOCAL_MAPS_DIR,
+        String localTargetFileName = replaceFileEnding(floorMapFile, PersistencyConstants.IMAGE_TARGET_FILE_ENDING);
+        Path localFilePath = Paths.get(String.format("%s/%s/%s/%s", PersistencyConstants.LOCAL_RESOURCE_DIR, PersistencyConstants.LOCAL_MAPS_DIR,
                 building.getBuildingName(), localTargetFileName));
         File localFile = new File(localFilePath.toUri());
         if (!Files.exists(localFilePath)) {
             OutputStream outputStream = new FileOutputStream(localFilePath.toFile());
             BufferedImage bufferedImage = ImageIO.read(floorMapFile);
-            fileWriteSuccess = ImageIO.write(bufferedImage, IMAGE_TARGET_FILE_ENDING, outputStream);
+            fileWriteSuccess = ImageIO.write(bufferedImage, PersistencyConstants.IMAGE_TARGET_FILE_ENDING, outputStream);
         }
 
         if (fileWriteSuccess) {
             String separator = File.separator;
-            String cleanFloorMapUrl = String.format("%s%s%s%s%s", LOCAL_MAPS_DIR, separator, building.getBuildingName(),
+            String cleanFloorMapUrl = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator, building.getBuildingName(),
                     separator, localFile.getName());
             floor.setFloorMapUrl(cleanFloorMapUrl);
         }
@@ -342,7 +341,7 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         if (floorFromDatabase != null) {
             String separator = File.separator;
-            Path localFilePath = Paths.get(String.format("%s%s%s", LOCAL_RESOURCE_DIR, separator,
+            Path localFilePath = Paths.get(String.format("%s%s%s", PersistencyConstants.LOCAL_RESOURCE_DIR, separator,
                     floorFromDatabase.getFloorMapUrl()));
             if (Files.exists(localFilePath)) {
                 File result = localFilePath.toFile();
