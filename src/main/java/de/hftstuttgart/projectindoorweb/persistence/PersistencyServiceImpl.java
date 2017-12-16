@@ -302,19 +302,20 @@ public class PersistencyServiceImpl implements PersistencyService {
         AssertParam.throwIfNull(floor, "floor");
         AssertParam.throwIfNull(floorMapFile, "floorMapFile");
 
-        Path localFolderPath = Paths.get(String.format("%s/%s/%s", PersistencyConstants.LOCAL_RESOURCE_DIR, PersistencyConstants.LOCAL_MAPS_DIR,
-                building.getBuildingName()));
-
-        if (!Files.exists(localFolderPath)) {
-            Files.createDirectory(localFolderPath);
-
+        String buildingName = building.getBuildingName();
+        if (buildingName == null || buildingName.isEmpty()) {
+            buildingName = "DefaultBuildingName";
         }
 
-        boolean fileWriteSuccess = true;
+
+        boolean fileWriteSuccess = doInitialImageFolderSetup(buildingName);
+
         String localTargetFileName = replaceFileEnding(floorMapFile, PersistencyConstants.IMAGE_TARGET_FILE_ENDING);
-        Path localFilePath = Paths.get(String.format("%s/%s/%s/%s", PersistencyConstants.LOCAL_RESOURCE_DIR, PersistencyConstants.LOCAL_MAPS_DIR,
-                building.getBuildingName(), localTargetFileName));
+        String separator = File.separator;
+        Path localFilePath = Paths.get(String.format("%s%s%s%s%s%s%s", PersistencyConstants.LOCAL_RESOURCE_DIR, separator,
+                PersistencyConstants.LOCAL_MAPS_DIR, separator, buildingName, separator, localTargetFileName));
         File localFile = new File(localFilePath.toUri());
+
         if (!Files.exists(localFilePath)) {
             OutputStream outputStream = new FileOutputStream(localFilePath.toFile());
             BufferedImage bufferedImage = ImageIO.read(floorMapFile);
@@ -322,9 +323,8 @@ public class PersistencyServiceImpl implements PersistencyService {
         }
 
         if (fileWriteSuccess) {
-            String separator = File.separator;
-            String cleanFloorMapUrl = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator, building.getBuildingName(),
-                    separator, localFile.getName());
+            String cleanFloorMapUrl = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator,
+                    building.getBuildingName(), separator, localFile.getName());
             floor.setFloorMapUrl(cleanFloorMapUrl);
         }
 
@@ -485,6 +485,38 @@ public class PersistencyServiceImpl implements PersistencyService {
         fileName = fileName.substring(0, fileName.lastIndexOf("."));
 
         return String.format("%s.%s", fileName, newFileEnding);
+
+    }
+
+    private boolean doInitialImageFolderSetup(String buildingName) {
+
+        try {
+
+            if (!Files.exists(Paths.get(PersistencyConstants.LOCAL_RESOURCE_DIR))) {
+                Files.createDirectory(Paths.get(PersistencyConstants.LOCAL_RESOURCE_DIR));
+            }
+
+            String separator = File.separator;
+            Path localFloorMapsPath = Paths.get(String.format("%s%s%s", PersistencyConstants.LOCAL_RESOURCE_DIR, separator,
+                    PersistencyConstants.LOCAL_MAPS_DIR));
+            if (!Files.exists(localFloorMapsPath)) {
+
+                Files.createDirectory(localFloorMapsPath);
+            }
+
+            Path localFloorMapsBuildingPath = Paths.get(String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_RESOURCE_DIR, separator,
+                    PersistencyConstants.LOCAL_MAPS_DIR, separator, buildingName));
+
+            if (!Files.exists(localFloorMapsBuildingPath)) {
+                Files.createDirectory(localFloorMapsBuildingPath);
+            }
+
+            return true;
+
+        } catch (IOException ex) {
+            return false;
+        }
+
 
     }
 
