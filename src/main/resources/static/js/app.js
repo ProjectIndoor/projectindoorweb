@@ -258,6 +258,10 @@ function DataService($http) {
     var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
     var getRadiomapsUrl = '/position/getRadioMapsForBuildingId';
     var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
+    var deleteBuildingUrl = '/building/deleteSelectedBuilding';
+    var deleteEvaalUrl = '/position/deleteSelectedEvaalFile';
+    var deleteProjectUrl = '/project/deleteSelectedProject';
+
 
     // Cache
     var buildings = [];
@@ -306,11 +310,9 @@ function DataService($http) {
                         },
                         {
                             floorNo: 6,
-                            url: "/maps/hft_2_floor_6.png"
+                            url: "/maps/car.png"
                         }
                     ];
-                    building.imagePixelHeight = 2304;
-                    building.imagePixelWidth = 3688;
                 });
 
                 // The return value gets picked up by the then in the controller.
@@ -379,6 +381,40 @@ function DataService($http) {
                 // save response in cache
                 angular.copy(response.data, evalFiles);
 
+                return response.data;
+            });
+            return promise;
+        },
+        // delete functions
+        deleteBuilding: function (buildingId) {
+            var config = {
+                params: {
+                    buildingIdentifier: buildingId
+                }
+            };
+            var promise = $http.delete(deleteBuildingUrl, config).then(function (response) {
+                return response.data;
+            });
+            return promise;
+        },
+        deleteEvaalFile: function (evaalFileId) {
+            var config = {
+                params: {
+                    evaalFileIdentifier: evaalFileId
+                }
+            };
+            var promise = $http.delete(deleteEvaalUrl, config).then(function (response) {
+                return response.data;
+            });
+            return promise;
+        },
+        deleteProject: function (projectId) {
+            var config = {
+                params: {
+                    projectIdentifier: projectId
+                }
+            };
+            var promise = $http.delete(deleteProjectUrl, config).then(function (response) {
                 return response.data;
             });
             return promise;
@@ -891,7 +927,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
     $scope.projectData = calculationService.getCurrentProject();
 
     $scope.saveProject = function () {
-        calculationService.saveCurrentProject($scope.projectData.projectName);
+        calculationService.saveCurrentProject($scope.projectData);
     };
 
     // decide when to hide/show project interface
@@ -939,7 +975,7 @@ function BuildingImportController($scope, uploadService, dataService) {
     };
 
     $scope.buildingCAR = {
-        buildingName: "",
+        buildingName: "CAR2",
         numberOfFloors: 1,
         imagePixelWidth: 1282,
         imagePixelHeight: 818,
@@ -1372,12 +1408,18 @@ app.controller('EvaalEditCtrl', EvaalEditController);
  * ----------------------------------------------
  */
 
-function ProjectDialogController(mdPanelRef, calculationService) {
+function ProjectDialogController(mdPanelRef, calculationService, dataService, projectService) {
     var panelRef = mdPanelRef;
 
     // function to load project into calculation Service
     this.loadProject = function () {
         calculationService.loadDataFromProject(this.project);
+    };
+
+    this.deleteProject = function (projectId) {
+        dataService.deleteProject(projectId);
+        this.closeDialog();
+        projectService.loadAllProjects();
     };
 
     this.closeDialog = function () {
@@ -1389,8 +1431,14 @@ function ProjectDialogController(mdPanelRef, calculationService) {
 
 app.controller('ProjectDialogCtrl', ProjectDialogController);
 
-function BuildingDialogController(mdPanelRef) {
+function BuildingDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
+
+    this.deleteBuilding = function (buildingId) {
+        dataService.deleteBuilding(buildingId);
+        this.closeDialog();
+        dataService.loadAllBuildings();
+    };
 
     this.closeDialog = function () {
         panelRef && panelRef.close().then(function () {
@@ -1401,8 +1449,14 @@ function BuildingDialogController(mdPanelRef) {
 
 app.controller('BuildingDialogCtrl', BuildingDialogController);
 
-function EvaalDialogController(mdPanelRef) {
+function EvaalDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
+
+    this.deleteEvaal = function (evaalId) {
+        dataService.deleteEvaalFile(evaalId);
+        this.closeDialog();
+        dataService.loadAllEvaals();
+    };
 
     this.closeDialog = function () {
         panelRef && panelRef.close().then(function () {
