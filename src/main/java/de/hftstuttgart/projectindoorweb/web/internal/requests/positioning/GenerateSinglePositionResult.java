@@ -11,9 +11,10 @@ public class GenerateSinglePositionResult {
 
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
+    private Long projectIdentifier;
     private long[] radioMapFileIdentifiers;
     private String algorithmType;
-    private Set<SaveNewProjectParameters> saveNewProjectParamaters;
+    private Set<SaveNewProjectParameters> saveNewProjectParameters;
     private boolean withPixelPosition;
     private String[] wifiReadings;
 
@@ -21,17 +22,19 @@ public class GenerateSinglePositionResult {
     @JsonCreator
     public GenerateSinglePositionResult(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                         @JsonProperty("evaluationFile") Long evalFileIdentifier,
+                                        @JsonProperty(value = "projectIdentifier", required = false) Long projectIdentifier,
                                         @JsonProperty("radioMapFiles") long[] radioMapFileIdentifiers,
                                         @JsonProperty("algorithmType") String algorithmType,
-                                        @JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParamaters,
+                                        @JsonProperty("projectParameters") Set<SaveNewProjectParameters> saveNewProjectParameters,
                                         @JsonProperty("withPixelPosition") boolean withPixelPosition,
                                         @JsonProperty("wifiReadings") String[] wifiReadings) {
 
         this.buildingIdentifier = buildingIdentifier;
         this.evalFileIdentifier = evalFileIdentifier;
+        this.projectIdentifier = projectIdentifier;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
         this.algorithmType = algorithmType;
-        this.saveNewProjectParamaters = saveNewProjectParamaters;
+        this.saveNewProjectParameters = saveNewProjectParameters;
         this.withPixelPosition = withPixelPosition;
         this.wifiReadings = wifiReadings;
     }
@@ -52,6 +55,14 @@ public class GenerateSinglePositionResult {
         this.evalFileIdentifier = evalFileIdentifier;
     }
 
+    public Long getProjectIdentifier() {
+        return projectIdentifier;
+    }
+
+    public void setProjectIdentifier(Long projectIdentifier) {
+        this.projectIdentifier = projectIdentifier;
+    }
+
     public long[] getRadioMapFileIdentifiers() {
         return radioMapFileIdentifiers;
     }
@@ -68,12 +79,12 @@ public class GenerateSinglePositionResult {
         this.algorithmType = algorithmType;
     }
 
-    public Set<SaveNewProjectParameters> getSaveNewProjectParamaters() {
-        return saveNewProjectParamaters;
+    public Set<SaveNewProjectParameters> getSaveNewProjectParameters() {
+        return saveNewProjectParameters;
     }
 
-    public void setSaveNewProjectParamaters(Set<SaveNewProjectParameters> saveNewProjectParamaters) {
-        this.saveNewProjectParamaters = saveNewProjectParamaters;
+    public void setSaveNewProjectParameters(Set<SaveNewProjectParameters> saveNewProjectParamaters) {
+        this.saveNewProjectParameters = saveNewProjectParamaters;
     }
 
     public boolean isWithPixelPosition() {
