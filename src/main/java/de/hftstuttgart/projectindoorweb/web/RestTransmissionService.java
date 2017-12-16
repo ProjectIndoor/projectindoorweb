@@ -27,6 +27,8 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding(String buildingIdentifier);
 
+    List<GetAllEvaalEntries> getAllEvaalEntries();
+
     /*Projects*/
     long addNewProject(AddNewProject addNewProject);
 

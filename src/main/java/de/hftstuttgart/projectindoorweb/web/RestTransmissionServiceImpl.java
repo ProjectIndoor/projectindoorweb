@@ -54,10 +54,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return false;
         }
 
-        try{
+        try {
             long evaalFileId = Long.valueOf(evaalFileIdentifier);
             return this.persistencyService.deleteEvaalFile(evaalFileId);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -322,9 +322,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
-        } finally {
-            return result;
         }
+
+        return result;
+
 
     }
 
@@ -412,10 +413,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return false;
         }
 
-        try{
+        try {
             long buildingId = Long.valueOf(buildingIdentifier);
             return this.persistencyService.deleteBuilding(buildingId);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -510,6 +511,13 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return result;
         }
 
+    }
+
+    @Override
+    public List<GetAllEvaalEntries> getAllEvaalEntries() {
+        List<GetAllEvaalEntries> result = new ArrayList<>();
+
+        return result; //TODO implement when ready
     }
 
     @Override
@@ -626,14 +634,14 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
     private Set<SaveNewProjectParameters> getProjectParametersFromInternalEntity(List<Parameter> parameters) {
 
-        Set<SaveNewProjectParameters> saveNewProjectParamaters = new LinkedHashSet<>();
+        Set<SaveNewProjectParameters> saveNewProjectParameters = new LinkedHashSet<>();
 
         for (Parameter parameter :
                 parameters) {
-            saveNewProjectParamaters.add(new SaveNewProjectParameters(parameter.getParameterName(), parameter.getParameterValue()));
+            saveNewProjectParameters.add(new SaveNewProjectParameters(parameter.getParameterName(), parameter.getParameterValue()));
         }
 
-        return saveNewProjectParamaters;
+        return saveNewProjectParameters;
 
     }
 }
