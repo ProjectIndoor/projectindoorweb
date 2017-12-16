@@ -1552,9 +1552,11 @@ function ProjectDialogController(mdPanelRef, calculationService, dataService, pr
     };
 
     this.deleteProject = function (projectId) {
-        dataService.deleteProject(projectId);
+        // call delete and reload projects on success
+        dataService.deleteProject(projectId).then(function (data) {
+            projectService.loadAllProjects();
+        });
         this.closeDialog();
-        projectService.loadAllProjects();
     };
 
     this.closeDialog = function () {
@@ -1570,9 +1572,11 @@ function BuildingDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
 
     this.deleteBuilding = function (buildingId) {
-        dataService.deleteBuilding(buildingId);
+        // call delete and reload buildings on success
+        dataService.deleteBuilding(buildingId).then(function (data) {
+            dataService.loadAllBuildings();
+        });
         this.closeDialog();
-        dataService.loadAllBuildings();
     };
 
     this.closeDialog = function () {
@@ -1588,9 +1592,11 @@ function EvaalDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
 
     this.deleteEvaal = function (evaalId) {
-        dataService.deleteEvaalFile(evaalId);
+        // call delete and reload evaals on success
+        dataService.deleteEvaalFile(evaalId).then(function (data) {
+            dataService.loadAllEvaals();
+        });
         this.closeDialog();
-        dataService.loadAllEvaals();
     };
 
     this.closeDialog = function () {
