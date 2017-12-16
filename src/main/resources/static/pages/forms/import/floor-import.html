@@ -1,0 +1,51 @@
+<md-card flex="100" flex-gt-sm="50" ng-controller="FloorImportCtrl" class="md-whiteframe-3dp"
+         md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Add floor maps</span>
+            <span class="md-subhead">Select the image you want to use as the floor map</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">layers</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content layout="column">
+        <!-- Building chooser -->
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Building</label>
+            <md-select ng-model="floorParameters.building" required>
+                <md-option ng-repeat="building in buildings()" ng-value="{{building}}">
+                    {{building.buildingName}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <!-- Floor chooser -->
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Floor</label>
+            <md-select ng-model="floorParameters.floorIdentifier" required>
+                <md-option ng-repeat="floor in floors()" value="{{floor.floorId}}">
+                    {{floor.floorLevel}}
+                </md-option>
+            </md-select>
+        </md-input-container>
+        <!-- Floor data -->
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Name of floor (e.g. ground floor)</label>
+            <input ng-model="floorParameters.floorName" required/>
+        </md-input-container>
+        <!-- File chooser -->
+        <md-input-container flex="100">
+            <input id="floorInputFile" name="file" class="ng-hide" type="file" ng-files="getFloorFiles($files)"
+                   aria-label="floorFileUpload"/>
+            <md-button class="md-button" ng-click="floorUpload()">
+                Choose File
+            </md-button>
+            <p>{{fileUploaded}}</p>
+        </md-input-container>
+
+    </md-card-content>
+
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button type="submit" ng-click="uploadFloor()">Upload</md-button>
+    </md-card-actions>
+</md-card>

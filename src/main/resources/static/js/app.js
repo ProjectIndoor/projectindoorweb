@@ -144,6 +144,8 @@ function UploadService($http, $mdToast) {
     var buildingUploadUrl = '/building/addNewBuilding';
     var logFileUploadUrl = '/position/processRadioMapFiles';
     var evalFileUploadUrl = '/position/processEvalFiles';
+    var floorUploadUrl = '/building/addFloorToBuilding';
+
 
     // service functions
     return {
@@ -229,6 +231,39 @@ function UploadService($http, $mdToast) {
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while uploading evaluation data";
+                    showToast(logMessage, "error-toast");
+                });
+            }
+        },
+        uploadFloorMap: function (floorSet) {
+            if (floorSet.floorFiles[0] == null) {
+                logMessage = "Please choose an image file to upload";
+                showToast(logMessage, "error-toast");
+            } else {
+                // body content (floor file, floorId and buildingId)
+                var formData = new FormData();
+                formData.append('buildingIdentifier', floorSet.building.buildingId);
+                formData.append('floorIdentifier', floorSet.floorIdentifier);
+                formData.append('floorName', floorSet.floorName);
+                formData.append('floorMapFile', floorSet.floorFiles[0]);
+
+                $http({
+                    method: 'POST',
+                    url: floorUploadUrl,
+                    data: formData,
+                    transformRequest: function (data, headersGetterFunction) {
+                        return data;
+                    },
+                    headers: {
+                        'Content-Type': undefined
+                    }
+                }).then(function successCallback(response) {
+                    // success
+                    logMessage = "Floor map uploaded successfully!";
+                    showToast(logMessage, "success-toast");
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while uploading floor map";
                     showToast(logMessage, "error-toast");
                 });
             }
@@ -1270,6 +1305,50 @@ function EvaluationImportController($scope, dataService, uploadService) {
 }
 
 app.controller('EvalImportCtrl', EvaluationImportController);
+
+// controller which handles the floor import view
+function FloorImportController($scope, dataService, uploadService) {
+    // show file chooser on button click
+    $scope.floorUpload = function () {
+        angular.element(document.querySelector('#floorInputFile')).click();
+    };
+
+    dataService.getAllBuildings();
+
+    // buildings to show for chooser
+    $scope.buildings = dataService.getAllBuildings;
+
+    // parameters needed to upload eval file
+    $scope.floorParameters = {
+        buildingIdentifier: 0,
+        floorFiles: []
+    };
+
+    // show floors of a selected building
+    $scope.floors = function () {
+        if ($scope.floorParameters.building) {
+            return $scope.floorParameters.building.buildingFloors;
+        }
+    };
+
+    $scope.getFloorFiles = function ($files) {
+        $scope.floorParameters.floorFiles = $files;
+        $scope.fileUploaded = "File: " + $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    //The success or error message
+    $scope.uploadStatus = false;
+
+    //Post the file and parameters
+    $scope.uploadFloor = function () {
+        console.log($scope.floorParameters);
+        uploadService.uploadFloorMap($scope.floorParameters);
+    }
+}
+
+app.controller('FloorImportCtrl', FloorImportController);
 
 //Controller to handle the project edit view
 function ProjectController($scope, $mdPanel, projectService) {
