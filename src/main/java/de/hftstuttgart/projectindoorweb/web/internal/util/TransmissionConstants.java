@@ -2,6 +2,8 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 public class TransmissionConstants { //TODO move to config container file and move somewhere more viewable
 
+    public static final String GET_FLOOR_MAP_REST_URL = "/getFloorMap";
+
     public static final String EMPTY_STRING_VALUE = "";
     public static final String FALSE_STRING_VALUE = "false";
 
