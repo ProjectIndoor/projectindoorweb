@@ -1,0 +1,137 @@
+/* ----------- Setup material icon font */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../assets/vendor/material-design-icons/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(../assets/vendor/material-design-icons/MaterialIcons-Regular.woff2) format('woff2'),
+    url(../assets/vendor/material-design-icons/MaterialIcons-Regular.woff) format('woff'),
+    url(../assets/vendor/material-design-icons/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px; /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+/* ----------- Own CSS */
+.md-sidenav-left.indoor-nav {
+    width: 30%;
+    max-width: 100%;
+}
+
+.indoor-toolbar {
+    top: 0;
+    position: fixed;
+}
+
+.mapview {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 0;
+}
+
+.indoorFooter {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 50px;
+    margin-bottom: 0px;
+}
+
+.file-input-hide {
+    position: relative;
+    left: -6em;
+}
+
+.bring-forward {
+    z-index: 10;
+}
+
+.bmarker {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #a11657;
+    border-radius: 10px;
+    background-color: #a11657;
+    opacity: 0.5;
+}
+
+.uploadFileSuccess {
+    color: green;
+    text-align: center;
+}
+
+.uploadFileError {
+    color: red;
+    text-align: center;
+}
+
+/* style of view project dialog */
+.project-dialog {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 7px 8px -4px rgba(0, 0, 0, 0.2),
+    0 13px 19px 2px rgba(0, 0, 0, 0.14),
+    0 5px 24px 4px rgba(0, 0, 0, 0.12);
+    width: 700px;
+    max-width: 100%;
+    max-height: 70%;
+}
+
+.project-dialog-content {
+    padding: 0 15px;
+    width: 100%;
+    max-height: 50vh;
+    overflow: auto;
+}
+
+/* hide scrollbars */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* angular material style additions */
+@media (min-width: 960px) {
+    md-toast.md-center {
+        margin-left: auto;
+        margin-right: auto;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        padding: 0px;
+    }
+
+    md-toast.md-success-toast-theme .md-toast-content {
+        color: #99cc99;
+    }
+
+    md-toast.md-error-toast-theme .md-toast-content {
+        color: #f2777a;
+    }
+}
+

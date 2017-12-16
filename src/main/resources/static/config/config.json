@@ -1,0 +1,44 @@
+{
+  "buildings": [
+    {
+      "id": "b1",
+      "name": "HFT Building 1"
+    },
+    {
+      "id": "b2",
+      "name": "HFT Building 2"
+    },
+    {
+      "id": "b3",
+      "name": "HFT Building 3"
+    }
+  ],
+  "floors": [
+    {
+      "id": "f1",
+      "name": "Floor 1"
+    },
+    {
+      "id": "f2",
+      "name": "Floor 2"
+    },
+    {
+      "id": "f3",
+      "name": "Floor 3"
+    }
+  ],
+  "algorithms": [
+    {
+      "id": "a1",
+      "name": "RadioMap Simple"
+    },
+    {
+      "id": "a2",
+      "name": "RadioMap with Sensors"
+    },
+    {
+      "id": "a3",
+      "name": "AP only mode"
+    }
+  ]
+}

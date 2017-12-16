@@ -1,12 +1,17 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'com.craigburke.client-dependencies' version '1.4.0'
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'checkstyle'
+    id 'pmd'
+    id 'findbugs'
+    id 'com.palantir.docker' version '0.13.0'
+    id "com.eriwen.gradle.js" version "2.14.1"
+}
+
 group 'de.hft-stuttgart'
 version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
-apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,15 +20,6 @@ def versions = [
         checkstyle: '8.3',
 ]
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
-    }
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -31,7 +27,26 @@ repositories {
 
 jar {
     baseName = 'projectindoorweb'
-    version =  '0.1.0'
+    version = '0.1.0'
+}
+
+// JavaScript handling
+combineJs {
+    encoding = "UTF-8"
+    source = [
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/angular.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-animate.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-aria.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-messages.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-route.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular/modules/angular-sanitize.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular-material/angular-material.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/openlayers/ol.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/angular-openlayers-directive/angular-openlayers-directive.js",
+            "${projectDir}/src/main/resources/static/assets/vendor/jquery/jquery.js",
+            "${projectDir}/src/main/resources/static/js/app.js"
+    ]
+    dest = file("${projectDir}/src/main/resources/static/assets/all-indoor.js")
 }
 
 configurations {
@@ -55,11 +70,31 @@ pmd {
 }
 
 findbugs {
-
     ignoreFailures = true
-
     sourceSets = [sourceSets.main]
+}
 
+docker {
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    buildArgs(['JAR_FILE': "${jar.archiveName}"])
+}
+
+clientDependencies {
+    installDir = 'src/main/resources/static/assets/vendor'
+    npm {
+        'jquery'('3.2.1')
+        'angular'('1.5.5')
+        'angular-animate'('1.5.5', into: 'angular/modules')
+        'angular-aria'('1.5.5', into: 'angular/modules')
+        'angular-messages'('1.5.5', into: 'angular/modules')
+        'angular-route'('1.5.5', into: 'angular/modules')
+        'angular-sanitize'('1.5.5', into: 'angular/modules')
+        'angular-material'('1.1.0')
+        'openlayers'('3.18.1', transitive: false)
+        'angular-openlayers-directive'('1.20.1', transitive: false)
+        'material-design-icons'('3.0.1', from: 'iconfont', transitive: false)
+    }
 }
 
 dependencies {
@@ -70,7 +105,7 @@ dependencies {
     compile("com.h2database:h2")
     compile "io.springfox:springfox-swagger2:2.7.0"
     compile 'io.springfox:springfox-swagger-ui:2.7.0'
-    checkstyleConfig ("com.puppycrawl.tools:checkstyle:${versions.checkstyle}"){ transitive = false }
+    checkstyleConfig("com.puppycrawl.tools:checkstyle:${versions.checkstyle}") { transitive = false }
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

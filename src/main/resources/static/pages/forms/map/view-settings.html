@@ -1,0 +1,34 @@
+<!-- View Settings (button toggles if they should be visible) -->
+<md-button ng-click="collapseViewSettings = !collapseViewSettings"
+           ng-class="{true: 'md-primary', false: ''}[!collapseViewSettings]">
+    {{!collapseViewSettings && 'Show ' || 'Hide '}} view settings
+</md-button>
+
+<md-card ng-show="collapseViewSettings" class="md-whiteframe-3dp" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">View settings</span>
+            <span class="md-subhead">Configure the map view</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">settings</i>
+        </md-card-title-media>
+    </md-card-title>
+    <md-card-content>
+        <md-input-container class="md-block" flex-gt-sm>
+            <md-switch ng-model="markerShow.showNoRefPos">
+                Show positions lacking a reference
+            </md-switch>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <md-switch ng-model="markerShow.showPos">
+                Show calculated positions
+            </md-switch>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <md-switch ng-model="markerShow.showRef">
+                Show reference positions
+            </md-switch>
+        </md-input-container>
+    </md-card-content>
+</md-card>

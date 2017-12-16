@@ -1,0 +1,182 @@
+<md-card flex="100" flex-gt-sm="50" ng-controller="BuildingImportCtrl" class="md-whiteframe-3dp"
+         md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Add a building</span>
+            <span class="md-subhead">Select a name and the number of floors</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">home</i>
+        </md-card-title-media>
+    </md-card-title>
+    <form name="buildingForm">
+        <md-card-content layout="column">
+            <div layout="row">
+                <md-input-container flex="100">
+                    <label>Name of building</label>
+                    <input ng-model="building.buildingName" name="buildingName" required/>
+                    <div ng-messages="buildingForm.buildingName.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <div layout="row">
+                <md-input-container flex="100">
+                    <label>Number of floors</label>
+                    <input type="number" ng-model="building.numberOfFloors" name="numberOfFloors" required/>
+                    <div ng-messages="buildingForm.numberOfFloors.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- Image size fields -->
+            <md-subheader class="md-primary">Image size of maps</md-subheader>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>Width of images</label>
+                    <input type="number" ng-model="building.imagePixelWidth" name="imagePixelWidth" required/>
+                    <div ng-messages="buildingForm.imagePixelWidth.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="50">
+                    <label>Height of images</label>
+                    <input type="number" ng-model="building.imagePixelHeight" name="imagePixelHeight" required/>
+                    <div ng-messages="buildingForm.imagePixelHeight.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- NW anchor -->
+            <md-subheader class="md-primary">North West Anchor</md-subheader>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>NW Latitude</label>
+                    <input type="number" ng-model="building.northWestAnchor.latitude" name="northWestLatitude"
+                           required min="-90" max="90"/>
+                    <div ng-messages="buildingForm.northWestLatitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -90</div>
+                        <div ng-message="max">Maximum value should be 90</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="50">
+                    <label>NW Longitude</label>
+                    <input type="number" ng-model="building.northWestAnchor.longitude" name="northWestLongitude"
+                           required min="-180" max="180"/>
+                    <div ng-messages="buildingForm.northWestLongitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -180</div>
+                        <div ng-message="max">Maximum value should be 180</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- NE anchor -->
+            <md-subheader class="md-primary">North East Anchor</md-subheader>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>NE Latitude</label>
+                    <input type="number" ng-model="building.northEastAnchor.latitude" name="northEastLatitude"
+                           required min="-90" max="90"/>
+                    <div ng-messages="buildingForm.northEastLatitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -90</div>
+                        <div ng-message="max">Maximum value should be 90</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="50">
+                    <label>NE Longitude</label>
+                    <input type="number" ng-model="building.northEastAnchor.longitude" name="northEastLongitude"
+                           required min="-180" max="180"/>
+                    <div ng-messages="buildingForm.northEastLongitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -180</div>
+                        <div ng-message="max">Maximum value should be 180</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- SE anchor -->
+            <md-subheader class="md-primary">South East Anchor</md-subheader>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>SE Latitude</label>
+                    <input type="number" ng-model="building.southEastAnchor.latitude" name="southEastLatitude"
+                           required min="-90" max="90"/>
+                    <div ng-messages="buildingForm.southEastLatitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -90</div>
+                        <div ng-message="max">Maximum value should be 90</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="50">
+                    <label>SE Longitude</label>
+                    <input type="number" ng-model="building.southEastAnchor.longitude" name="southEastLongitude"
+                           required min="-180" max="180"/>
+                    <div ng-messages="buildingForm.southEastLongitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -180</div>
+                        <div ng-message="max">Maximum value should be 180</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- SW anchor -->
+            <md-subheader class="md-primary">South West Anchor</md-subheader>
+            <div layout="row">
+                <md-input-container flex="50">
+                    <label>SW Latitude</label>
+                    <input type="number" ng-model="building.southWestAnchor.latitude" name="southWestLatitude"
+                           required min="-90" max="90"/>
+                    <div ng-messages="buildingForm.southWestLatitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -90</div>
+                        <div ng-message="max">Maximum value should be 90</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex="50">
+                    <label>SW Longitude</label>
+                    <input type="number" ng-model="building.southWestAnchor.longitude" name="southWestLongitude"
+                           required min="-180" max="180"/>
+                    <div ng-messages="buildingForm.southWestLongitude.$error">
+                        <div ng-message="required">This is required.</div>
+                        <div ng-message="min">Minimum value should be -180</div>
+                        <div ng-message="max">Maximum value should be 180</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <!-- Floors -->
+            <md-subheader class="md-primary">
+                Floors
+            </md-subheader>
+            <div layout="column" ng-repeat="floor in building.floors">
+                <p class="md-subhead" flex="50">
+                    <label>Floor: </label>
+                    <label class="md-accent">{{floor.id}}</label>
+                </p>
+
+                <md-input-container flex="50">
+                    <label>Map url (page like stated above)</label>
+                    <input type="url" name="mapUrl" value="{{floor.mapUrl}}" required/>
+                </md-input-container>
+            </div>
+            <div layout="row">
+                <md-button class="md-raised" ng-click="addFloorFields()" flex="50">Add new floor</md-button>
+                <md-button class="md-raised" ng-click="removeLastFloorField()" flex="50">Remove floor</md-button>
+            </div>
+        </md-card-content>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button type="submit" class="md-raised md-primary" ng-click="buildingForm.$valid && uploadBuildingData()">Add Building</md-button>
+        </md-card-actions>
+    </form>
+</md-card>

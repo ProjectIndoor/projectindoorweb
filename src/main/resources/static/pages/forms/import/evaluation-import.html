@@ -1,0 +1,42 @@
+<md-card flex="100" flex-gt-sm="50" ng-controller="EvalImportCtrl" class="md-whiteframe-3dp"
+         md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Evaluation file import</span>
+            <span class="md-subhead">Select the file you want to import for evaluation</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">insert_drive_file</i>
+        </md-card-title-media>
+    </md-card-title>
+    <form name="evalForm">
+        <md-card-content layout="column">
+            <!-- Building chooser -->
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Building</label>
+                <md-select ng-model="evalFileParameters.buildingIdentifier" name="buildingIdentifier" required>
+                    <md-option ng-repeat="building in buildings()" value="{{building.buildingId}}">
+                        {{building.buildingName}}
+                    </md-option>
+                </md-select>
+                <div ng-messages="evalForm.buildingIdentifier.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <!-- File chooser -->
+            <md-input-container flex="100">
+                <input id="evalInputFile" name="file" class="ng-hide" type="file" ng-files="getEvalFiles($files)"
+                       aria-label="evalFileUpload"/>
+                <md-button class="md-button" ng-click="evalUpload()">
+                    Choose File
+                </md-button>
+                <p>{{fileUploaded}}</p>
+            </md-input-container>
+
+        </md-card-content>
+
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button type="submit" ng-click="uploadEvaluation()">Upload</md-button>
+        </md-card-actions>
+    </form>
+</md-card>

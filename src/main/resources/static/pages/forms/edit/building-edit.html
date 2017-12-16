@@ -1,0 +1,29 @@
+<md-card flex="100" flex-gt-xs="50" class="md-whiteframe-3dp" ng-controller="BuildingEditCtrl" md-theme="default">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">List of Buildings</span>
+            <span class="md-subhead">View and delete buildings</span>
+        </md-card-title-text>
+        <md-card-title-media>
+            <i class="material-icons">view_list</i>
+        </md-card-title-media>
+    </md-card-title>
+
+    <md-list>
+        <md-list-item ng-repeat="building in buildings()" ng-click="showBuildingInfo(building)"
+                      class="md-2-line noright">
+            <div class="md-list-item-text">
+                <h3>{{ building.buildingName }}</h3>
+                <p>{{ building.buildingId }}</p>
+            </div>
+            <div class="layout-margin">
+                <i class="material-icons">visibility</i>
+                <i class="material-icons">mode_edit</i>
+            </div>
+        </md-list-item>
+        <!-- Message only visible when no projects available -->
+        <md-list-item ng-hide="buildings().length">
+            <p>No Buildings available yet</p>
+        </md-list-item>
+    </md-list>
+</md-card>
