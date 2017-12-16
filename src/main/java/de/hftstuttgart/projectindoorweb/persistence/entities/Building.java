@@ -34,7 +34,7 @@ public class Building {
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position centerPoint;
 
-    @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedInBuilding")
+    @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedInBuilding", cascade = CascadeType.ALL)
     private List<EvaalFile> evaalFiles;
 
     @OneToMany(targetEntity = Floor.class, cascade = CascadeType.ALL)
