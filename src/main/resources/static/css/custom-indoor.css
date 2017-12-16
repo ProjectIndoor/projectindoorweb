@@ -55,12 +55,12 @@
 }
 
 .indoorFooter {
-    position:absolute;
-    bottom:0px;
-    left:0px;
-    right:0px;
-    height:50px;
-    margin-bottom:0px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 50px;
+    margin-bottom: 0px;
 }
 
 .file-input-hide {
@@ -69,7 +69,7 @@
 }
 
 .bring-forward {
-    z-index:10;
+    z-index: 10;
 }
 
 .bmarker {
@@ -127,11 +127,11 @@
     }
 
     md-toast.md-success-toast-theme .md-toast-content {
-        background-color: #93DB70;
+        color: #99cc99;
     }
 
     md-toast.md-error-toast-theme .md-toast-content {
-            background-color: #FF6666;
-        }
+        color: #f2777a;
+    }
 }
 

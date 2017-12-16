@@ -171,7 +171,7 @@ function UploadService($http, $mdToast) {
             if (radioMapSet.radioMapFiles[0] == null) {
                 if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
-                    showToast(logMessage, "default");
+                    showToast(logMessage, "error-toast");
                 }
             } else {
                 // body content (log files and buildingId)
@@ -204,7 +204,7 @@ function UploadService($http, $mdToast) {
             if (evaluationSet.evalFiles[0] == null) {
                 if (evaluationSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
-                    showToast(logMessage, "default");
+                    showToast(logMessage, "error-toast");
                 }
             } else {
                 // body content (eval files and buildingId)
