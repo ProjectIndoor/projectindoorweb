@@ -316,53 +316,6 @@ function DataService($http, $mdToast) {
                 console.log(response);*/
                 // save response in cache
                 angular.copy(response.data, buildings);
-                //TODO remove fake floors
-                buildings.forEach(function (building) {
-                    building.floors = [
-                        {
-                            floorId: 1,
-                            floorLevel: 0,
-                            floorName: "EG",
-                            floorMapUrl: "building/getFloorMap?floorIdentifier=1"
-                        },
-                        {
-                            floorId: 2,
-                            floorLevel: 1,
-                            floorName: "",
-                            floorMapUrl: "/maps/hft_2_floor_1.png"
-                        },
-                        {
-                            floorId: 3,
-                            floorLevel: 2,
-                            floorName: "",
-                            floorMapUrl: "/maps/hft_2_floor_2.png"
-                        },
-                        {
-                            floorId: 4,
-                            floorLevel: 3,
-                            floorName: "",
-                            floorMapUrl: "/maps/hft_2_floor_3.png"
-                        },
-                        {
-                            floorId: 5,
-                            floorLevel: 4,
-                            floorName: "",
-                            floorMapUrl: "/maps/hft_2_floor_4.png"
-                        },
-                        {
-                            floorId: 6,
-                            floorLevel: 5,
-                            floorName: "",
-                            floorMapUrl: ""
-                        },
-                        {
-                            floorId: 7,
-                            floorLevel: 6,
-                            floorName: "",
-                            floorMapUrl: "/maps/car.png"
-                        }
-                    ];
-                });
 
                 // The return value gets picked up by the then in the controller.
                 return response.data;
@@ -1141,7 +1094,7 @@ function BuildingController($scope, dataService, calculationService, mapService)
     //function to choose correct floor list
     $scope.floors = function () {
         if ($scope.selectedBuilding) {
-            return $scope.selectedBuilding.floors
+            return $scope.selectedBuilding.buildingFloors
         }
     };
 
