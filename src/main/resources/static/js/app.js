@@ -499,6 +499,9 @@ function CalculationService($http) {
     var projectParameters;
     var asPixel = true;
 
+    // result cache
+    var result;
+
     // loaded projectInfo
     var loadedProject = {
         projectName: "",
@@ -518,6 +521,9 @@ function CalculationService($http) {
         },
         isAlgorithmReady: function () {
             return currentBuilding && evalFile && radioMapFileIds && algorithmType && projectParameters;
+        },
+        hasResult: function () {
+            return result;
         },
         // set and get building
         getCurrentBuilding: function () {
@@ -566,6 +572,19 @@ function CalculationService($http) {
             loadedProject.projectName = project.projectName;
             loadedProject.projectId = project.projectId;
             console.log("Building Changed: " + currentBuilding);
+        },
+        // set and get results
+        getResult: function () {
+            return result;
+        },
+        setResult: function (sum, average) {
+            // Round saved result
+            var rSum = Math.round(sum * 100) / 100;
+            var rAverage = Math.round(average * 100) / 100;
+            result = {
+                errorSum: rSum,
+                averageError: rAverage
+            }
         },
         // API calls
         generatePositions: function () {
@@ -1237,6 +1256,8 @@ function AlgorithmController($scope, dataService, calculationService, mapService
                     mapService.addNoRefCalcPoint(calcP.x, calcP.y)
                 }
             }
+            // set results in calculation service
+            calculationService.setResult(errorSum, errorSum / refCounter);
         });
 
         mapService.displayLines();
@@ -1245,6 +1266,17 @@ function AlgorithmController($scope, dataService, calculationService, mapService
 
 app.controller('AlgorithmCtrl', AlgorithmController);
 
+// Track chooser controller
+function ResultController($scope, calculationService) {
+    // properties
+    $scope.result = calculationService.getResult;
+
+    // hide if not needed yet
+    $scope.resultShow = calculationService.hasResult;
+
+}
+
+app.controller('ResultCtrl', ResultController);
 
 /**
  * POST the uploaded log file
