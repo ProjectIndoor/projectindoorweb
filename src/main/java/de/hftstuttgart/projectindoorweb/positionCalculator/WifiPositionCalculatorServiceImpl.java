@@ -55,6 +55,7 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         if (wifiPositionSmootheningFactor == null || wifiPositionSmootheningFactor < 0.0) {
             wifiPositionSmootheningFactor = ConfigContainer.WIFI_POSITION_SMOOTHENER;
         }
+
         for (RadioMap radioMap :
                 radioMaps) {
             rssiSignals = EvaalFileHelper.retrieveAveragedRssiSignalsForWifiBlock(evaluationFile.getWifiBlocks(), 0);
@@ -133,25 +134,27 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
         double positionWeight = 0.0;
         double wifiBlockAppTimestamp = rssiSignals.get(0).getAppTimestamp();
         Position referencePosition;
+        PosiReference posiReference;
         CorrelationMode correlationMode = (CorrelationMode) ProjectParameterResolver.retrieveParameterValue(project, "correlationMode", CorrelationMode.class);
         if (correlationMode == null) {
             correlationMode = ConfigContainer.CORRELATION_MODE;
         }
         for (RadioMapElement radioMapElement :
                 radioMapElements) {
-            positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(radioMapElement.getRssiSignals(), rssiSignals);
-            if (correlationMode == CorrelationMode.EUCLIDIAN) {
 
-            } else {
+            if (correlationMode == CorrelationMode.EUCLIDIAN) {
+                positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
+            } else if(correlationMode == CorrelationMode.SCALAR){
+                positionWeight = WifiMathHelper.calculateScalarRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
+            }else{
                 /*
-                * This is where the Scalar weight position calculation would have
-                * been included if it had been part of the prototype.
-                *
+                * Include further correlation modes here.
                 * */
             }
-            referencePosition = radioMapElement.getPosiReference().getReferencePosition();
+            posiReference = radioMapElement.getPosiReference();
+            referencePosition = posiReference.getReferencePosition();
             preResults.add(new WifiPositionResult(referencePosition.getX(), referencePosition.getY(), referencePosition.getZ(),
-                    true, positionWeight, wifiBlockAppTimestamp));
+                    true, positionWeight, wifiBlockAppTimestamp, posiReference));
         }
 
         Collections.sort(preResults);

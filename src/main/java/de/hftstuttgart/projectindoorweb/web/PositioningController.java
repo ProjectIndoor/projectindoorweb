@@ -98,6 +98,16 @@ public class PositioningController {
 
     }
 
+    @ApiOperation(value = "Get all current evaluation entries in the database", nickname = "position/getAllEvaalEntries",
+            notes = TransmissionConstants.GET_ALL_EVAAL_FILES_NOTE)
+    @RequestMapping(path = "/getAllEvaalEntries", method = GET)
+    public ResponseEntity<List<GetAllEvaalEntries>> getAllEvaalEntries() {
+
+        List<GetAllEvaalEntries> result = restTransmissionService.getAllEvaalEntries();
+        return new ResponseEntity<List<GetAllEvaalEntries>>(result, HttpStatus.OK);
+
+    }
+
     @ApiOperation(value = "Get Radio Maps for building identifier.", nickname = "position/getRadioMapsForBuildingId",
             notes = TransmissionConstants.GET_EVALUATIONENTRIES_NOTE)
     @RequestMapping(path = "/getRadioMapsForBuildingId", method = GET)

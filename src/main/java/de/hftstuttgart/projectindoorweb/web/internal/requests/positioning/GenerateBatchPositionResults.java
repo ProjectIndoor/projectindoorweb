@@ -10,6 +10,7 @@ public class GenerateBatchPositionResults {
 
     private Long buildingIdentifier;
     private Long evalFileIdentifier;
+    private Long projectIdentifier;
     private long[] radioMapFileIdentifiers;
     private String algorithmType;
     private Set<SaveNewProjectParameters> projectParameters;
@@ -18,6 +19,7 @@ public class GenerateBatchPositionResults {
     @JsonCreator
     public GenerateBatchPositionResults(@JsonProperty("buildingIdentifier") Long buildingIdentifier,
                                         @JsonProperty("evaluationFile") Long evalFileIdentifier,
+                                        @JsonProperty(value = "projectIdentifier", required = false) Long projectIdentifier,
                                         @JsonProperty("radioMapFiles") long[] radioMapFileIdentifiers,
                                         @JsonProperty("algorithmType") String algorithmType,
                                         @JsonProperty("projectParameters") Set<SaveNewProjectParameters> projectParameters,
@@ -25,6 +27,7 @@ public class GenerateBatchPositionResults {
 
         this.buildingIdentifier = buildingIdentifier;
         this.evalFileIdentifier = evalFileIdentifier;
+        this.projectIdentifier = projectIdentifier;
         this.radioMapFileIdentifiers = radioMapFileIdentifiers;
         this.algorithmType = algorithmType;
         this.projectParameters = projectParameters;
@@ -37,6 +40,14 @@ public class GenerateBatchPositionResults {
 
     public void setBuildingIdentifier(Long buildingIdentifier) {
         this.buildingIdentifier = buildingIdentifier;
+    }
+
+    public Long getProjectIdentifier() {
+        return projectIdentifier;
+    }
+
+    public void setProjectIdentifier(Long projectIdentifier) {
+        this.projectIdentifier = projectIdentifier;
     }
 
     public Long getEvalFileIdentifier() {
