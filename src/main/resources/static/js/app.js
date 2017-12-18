@@ -740,7 +740,6 @@ function MapService() {
     var loadedCalcPos = [];
     var loadedRefs = [];
     var emptyPoints = [];
-    var emptyPathsLayer = {};
 
     // map objects
     var pathsLayerObject = {};
@@ -921,6 +920,13 @@ function MapService() {
                 ]
             ];
             lines.push(newLine);
+        },
+        clearMap: function () {
+            // empty arrays
+            lines.length = 0;
+            loadedCalcPos.length = 0;
+            loadedNoRefPos.length = 0;
+            loadedRefs.length = 0;
         }
     };
 }
@@ -1229,6 +1235,10 @@ function AlgorithmController($scope, dataService, calculationService, mapService
 
     // action for calculation button
     $scope.calculatePos = function () {
+        // clear map
+        mapService.clearMap();
+
+        // set choosen values for calculation
         calculationService.setRadiomaps($scope.radiomaps);
         calculationService.setAlgorithmAndParameters($scope.choosenAlgorithm);
         // run calculation and show results
