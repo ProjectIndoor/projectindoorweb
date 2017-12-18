@@ -1,0 +1,4 @@
+# Ignore resources
+evaluationfiles/* linguist-vendored
+radiomapfiles/* linguist-vendored
+src/main/resources/static/maps/* linguist-vendored
