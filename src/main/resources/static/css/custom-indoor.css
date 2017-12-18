@@ -128,10 +128,12 @@
 
     md-toast.md-success-toast-theme .md-toast-content {
         color: #99cc99;
+        text-align: center;
     }
 
     md-toast.md-error-toast-theme .md-toast-content {
         color: #f2777a;
+        text-align: center;
     }
 }
 
