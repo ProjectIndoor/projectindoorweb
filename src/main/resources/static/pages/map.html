@@ -9,6 +9,9 @@
 
     <md-content ng-controller="MapSettingsCtrl" layout-margin>
 
+        <!-- Toolbar view settings -->
+        <div ng-include="'pages/forms/map/view-settings.html'"></div>
+
         <!-- Toolbar map chooser -->
         <div ng-include="'pages/forms/map/map-chooser.html'"></div>
 
@@ -19,13 +22,13 @@
         <div ng-include="'pages/forms/map/algorithm-chooser.html'"></div>
 
         <!-- Save project field -->
-        <div layout="row" ng>
+        <div ng-show="projectShow()" layout="row" layout-align="end center">
             <md-input-container>
                 <label>Projectname</label>
-                <input/>
+                <input ng-model="projectData.projectName"/>
             </md-input-container>
 
-            <md-button class="md-button">
+            <md-button ng-click="saveProject()" class="md-button">
                 Save Project
             </md-button>
         </div>
@@ -35,6 +38,9 @@
 </md-sidenav>
 <!-- Actual map -->
 <openlayers id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()" custom-layers="true">
+    <ol-layer ol-layer-properties="pathsLayer()"></ol-layer>
     <ol-layer ol-layer-properties="map()"></ol-layer>
+    <ol-marker ng-repeat="calcPoint in calcPoints()" ol-marker-properties="calcPoint"></ol-marker>
     <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
+    <ol-marker ng-repeat="noRefCalcPoint in noRefCalcPoints()" ol-marker-properties="noRefCalcPoint"></ol-marker>
 </openlayers>

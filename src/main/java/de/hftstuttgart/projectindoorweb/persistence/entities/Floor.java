@@ -12,22 +12,25 @@ public class Floor {
 
     private int level;
 
+    private String floorName;
     private String floorMapUrl;
+    private String floorMapPath;
 
     @OneToMany(targetEntity = PosiReference.class, mappedBy = "floor")
     private List<PosiReference> posiReferences;
 
     protected Floor(){}
 
-
-    public Floor(int level, String floorMapUrl) {
+    public Floor(int level, String floorName, String floorMapUrl, String floorMapPath, List<PosiReference> posiReferences) {
         this.level = level;
+        this.floorName = floorName;
         this.floorMapUrl = floorMapUrl;
+        this.floorMapPath = floorMapPath;
+        this.posiReferences = posiReferences;
     }
 
     public Floor(int level) {
         this.level = level;
-        this.floorMapUrl = null;
     }
 
     public Long getId() {
@@ -42,12 +45,28 @@ public class Floor {
         this.level = level;
     }
 
+    public String getFloorName() {
+        return floorName;
+    }
+
+    public void setFloorName(String floorName) {
+        this.floorName = floorName;
+    }
+
     public String getFloorMapUrl() {
         return floorMapUrl;
     }
 
     public void setFloorMapUrl(String floorMapUrl) {
         this.floorMapUrl = floorMapUrl;
+    }
+
+    public String getFloorMapPath() {
+        return floorMapPath;
+    }
+
+    public void setFloorMapPath(String floorMapPath) {
+        this.floorMapPath = floorMapPath;
     }
 
     public List<PosiReference> getPosiReferences() {

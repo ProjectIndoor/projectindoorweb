@@ -9,40 +9,35 @@
             <i class="material-icons">insert_drive_file</i>
         </md-card-title-media>
     </md-card-title>
-    <md-card-content layout="column">
+    <form name="radioMapForm">
+        <md-card-content layout="column">
+            <!-- Building chooser -->
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Building</label>
+                <md-select ng-model="logFileParameters.buildingIdentifier" required name="buildingIdentifier">
+                    <md-option ng-repeat="building in buildings()" value="{{building.buildingId}}">
+                        {{building.buildingName}}
+                    </md-option>
+                </md-select>
+                <div ng-messages="radioMapForm.buildingIdentifier.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
 
-        <!--Display Success/Error message-->
-        <div ng-show="uploadStatus" class="{{fileUpload}}">{{logMessage}}</div>
+            <!-- File chooser -->
+            <md-input-container flex="100">
+                <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
+                       aria-label="logFileUpload"/>
+                <md-button class="md-button" ng-click="uploadLogClick()">
+                    Choose File
+                </md-button>
+                <p id="fileNameField">{{fileUploaded}}</p>
+            </md-input-container>
 
-        <!-- Name field -->
-        <md-input-container flex="100">
-            <label>Name</label>
-            <input ng-model="fileName"/>
-        </md-input-container>
+        </md-card-content>
 
-        <!-- Building chooser -->
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Building</label>
-            <md-select ng-model="logFileParameters.buildingIdentifier">
-                <md-option ng-repeat="building in buildings" value="{{building.id}}">{{building.buildingName}}
-                </md-option>
-            </md-select>
-        </md-input-container>
-
-        <!-- File chooser -->
-        <md-input-container flex="100">
-            <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
-                   aria-label="logFileUpload"/>
-            <md-button class="md-button" ng-click="upload()">
-                Choose File
-            </md-button>
-            <p id="fileNameField">{{fileUploaded}}</p>
-        </md-input-container>
-
-
-    </md-card-content>
-
-    <md-card-actions layout="row" layout-align="end center">
-        <md-button ng-click="uploadFiles()">Upload</md-button>
-    </md-card-actions>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button type="submit" ng-click="uploadFiles()">Upload</md-button>
+        </md-card-actions>
+    </form>
 </md-card>
