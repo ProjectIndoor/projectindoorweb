@@ -15,7 +15,8 @@ public class WifiPositionResult extends PositionResult implements Comparable<Wif
     @ManyToOne(targetEntity = PosiReference.class, cascade = CascadeType.ALL)
     private PosiReference posiReference;
 
-    protected WifiPositionResult(){}
+    protected WifiPositionResult() {
+    }
 
     public WifiPositionResult(double x, double y, double z, boolean wgs84, double weight) {
         super(x, y, z, wgs84);
@@ -27,6 +28,15 @@ public class WifiPositionResult extends PositionResult implements Comparable<Wif
         super(x, y, z, wgs84);
         this.weight = weight;
         this.rssiSignalsAppTimestamp = rssiSignalsAppTimestamp;
+    }
+
+    public WifiPositionResult(double x, double y, double z, boolean wgs84, double weight, double rssiSignalsAppTimestamp,
+                              PosiReference posiReference) {
+
+        super(x, y, z, wgs84);
+        this.weight = weight;
+        this.rssiSignalsAppTimestamp = rssiSignalsAppTimestamp;
+        this.posiReference = posiReference;
     }
 
     public double getRssiSignalsAppTimestamp() {
@@ -55,9 +65,9 @@ public class WifiPositionResult extends PositionResult implements Comparable<Wif
 
     @Override
     public int compareTo(WifiPositionResult other) {
-        if(this.weight > other.weight){
+        if (this.weight > other.weight) {
             return -1;
-        }else if(this.weight < other.weight){
+        } else if (this.weight < other.weight) {
             return 1;
         }
         return 0;

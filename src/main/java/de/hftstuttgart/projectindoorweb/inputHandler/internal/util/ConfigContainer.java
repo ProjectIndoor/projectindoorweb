@@ -12,6 +12,8 @@ public class ConfigContainer {
     public static final double WEIGHT_RESULT_2 = 0.9;
     public static final double WEIGHT_RESULT_3 = 0.9;
     public static final double POSI_REFERENCE_MAX_TIME_DELTA_MILLIS = 3000;
+    public static final double LOWEST_RSSI_IN_SCALAR_MODE = -95.0;
+    public static final double RADIO_PROPAGATION_EXPONENT = 4.0;
 
     public static final int POSI_MAX_INTERVAL_END = Integer.MAX_VALUE;
     public static final int NUM_REFERENCES_IN_WEIGHTED_MODE = 3;

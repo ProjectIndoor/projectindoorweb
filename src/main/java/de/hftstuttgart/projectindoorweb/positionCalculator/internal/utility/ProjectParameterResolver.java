@@ -71,13 +71,11 @@ public class ProjectParameterResolver {
     private static CorrelationMode getCorrelationMode(String parameterValue){
 
         switch (parameterValue.toLowerCase()){
-            /*
-            * Currently (as of December 8th, 2017), our backend knows only the Euclidian correlation mode as
-            * this was the only correlation mode implemented in the prototype.
-            *
-            * */
+
             case "euclidian": return CorrelationMode.EUCLIDIAN;
+            case "scalar": return CorrelationMode.SCALAR;
             default: return null;
+
         }
 
     }

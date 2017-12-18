@@ -60,7 +60,7 @@ public class EvaalFileHelper {
     public static RadioMapElement mergeRadioMapElements(RadioMapElement a, RadioMapElement b) {
 
         int someAverage = a.getPosiReference().getAvgNumber() + b.getPosiReference().getAvgNumber();
-        Map<String, Double[]> averagedMacSignalStrength = new HashMap<>();
+        Map<String, Double[]> averagedMacSignalStrength = new LinkedHashMap<>();
 
         RadioMapElement result;
         String macAddress;
@@ -184,8 +184,8 @@ public class EvaalFileHelper {
     public static List<RssiSignal> retrieveAveragedReadings(List<RssiSignal> relevantReadings) {
 
 
-        Map<String, List<RssiSignal>> rawReadingsForMacs = new HashMap<>();
-        Map<String, RssiSignal> averagedReadingForMac = new HashMap<>();
+        Map<String, List<RssiSignal>> rawReadingsForMacs = new LinkedHashMap<>();
+        Map<String, RssiSignal> averagedReadingForMac = new LinkedHashMap<>();
 
         for (RssiSignal signal : relevantReadings) {
             String macAddress = signal.getWifiAccessPoint().getMacAddress();
@@ -369,7 +369,7 @@ public class EvaalFileHelper {
 
     private static Map<String, Double> retrieveRssiSignalsForWifiBlock(List<String> wifiBlock) {
 
-        Map<String, Double> result = new HashMap<>();
+        Map<String, Double> result = new LinkedHashMap<>();
 
         String mac;
         double rssiSignalStrength;
@@ -390,7 +390,7 @@ public class EvaalFileHelper {
 
     private static Map<String, Integer> retrieveNumMacsForWifiBlock(List<String> wifiBlock) {
 
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Integer> result = new LinkedHashMap<>();
 
         String mac;
         for (String currentWifiLine :
