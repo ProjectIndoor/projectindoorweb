@@ -24,14 +24,30 @@
                 </div>
             </md-input-container>
 
-            <!-- File chooser -->
-            <md-input-container flex="100">
+            <!-- File chooser radiomap log -->
+            <md-input-container flex="100" layout="row">
                 <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
                        aria-label="logFileUpload"/>
                 <md-button class="md-button" ng-click="uploadLogClick()">
                     Choose File
                 </md-button>
                 <p id="fileNameField">{{fileUploaded}}</p>
+            </md-input-container>
+
+            <!-- Option to add an optional transformedPointsFile  -->
+            <md-switch ng-model="toggleTransformedPoints" aria-label="Transformed points file">
+                Add a transformed points file
+            </md-switch>
+
+            <!-- File chooser transformed points -->
+            <md-input-container ng-if="toggleTransformedPoints" flex="100" layout="row">
+                <input id="transformedPointsFile" name="tpFile" class="ng-hide" type="file"
+                       ng-files="getTpFiles($files)"
+                       aria-label="transformedPointsUpload"/>
+                <md-button class="md-button" ng-click="uploadTransformedClick()">
+                    Choose File
+                </md-button>
+                <p id="fileNameTransformedPoints">{{tpFileUploaded}}</p>
             </md-input-container>
 
         </md-card-content>

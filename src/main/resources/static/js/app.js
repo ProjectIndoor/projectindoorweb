@@ -170,7 +170,7 @@ function UploadService($http, $mdToast) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            if (radioMapSet.radioMapFiles[0] == null) {
+            if (radioMapSet.radioMapFiles[0] == null && radioMapSet.tpFiles[0] == null) {
                 if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
                     showToast(logMessage, "error-toast");
@@ -180,6 +180,9 @@ function UploadService($http, $mdToast) {
                 var formData = new FormData();
                 formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
                 formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
+                if (radioMapSet.tpFiles[0] == null) {
+                    formData.append('transformedPointsFile', radioMapSet.tpFiles[0]);
+                }
 
                 $http({
                     method: 'POST',
@@ -1312,6 +1315,9 @@ function LogImportController($scope, uploadService, dataService) {
     $scope.uploadLogClick = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
+    $scope.uploadTransformedClick = function () {
+        angular.element(document.querySelector('#transformedPointsFile')).click();
+    };
 
     dataService.loadAllBuildings();
 
@@ -1321,14 +1327,22 @@ function LogImportController($scope, uploadService, dataService) {
     // parameters needed to upload log file
     $scope.logFileParameters = {
         buildingIdentifier: 0,
-        radioMapFiles: []
+        radioMapFiles: [],
+        tpFiles: []
     };
 
     var formData = new FormData();
 
     $scope.getTheFiles = function ($files) {
         $scope.logFileParameters.radioMapFiles = $files;
-        $scope.fileUploaded = "File: " + $files[0].name;
+        $scope.fileUploaded = $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    $scope.getTpFiles = function ($files) {
+        $scope.logFileParameters.tpFiles = $files;
+        $scope.tpFileUploaded = $files[0].name;
         // notify changed scope to display file name
         $scope.$apply();
     };
