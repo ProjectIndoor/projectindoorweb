@@ -1053,6 +1053,7 @@ function BuildingImportController($scope, uploadService, dataService) {
         }
     };
 
+    // pre populated data
     $scope.buildingCAR = {
         buildingName: "CAR2",
         numberOfFloors: 1,
@@ -1073,7 +1074,13 @@ function BuildingImportController($scope, uploadService, dataService) {
         southWestAnchor: {
             latitude: 40.312959,
             longitude: -3.484038
-        }
+        },
+        buildingCenterPoint: {
+            latitude: 48.77966682484418,
+            longitude: 9.1738866322615
+        },
+        rotationAngle: 0.15318405778903832,
+        metersPerPixel: 0.05207600
     };
 
     $scope.building = {
@@ -1096,13 +1103,7 @@ function BuildingImportController($scope, uploadService, dataService) {
         southWestAnchor: {
             latitude: 48.77966682484418,
             longitude: 9.1738866322615
-        },
-        floors: [
-            {
-                id: 1,
-                mapUrl: "/maps/hft_2_floor_3.png"
-            }
-        ]
+        }
     };
 
     $scope.uploadBuildingData = function () {
