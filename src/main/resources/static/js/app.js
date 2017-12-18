@@ -780,14 +780,19 @@ function MapService() {
             // return copy of list
             return [].concat(calculatedPoints);
         },
-        addCalcPoint: function (x, y) {
+        addCalcPoint: function (x, y, error) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = mirrorY(y);
             // create a new calculated point
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style
+                style: calc_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>error: " + error + " m</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedCalcPos.push(newCalc)
         },
@@ -809,7 +814,12 @@ function MapService() {
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style
+                style: calc_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>Error: No reference available</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedNoRefPos.push(newCalc)
         },
@@ -831,7 +841,12 @@ function MapService() {
             var newRef = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: ref_marker_style
+                style: ref_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedRefs.push(newRef)
         },
@@ -1200,19 +1215,27 @@ function AlgorithmController($scope, dataService, calculationService, mapService
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
+            var refCounter = 0;
+            var errorSum = 0;
+
             for (var i = 0; i < posis.length; i++) {
                 var calcP = posis[i].calculatedPosition;
                 var refP = posis[i].referencePosition;
+                var error = posis[i].distanceInMeters;
 
                 // if no reference is available put points in a separate list
-                if (refP != null) {
-                    mapService.addCalcPoint(calcP.x, calcP.y);
+                if (refP !== null) {
+                    // only when a ref is available error is considered
+                    errorSum += error;
+                    refCounter++;
+                    // after sum error is rounded for a nicer displayed result
+                    error = Math.round(error * 10) / 10;
+                    mapService.addCalcPoint(calcP.x, calcP.y, error);
                     mapService.addRefPoint(refP.x, refP.y);
                     mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
                 } else {
                     mapService.addNoRefCalcPoint(calcP.x, calcP.y)
                 }
-
             }
         });
 
