@@ -54,6 +54,12 @@
     z-index: 0;
 }
 
+/* make openlayers directive maps use the whole screen */
+.angular-openlayers-map {
+    height: 100% !important;
+    width: 100%;
+}
+
 .indoorFooter {
     position: absolute;
     bottom: 0px;
@@ -128,10 +134,12 @@
 
     md-toast.md-success-toast-theme .md-toast-content {
         color: #99cc99;
+        text-align: center;
     }
 
     md-toast.md-error-toast-theme .md-toast-content {
         color: #f2777a;
+        text-align: center;
     }
 }
 

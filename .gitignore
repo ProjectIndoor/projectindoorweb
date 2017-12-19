@@ -18,5 +18,8 @@ gradle-app.setting
 # External client JS/CSS assets
 /src/main/resources/static/assets/vendor/
 
+# Floor map directory during development
+/src/main/resources/static/floor_maps/
+
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties

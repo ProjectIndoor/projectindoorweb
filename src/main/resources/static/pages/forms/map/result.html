@@ -1,0 +1,10 @@
+<md-card ng-show="resultShow()" ng-controller="ResultCtrl" class="md-whiteframe-3dp" md-theme="default">
+    <md-card-content>
+        <p>Error sum: {{result().errorSum}} m</p>
+        <p>Average error: {{result().averageError}} m</p>
+        <p>Median error: {{result().medianError}} m</p>
+        <p>Third quartile error: {{result().thirdQuartilError}} m</p>
+        <p>Max error: {{result().maxError}} m</p>
+
+    </md-card-content>
+</md-card>

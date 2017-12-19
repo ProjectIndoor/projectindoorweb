@@ -16,7 +16,13 @@ import java.util.stream.Collectors;
 /**
  * Class that merges an Evaal-Logilfe with empty POSI-entries with a given list of reference points.
  */
-public class POSILogMerger {
+public final class POSILogMerger {
+
+    /**
+     * Private constructor to prevent creating an object.
+     */
+    private POSILogMerger() {
+    }
 
     /**
      * Reads the file that contains the reference-points in pixel-coordinates.
@@ -35,8 +41,8 @@ public class POSILogMerger {
                 String pointNumber = elements[0];
                 double coord1 = Double.valueOf(elements[1]);
                 double coord2 = Double.valueOf(elements[2]);
-                double building = Double.valueOf(elements[3]);
-                double floor = Double.valueOf(elements[4]);
+                int building = Integer.valueOf(elements[3]);
+                int floor = Integer.valueOf(elements[4]);
 
                 return new XYPoint(pointNumber, new LocalXYCoord(coord1, coord2), building, floor);
 
@@ -87,7 +93,7 @@ public class POSILogMerger {
         for (int i = 0; i < posiLines.size(); i++) {
             String[] line = posiLines.get(i).split(";");
             if (line[0].equals("POSI") && line.length == 7) {
-                LLPoint p = (LLPoint) transformedPoints.get(i);
+                LLPoint p = transformedPoints.get(i);
                 line[3] = Double.toString(p.getCoords().latitude);
                 line[4] = Double.toString(p.getCoords().longitude);
                 line[5] = Double.toString(p.getFloor());

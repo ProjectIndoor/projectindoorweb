@@ -141,9 +141,11 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 // Upload service (send data to the server e.g. log files)
 function UploadService($http, $mdToast) {
     //api endpoints
-    var buildingUploadUrl = '/building/addNewBuilding';
-    var logFileUploadUrl = '/position/processRadioMapFiles';
-    var evalFileUploadUrl = '/position/processEvalFiles';
+    var buildingUploadUrl = 'building/addNewBuilding';
+    var logFileUploadUrl = 'position/processRadioMapFiles';
+    var evalFileUploadUrl = 'position/processEvalFiles';
+    var floorUploadUrl = 'building/addFloorToBuilding';
+
 
     // service functions
     return {
@@ -168,7 +170,7 @@ function UploadService($http, $mdToast) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            if (radioMapSet.radioMapFiles[0] == null) {
+            if (radioMapSet.radioMapFiles[0] == null && radioMapSet.tpFiles[0] == null) {
                 if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
                     showToast(logMessage, "error-toast");
@@ -178,6 +180,9 @@ function UploadService($http, $mdToast) {
                 var formData = new FormData();
                 formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
                 formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
+                if (radioMapSet.tpFiles[0] == null) {
+                    formData.append('transformedPointsFile', radioMapSet.tpFiles[0]);
+                }
 
                 $http({
                     method: 'POST',
@@ -232,6 +237,39 @@ function UploadService($http, $mdToast) {
                     showToast(logMessage, "error-toast");
                 });
             }
+        },
+        uploadFloorMap: function (floorSet) {
+            if (floorSet.floorFiles[0] == null) {
+                logMessage = "Please choose an image file to upload";
+                showToast(logMessage, "error-toast");
+            } else {
+                // body content (floor file, floorId and buildingId)
+                var formData = new FormData();
+                formData.append('buildingIdentifier', floorSet.building.buildingId);
+                formData.append('floorIdentifier', floorSet.floorIdentifier);
+                formData.append('floorName', floorSet.floorName);
+                formData.append('floorMapFile', floorSet.floorFiles[0]);
+
+                $http({
+                    method: 'POST',
+                    url: floorUploadUrl,
+                    data: formData,
+                    transformRequest: function (data, headersGetterFunction) {
+                        return data;
+                    },
+                    headers: {
+                        'Content-Type': undefined
+                    }
+                }).then(function successCallback(response) {
+                    // success
+                    logMessage = "Floor map uploaded successfully!";
+                    showToast(logMessage, "success-toast");
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while uploading floor map";
+                    showToast(logMessage, "error-toast");
+                });
+            }
         }
     };
 
@@ -252,15 +290,16 @@ function UploadService($http, $mdToast) {
 app.factory("uploadService", UploadService);
 
 // Data service (retrieve data from server e.g. get Buildings)
-function DataService($http) {
+function DataService($http, $mdToast) {
     // API endpoints
-    var getBuildingsUrl = '/building/getAllBuildings';
-    var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
-    var getRadiomapsUrl = '/position/getRadioMapsForBuildingId';
-    var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
-    var deleteBuildingUrl = '/building/deleteSelectedBuilding';
-    var deleteEvaalUrl = '/position/deleteSelectedEvaalFile';
-    var deleteProjectUrl = '/project/deleteSelectedProject';
+    var getBuildingsUrl = 'building/getAllBuildings';
+    var getEvalFilesUrl = 'position/getEvalFilesForBuildingId';
+    var getRadiomapsUrl = 'position/getRadioMapsForBuildingId';
+    var getAlgorithmTypesUrl = 'project/getAllAlgorithmTypes';
+    var getAllEvaalFilesUrl = 'position/getAllEvaalEntries';
+    var deleteBuildingUrl = 'building/deleteSelectedBuilding';
+    var deleteEvaalUrl = 'position/deleteSelectedEvaalFile';
+    var deleteProjectUrl = 'project/deleteSelectedProject';
 
 
     // Cache
@@ -268,6 +307,7 @@ function DataService($http) {
     var evalFiles = [];
     var radiomaps = [];
     var algorithms = [];
+    var evaalFiles = [];
 
     // Service functions
     return {
@@ -281,39 +321,6 @@ function DataService($http) {
                 console.log(response);*/
                 // save response in cache
                 angular.copy(response.data, buildings);
-                //TODO remove fake floors
-                buildings.forEach(function (building) {
-                    building.floors = [
-                        {
-                            floorNo: 0,
-                            url: "/maps/hft_2_floor_0.png"
-                        },
-                        {
-                            floorNo: 1,
-                            url: "/maps/hft_2_floor_1.png"
-                        },
-                        {
-                            floorNo: 2,
-                            url: "/maps/hft_2_floor_2.png"
-                        },
-                        {
-                            floorNo: 3,
-                            url: "/maps/hft_2_floor_3.png"
-                        },
-                        {
-                            floorNo: 4,
-                            url: "/maps/hft_2_floor_4.png"
-                        },
-                        {
-                            floorNo: 5,
-                            url: "/maps/hft_2_floor_5.png"
-                        },
-                        {
-                            floorNo: 6,
-                            url: "/maps/car.png"
-                        }
-                    ];
-                });
 
                 // The return value gets picked up by the then in the controller.
                 return response.data;
@@ -368,18 +375,9 @@ function DataService($http) {
             return promise;
         },
         loadAllEvaals: function () {
-            //TODO replace with all evaal files
-            var config = {
-                params: {
-                    buildingIdentifier: 1
-                }
-            };
-            var promise = $http.get(getEvalFilesUrl, config).then(function (response) {
-                console.log("Retrieved eval files:");
-                console.log(response);
-
+            var promise = $http.get(getAllEvaalFilesUrl).then(function (response) {
                 // save response in cache
-                angular.copy(response.data, evalFiles);
+                angular.copy(response.data, evaalFiles);
 
                 return response.data;
             });
@@ -392,9 +390,17 @@ function DataService($http) {
                     buildingIdentifier: buildingId
                 }
             };
-            var promise = $http.delete(deleteBuildingUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteBuildingUrl, config)
+                .then(function (response) {
+                    logMessage = "Building deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting building:" + buildingId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         deleteEvaalFile: function (evaalFileId) {
@@ -403,9 +409,17 @@ function DataService($http) {
                     evaalFileIdentifier: evaalFileId
                 }
             };
-            var promise = $http.delete(deleteEvaalUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteEvaalUrl, config)
+                .then(function (response) {
+                    logMessage = "Evaal entry deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting evaal entry:" + evaalFileId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         deleteProject: function (projectId) {
@@ -414,9 +428,17 @@ function DataService($http) {
                     projectIdentifier: projectId
                 }
             };
-            var promise = $http.delete(deleteProjectUrl, config).then(function (response) {
-                return response.data;
-            });
+            var promise = $http.delete(deleteProjectUrl, config)
+                .then(function (response) {
+                    logMessage = "Project deleted successfully!";
+                    showToast(logMessage, "success-toast");
+                    // return response data with promise
+                    return response.data;
+                }, function errorCallback(response) {
+                    // failure
+                    logMessage = "Error while deleting project:" + projectId;
+                    showToast(logMessage, "error-toast");
+                });
             return promise;
         },
         // access functions
@@ -437,9 +459,21 @@ function DataService($http) {
             return [].concat(algorithms);
         },
         getAllEvaals: function () {
-            //TODO replace with all evaal files
-            return [].concat(evalFiles);
+            return [].concat(evaalFiles);
         }
+    };
+
+    // private functions
+    function showToast(logMessage, customTheme) {
+        var pinTo = "bottom center";
+
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(logMessage)
+                .position(pinTo)
+                .hideDelay(3000)
+                .theme(customTheme)
+        );
     }
 
 }
@@ -449,8 +483,8 @@ app.factory("dataService", DataService);
 // Calculation service (setup and call position calculations)
 function CalculationService($http) {
     //api endpoints
-    var generatePositionsUrl = '/position/generateBatchPositionResults';
-    var createProjectUrl = '/project/saveNewProject';
+    var generatePositionsUrl = 'position/generateBatchPositionResults';
+    var createProjectUrl = 'project/saveNewProject';
 
     // properties
     var currentBuilding = {};
@@ -459,6 +493,9 @@ function CalculationService($http) {
     var algorithmType;
     var projectParameters;
     var asPixel = true;
+
+    // result cache
+    var result;
 
     // loaded projectInfo
     var loadedProject = {
@@ -479,6 +516,9 @@ function CalculationService($http) {
         },
         isAlgorithmReady: function () {
             return currentBuilding && evalFile && radioMapFileIds && algorithmType && projectParameters;
+        },
+        hasResult: function () {
+            return result;
         },
         // set and get building
         getCurrentBuilding: function () {
@@ -527,6 +567,26 @@ function CalculationService($http) {
             loadedProject.projectName = project.projectName;
             loadedProject.projectId = project.projectId;
             console.log("Building Changed: " + currentBuilding);
+        },
+        // set and get results
+        getResult: function () {
+            return result;
+        },
+        setResult: function (sum, average, median, thirdQuartil, max) {
+            // Round saved result
+            var rSum = Math.round(sum * 100) / 100;
+            var rAverage = Math.round(average * 100) / 100;
+            var rMedian = Math.round(median * 100) / 100;
+            var rThirdQuartil = Math.round(thirdQuartil * 100) / 100;
+            var rMax = Math.round(max * 100) / 100;
+
+            result = {
+                errorSum: rSum,
+                averageError: rAverage,
+                medianError: rMedian,
+                thirdQuartilError: rThirdQuartil,
+                maxError: rMax
+            }
         },
         // API calls
         generatePositions: function () {
@@ -589,8 +649,8 @@ app.factory("calculationService", CalculationService);
 // Project service (create, persist and load projects)
 function ProjectService($http) {
     //api endpoints
-    var allProjUrl = '/project/getAllProjects';
-    var projInfoUrl = '/project/loadSelectedProject';
+    var allProjUrl = 'project/getAllProjects';
+    var projInfoUrl = 'project/loadSelectedProject';
 
     // project properties
     var projectId;
@@ -682,7 +742,6 @@ function MapService() {
     var loadedCalcPos = [];
     var loadedRefs = [];
     var emptyPoints = [];
-    var emptyPathsLayer = {};
 
     // map objects
     var pathsLayerObject = {};
@@ -709,7 +768,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: '/icons/calc-marker.png'
+                src: 'icons/calc-marker.png'
             }
         }
     };
@@ -720,7 +779,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: '/icons/ref-marker.png'
+                src: 'icons/ref-marker.png'
             }
         }
     };
@@ -741,14 +800,19 @@ function MapService() {
             // return copy of list
             return [].concat(calculatedPoints);
         },
-        addCalcPoint: function (x, y) {
+        addCalcPoint: function (x, y, error) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = mirrorY(y);
             // create a new calculated point
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style
+                style: calc_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>error: " + error + " m</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedCalcPos.push(newCalc)
         },
@@ -770,7 +834,12 @@ function MapService() {
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style
+                style: calc_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>Error: No reference available</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedNoRefPos.push(newCalc)
         },
@@ -792,7 +861,12 @@ function MapService() {
             var newRef = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: ref_marker_style
+                style: ref_marker_style,
+                label: {
+                    message: "<p>X: " + x + "</p><p>Y: " + y + "</p>",
+                    show: false,
+                    showOnMouseOver: true
+                }
             };
             loadedRefs.push(newRef)
         },
@@ -848,6 +922,13 @@ function MapService() {
                 ]
             ];
             lines.push(newLine);
+        },
+        clearMap: function () {
+            // empty arrays
+            lines.length = 0;
+            loadedCalcPos.length = 0;
+            loadedNoRefPos.length = 0;
+            loadedRefs.length = 0;
         }
     };
 }
@@ -937,7 +1018,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
 // controller which handles the map
 function MapController($scope, mapService) {
     // example map service setup
-    mapService.setMap("/maps/hft_2_floor_3.png", 3688, 2304);
+    mapService.setMap("maps/hft_2_floor_3.png", 3688, 2304);
 
     // setup usage of map service
     angular.extend($scope, {
@@ -974,6 +1055,7 @@ function BuildingImportController($scope, uploadService, dataService) {
         }
     };
 
+    // pre populated data
     $scope.buildingCAR = {
         buildingName: "CAR2",
         numberOfFloors: 1,
@@ -994,7 +1076,13 @@ function BuildingImportController($scope, uploadService, dataService) {
         southWestAnchor: {
             latitude: 40.312959,
             longitude: -3.484038
-        }
+        },
+        buildingCenterPoint: {
+            latitude: 48.77966682484418,
+            longitude: 9.1738866322615
+        },
+        rotationAngle: 0.15318405778903832,
+        metersPerPixel: 0.05207600
     };
 
     $scope.building = {
@@ -1017,13 +1105,7 @@ function BuildingImportController($scope, uploadService, dataService) {
         southWestAnchor: {
             latitude: 48.77966682484418,
             longitude: 9.1738866322615
-        },
-        floors: [
-            {
-                id: 1,
-                mapUrl: "/maps/hft_2_floor_3.png"
-            }
-        ]
+        }
     };
 
     $scope.uploadBuildingData = function () {
@@ -1055,8 +1137,13 @@ function BuildingController($scope, dataService, calculationService, mapService)
     //function to choose correct floor list
     $scope.floors = function () {
         if ($scope.selectedBuilding) {
-            return $scope.selectedBuilding.floors
+            return $scope.selectedBuilding.buildingFloors
         }
+    };
+
+    //function to use either floor name or level
+    $scope.resolveNameOrLevel = function (floor) {
+        return floor.floorName || floor.floorLevel;
     };
 
     // enumeration function
@@ -1069,7 +1156,7 @@ function BuildingController($scope, dataService, calculationService, mapService)
 
     $scope.setBuilding = function () {
         // update Map to new building
-        mapService.setMap($scope.selectedFloor.url, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
+        mapService.setMap($scope.selectedFloor.floorMapUrl, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
         calculationService.setCalculationBuilding($scope.selectedBuilding);
         // load building related evaluation files and radiomaps
@@ -1151,25 +1238,57 @@ function AlgorithmController($scope, dataService, calculationService, mapService
 
     // action for calculation button
     $scope.calculatePos = function () {
+        // clear map
+        mapService.clearMap();
+
+        // set choosen values for calculation
         calculationService.setRadiomaps($scope.radiomaps);
         calculationService.setAlgorithmAndParameters($scope.choosenAlgorithm);
         // run calculation and show results
         calculationService.generatePositions().then(function (data) {
             var posis = data;
+            var errorList = [];
+            var refCounter = 0;
+            var errorSum = 0;
+
             for (var i = 0; i < posis.length; i++) {
                 var calcP = posis[i].calculatedPosition;
                 var refP = posis[i].referencePosition;
+                var error = posis[i].distanceInMeters;
 
                 // if no reference is available put points in a separate list
-                if (refP != null) {
-                    mapService.addCalcPoint(calcP.x, calcP.y);
+                if (refP !== null) {
+                    // only when a ref is available error is considered
+                    errorList.push(error);
+                    errorSum += error;
+                    refCounter++;
+                    // after sum error is rounded for a nicer displayed result
+                    error = Math.round(error * 10) / 10;
+                    mapService.addCalcPoint(calcP.x, calcP.y, error);
                     mapService.addRefPoint(refP.x, refP.y);
                     mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
                 } else {
                     mapService.addNoRefCalcPoint(calcP.x, calcP.y)
                 }
-
             }
+
+            // sort the errors
+            errorList.sort(function (a, b) {
+                return a - b;
+            });
+
+            // get or calculate result values
+            var medianIndex = Math.round(errorList.length / 2);
+            var thirdQuartilIndex = Math.round((errorList.length / 4) * 3);
+
+            var medianError = errorList[medianIndex];
+            var thirdQuartilError = errorList[thirdQuartilIndex];
+            var averageError = errorSum / refCounter;
+            var maxError = errorList.pop();
+
+
+            // set results in calculation service
+            calculationService.setResult(errorSum, averageError, medianError, thirdQuartilError, maxError);
         });
 
         mapService.displayLines();
@@ -1178,6 +1297,17 @@ function AlgorithmController($scope, dataService, calculationService, mapService
 
 app.controller('AlgorithmCtrl', AlgorithmController);
 
+// Track chooser controller
+function ResultController($scope, calculationService) {
+    // properties
+    $scope.result = calculationService.getResult;
+
+    // hide if not needed yet
+    $scope.resultShow = calculationService.hasResult;
+
+}
+
+app.controller('ResultCtrl', ResultController);
 
 /**
  * POST the uploaded log file
@@ -1202,6 +1332,9 @@ function LogImportController($scope, uploadService, dataService) {
     $scope.uploadLogClick = function () {
         angular.element(document.querySelector('#inputFile')).click();
     };
+    $scope.uploadTransformedClick = function () {
+        angular.element(document.querySelector('#transformedPointsFile')).click();
+    };
 
     dataService.loadAllBuildings();
 
@@ -1211,14 +1344,22 @@ function LogImportController($scope, uploadService, dataService) {
     // parameters needed to upload log file
     $scope.logFileParameters = {
         buildingIdentifier: 0,
-        radioMapFiles: []
+        radioMapFiles: [],
+        tpFiles: []
     };
 
     var formData = new FormData();
 
     $scope.getTheFiles = function ($files) {
         $scope.logFileParameters.radioMapFiles = $files;
-        $scope.fileUploaded = "File: " + $files[0].name;
+        $scope.fileUploaded = $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    $scope.getTpFiles = function ($files) {
+        $scope.logFileParameters.tpFiles = $files;
+        $scope.tpFileUploaded = $files[0].name;
         // notify changed scope to display file name
         $scope.$apply();
     };
@@ -1271,6 +1412,50 @@ function EvaluationImportController($scope, dataService, uploadService) {
 
 app.controller('EvalImportCtrl', EvaluationImportController);
 
+// controller which handles the floor import view
+function FloorImportController($scope, dataService, uploadService) {
+    // show file chooser on button click
+    $scope.floorUpload = function () {
+        angular.element(document.querySelector('#floorInputFile')).click();
+    };
+
+    dataService.getAllBuildings();
+
+    // buildings to show for chooser
+    $scope.buildings = dataService.getAllBuildings;
+
+    // parameters needed to upload eval file
+    $scope.floorParameters = {
+        buildingIdentifier: 0,
+        floorFiles: []
+    };
+
+    // show floors of a selected building
+    $scope.floors = function () {
+        if ($scope.floorParameters.building) {
+            return $scope.floorParameters.building.buildingFloors;
+        }
+    };
+
+    $scope.getFloorFiles = function ($files) {
+        $scope.floorParameters.floorFiles = $files;
+        $scope.fileUploaded = "File: " + $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    //The success or error message
+    $scope.uploadStatus = false;
+
+    //Post the file and parameters
+    $scope.uploadFloor = function () {
+        console.log($scope.floorParameters);
+        uploadService.uploadFloorMap($scope.floorParameters);
+    }
+}
+
+app.controller('FloorImportCtrl', FloorImportController);
+
 //Controller to handle the project edit view
 function ProjectController($scope, $mdPanel, projectService) {
     //load md panel
@@ -1291,7 +1476,7 @@ function ProjectController($scope, $mdPanel, projectService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/project.panel.html',
+            templateUrl: 'pages/panels/project.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
@@ -1336,7 +1521,7 @@ function BuildingEditController($scope, $mdPanel, dataService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/building.panel.html',
+            templateUrl: 'pages/panels/building.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
@@ -1379,7 +1564,7 @@ function EvaalEditController($scope, $mdPanel, dataService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/evaal.panel.html',
+            templateUrl: 'pages/panels/evaal.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
@@ -1417,9 +1602,11 @@ function ProjectDialogController(mdPanelRef, calculationService, dataService, pr
     };
 
     this.deleteProject = function (projectId) {
-        dataService.deleteProject(projectId);
+        // call delete and reload projects on success
+        dataService.deleteProject(projectId).then(function (data) {
+            projectService.loadAllProjects();
+        });
         this.closeDialog();
-        projectService.loadAllProjects();
     };
 
     this.closeDialog = function () {
@@ -1435,9 +1622,11 @@ function BuildingDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
 
     this.deleteBuilding = function (buildingId) {
-        dataService.deleteBuilding(buildingId);
+        // call delete and reload buildings on success
+        dataService.deleteBuilding(buildingId).then(function (data) {
+            dataService.loadAllBuildings();
+        });
         this.closeDialog();
-        dataService.loadAllBuildings();
     };
 
     this.closeDialog = function () {
@@ -1453,9 +1642,11 @@ function EvaalDialogController(mdPanelRef, dataService) {
     var panelRef = mdPanelRef;
 
     this.deleteEvaal = function (evaalId) {
-        dataService.deleteEvaalFile(evaalId);
+        // call delete and reload evaals on success
+        dataService.deleteEvaalFile(evaalId).then(function (data) {
+            dataService.loadAllEvaals();
+        });
         this.closeDialog();
-        dataService.loadAllEvaals();
     };
 
     this.closeDialog = function () {

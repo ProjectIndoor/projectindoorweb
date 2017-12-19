@@ -4,11 +4,11 @@ public class XYPoint {
 
     private String pointNumber;
     private LocalXYCoord coord;
-    private double floor;
-    private double building;
+    private int floor;
+    private int building;
 
 
-    public XYPoint(String pointNumber, LocalXYCoord coord, double building, double floor) {
+    public XYPoint(String pointNumber, LocalXYCoord coord, int building, int floor) {
         this.pointNumber = pointNumber;
         this.coord = coord;
         this.building = building;
@@ -23,11 +23,11 @@ public class XYPoint {
         return pointNumber;
     }
 
-    public double getBuilding() {
+    public int getBuilding() {
         return building;
     }
 
-    public double getFloor() {
+    public int getFloor() {
         return floor;
     }
 }

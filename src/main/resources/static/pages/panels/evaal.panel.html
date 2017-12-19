@@ -9,12 +9,12 @@
         <md-list>
             <md-list-item>
                 <p>Evaal File Name:</p>
-                <p class="md-secondary">{{ ctrl.evaal.evaluationEntryName }}</p>
+                <p class="md-secondary">{{ ctrl.evaal.fileName }}</p>
             </md-list-item>
 
             <md-list-item>
                 <p>Evaal File Id:</p>
-                <p class="md-secondary">{{ ctrl.evaal.id }}</p>
+                <p class="md-secondary">{{ ctrl.evaal.evaalFileId }}</p>
             </md-list-item>
 
             <md-list-item>
@@ -25,7 +25,7 @@
     </div>
 
     <div layout="row" class="dialog-button">
-        <md-button flex ng-click="ctrl.deleteEvaal(ctrl.evaal.id)">
+        <md-button flex ng-click="ctrl.deleteEvaal(ctrl.evaal.evaalFileId)">
             Delete
         </md-button>
         <md-button md-autofocus flex class="md-primary" ng-click="ctrl.closeDialog()">

@@ -13,8 +13,8 @@
         <md-list-item ng-repeat="evaalFile in evaalFiles()" ng-click="showEvaalInfo(evaalFile)"
                       class="md-2-line noright">
             <div class="md-list-item-text">
-                <h3>{{ evaalFile.evaluationEntryName }}</h3>
-                <p>{{ evaalFile.id }}</p>
+                <h3>{{ evaalFile.fileName }}</h3>
+                <p>{{ evaalFile.type }}</p>
             </div>
             <div class="layout-margin">
                 <i class="material-icons">visibility</i>
