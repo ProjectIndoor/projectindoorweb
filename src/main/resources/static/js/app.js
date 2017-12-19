@@ -141,10 +141,10 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 // Upload service (send data to the server e.g. log files)
 function UploadService($http, $mdToast) {
     //api endpoints
-    var buildingUploadUrl = '/building/addNewBuilding';
-    var logFileUploadUrl = '/position/processRadioMapFiles';
-    var evalFileUploadUrl = '/position/processEvalFiles';
-    var floorUploadUrl = '/building/addFloorToBuilding';
+    var buildingUploadUrl = 'building/addNewBuilding';
+    var logFileUploadUrl = 'position/processRadioMapFiles';
+    var evalFileUploadUrl = 'position/processEvalFiles';
+    var floorUploadUrl = 'building/addFloorToBuilding';
 
 
     // service functions
@@ -292,13 +292,13 @@ app.factory("uploadService", UploadService);
 // Data service (retrieve data from server e.g. get Buildings)
 function DataService($http, $mdToast) {
     // API endpoints
-    var getBuildingsUrl = '/building/getAllBuildings';
-    var getEvalFilesUrl = '/position/getEvalFilesForBuildingId';
-    var getRadiomapsUrl = '/position/getRadioMapsForBuildingId';
-    var getAlgorithmTypesUrl = '/project/getAllAlgorithmTypes';
-    var deleteBuildingUrl = '/building/deleteSelectedBuilding';
-    var deleteEvaalUrl = '/position/deleteSelectedEvaalFile';
-    var deleteProjectUrl = '/project/deleteSelectedProject';
+    var getBuildingsUrl = 'building/getAllBuildings';
+    var getEvalFilesUrl = 'position/getEvalFilesForBuildingId';
+    var getRadiomapsUrl = 'position/getRadioMapsForBuildingId';
+    var getAlgorithmTypesUrl = 'project/getAllAlgorithmTypes';
+    var deleteBuildingUrl = 'building/deleteSelectedBuilding';
+    var deleteEvaalUrl = 'position/deleteSelectedEvaalFile';
+    var deleteProjectUrl = 'project/deleteSelectedProject';
 
 
     // Cache
@@ -491,8 +491,8 @@ app.factory("dataService", DataService);
 // Calculation service (setup and call position calculations)
 function CalculationService($http) {
     //api endpoints
-    var generatePositionsUrl = '/position/generateBatchPositionResults';
-    var createProjectUrl = '/project/saveNewProject';
+    var generatePositionsUrl = 'position/generateBatchPositionResults';
+    var createProjectUrl = 'project/saveNewProject';
 
     // properties
     var currentBuilding = {};
@@ -650,8 +650,8 @@ app.factory("calculationService", CalculationService);
 // Project service (create, persist and load projects)
 function ProjectService($http) {
     //api endpoints
-    var allProjUrl = '/project/getAllProjects';
-    var projInfoUrl = '/project/loadSelectedProject';
+    var allProjUrl = 'project/getAllProjects';
+    var projInfoUrl = 'project/loadSelectedProject';
 
     // project properties
     var projectId;
@@ -769,7 +769,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: '/icons/calc-marker.png'
+                src: 'icons/calc-marker.png'
             }
         }
     };
@@ -780,7 +780,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: '/icons/ref-marker.png'
+                src: 'icons/ref-marker.png'
             }
         }
     };
@@ -1019,7 +1019,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
 // controller which handles the map
 function MapController($scope, mapService) {
     // example map service setup
-    mapService.setMap("/maps/hft_2_floor_3.png", 3688, 2304);
+    mapService.setMap("maps/hft_2_floor_3.png", 3688, 2304);
 
     // setup usage of map service
     angular.extend($scope, {
@@ -1459,7 +1459,7 @@ function ProjectController($scope, $mdPanel, projectService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/project.panel.html',
+            templateUrl: 'pages/panels/project.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
@@ -1504,7 +1504,7 @@ function BuildingEditController($scope, $mdPanel, dataService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/building.panel.html',
+            templateUrl: 'pages/panels/building.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
@@ -1547,7 +1547,7 @@ function EvaalEditController($scope, $mdPanel, dataService) {
         // setup panel config
         var config = {
             attachTo: angular.element(document.body),
-            templateUrl: '/pages/panels/evaal.panel.html',
+            templateUrl: 'pages/panels/evaal.panel.html',
             hasBackdrop: true,
             panelClass: 'project-dialog',
             position: position,
