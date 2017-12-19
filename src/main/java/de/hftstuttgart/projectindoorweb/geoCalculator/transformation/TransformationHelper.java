@@ -18,6 +18,14 @@ import java.util.Iterator;
  */
 public class TransformationHelper {
 
+
+    /**
+     * Private constructor to prevent creating an object
+     */
+    private TransformationHelper() {
+
+    }
+
     /**
      * Calculates the distance in meter between two points given in latitude / longitude.
      *

@@ -4,11 +4,11 @@ public class LLPoint {
 
     private String pointNumber;
     private LatLongCoord coord;
-    private double floor;
-    private double building;
+    private int floor;
+    private int building;
 
 
-    public LLPoint(String pointNumber, LatLongCoord coord, double building, double floor) {
+    public LLPoint(String pointNumber, LatLongCoord coord, int building, int floor) {
         this.pointNumber = pointNumber;
         this.coord = coord;
         this.building = building;
@@ -23,11 +23,11 @@ public class LLPoint {
         return pointNumber;
     }
 
-    public double getBuilding() {
+    public int getBuilding() {
         return building;
     }
 
-    public double getFloor() {
+    public int getFloor() {
         return floor;
     }
 }
