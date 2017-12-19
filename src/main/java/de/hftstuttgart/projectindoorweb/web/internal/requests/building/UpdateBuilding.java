@@ -3,8 +3,6 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.building;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 public class UpdateBuilding {
 
     private long buildingId;
@@ -21,16 +19,16 @@ public class UpdateBuilding {
 
     @JsonCreator
     public UpdateBuilding(@JsonProperty("buildingId") long buildingId,
-                             @JsonProperty("buildingName") String buildingName,
-                             @JsonProperty("imagePixelWidth") int imagePixelWidth,
-                             @JsonProperty("imagePixelHeight") int imagePixelHeight,
-                             @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
-                             @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
-                             @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
-                             @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
-                             @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
-                             @JsonProperty("rotationAngle") double rotationAngle,
-                             @JsonProperty("metersPerPixel") double metersPerPixel) {
+                          @JsonProperty("buildingName") String buildingName,
+                          @JsonProperty("imagePixelWidth") int imagePixelWidth,
+                          @JsonProperty("imagePixelHeight") int imagePixelHeight,
+                          @JsonProperty("northWestAnchor") BuildingPositionAnchor northWestAnchor,
+                          @JsonProperty("northEastAnchor") BuildingPositionAnchor northEastAnchor,
+                          @JsonProperty("southEastAnchor") BuildingPositionAnchor southEastAnchor,
+                          @JsonProperty("southWestAnchor") BuildingPositionAnchor southWestAnchor,
+                          @JsonProperty("buildingCenterPoint") BuildingPositionAnchor buildingCenterPoint,
+                          @JsonProperty("rotationAngle") double rotationAngle,
+                          @JsonProperty("metersPerPixel") double metersPerPixel) {
 
         this.buildingId = buildingId;
         this.buildingName = buildingName;

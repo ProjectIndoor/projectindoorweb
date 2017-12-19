@@ -13,7 +13,6 @@ public interface EvaalFileRepository extends CrudRepository<EvaalFile, Long> {
     EvaalFile findBySourceFileName(String sourceFileName);
 
 
-
     List<EvaalFile> findByRecordedInBuildingAndAndEvaluationFileTrue(Building building);
 
     List<EvaalFile> findByRecordedInBuildingAndEvaluationFileFalse(Building building);

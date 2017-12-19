@@ -10,7 +10,7 @@ public class GetEvaluationFilesForBuilding {
     private String evaluationEntryName;
 
     @JsonCreator
-    public GetEvaluationFilesForBuilding(@JsonProperty("id")long id, @JsonProperty("evaluationEntryName")String evaluationEntryName) {
+    public GetEvaluationFilesForBuilding(@JsonProperty("id") long id, @JsonProperty("evaluationEntryName") String evaluationEntryName) {
         this.id = id;
         this.evaluationEntryName = evaluationEntryName;
     }

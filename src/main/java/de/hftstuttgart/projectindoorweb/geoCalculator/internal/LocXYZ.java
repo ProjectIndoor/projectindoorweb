@@ -14,7 +14,7 @@ public class LocXYZ extends LocalXYCoord {
         this.z = 0;
     }
 
-    public LocXYZ(LocalXYCoord localXYCoord, double height){
+    public LocXYZ(LocalXYCoord localXYCoord, double height) {
         super(localXYCoord.x, localXYCoord.y);
         this.z = height;
     }
@@ -68,7 +68,7 @@ public class LocXYZ extends LocalXYCoord {
     }
 
     /*	public int getFloorID() {
-		return MyUtils.getFloor(z);
+        return MyUtils.getFloor(z);
 	}*/
     @Override
     public LocXYZ clone() {

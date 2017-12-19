@@ -2,12 +2,28 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
+import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.WifiPositionResult;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetFloor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuildingEvaalFile;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuildingFloor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.CalculatedPosition;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.ReferencePosition;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
-import org.hibernate.engine.jdbc.batch.spi.Batch;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -347,13 +363,13 @@ public class TransmissionHelper {
 
     }
 
-    public static Floor getBuildingFloorById(long floorId, Building building){
+    public static Floor getBuildingFloorById(long floorId, Building building) {
 
         List<Floor> buildingFloors = building.getBuildingFloors();
 
-        for (Floor floor:
-             buildingFloors) {
-            if(floor.getId() - floorId == 0){
+        for (Floor floor :
+                buildingFloors) {
+            if (floor.getId() - floorId == 0) {
                 return floor;
             }
         }
@@ -362,7 +378,7 @@ public class TransmissionHelper {
 
     }
 
-    public static List<GetAllEvaalEntries> convertToGetAlLEvaalEntries(List<EvaalFile> evaalFiles){
+    public static List<GetAllEvaalEntries> convertToGetAlLEvaalEntries(List<EvaalFile> evaalFiles) {
 
         List<GetAllEvaalEntries> result = new ArrayList<>(evaalFiles.size());
 
@@ -370,8 +386,8 @@ public class TransmissionHelper {
         Building building;
         String buildingName;
         String evaalFileType;
-        for (EvaalFile evaalFile:
-             evaalFiles) {
+        for (EvaalFile evaalFile :
+                evaalFiles) {
             building = evaalFile.getRecordedInBuilding();
             buildingName = building == null ? "" : building.getBuildingName();
             evaalFileType = evaalFile.isEvaluationFile() ? "Evaluation File" : "Radiomap File";

@@ -9,21 +9,21 @@ import java.util.List;
 
 public class ProjectParameterResolver {
 
-    public static Object retrieveParameterValue(Project project, String parameterName, Class<? extends Object> parameterValueClass){
+    public static Object retrieveParameterValue(Project project, String parameterName, Class<? extends Object> parameterValueClass) {
 
         List<Parameter> projectParameters = project.getProjectParameters();
 
         Object result = null;
-        for (Parameter parameter:
-             projectParameters) {
-            if(parameter.getParameterName().equalsIgnoreCase(parameterName)){
-                if(parameterValueClass.isAssignableFrom(Double.class)){
+        for (Parameter parameter :
+                projectParameters) {
+            if (parameter.getParameterName().equalsIgnoreCase(parameterName)) {
+                if (parameterValueClass.isAssignableFrom(Double.class)) {
                     return getDoubleValue(parameter.getParameterValue());
-                }else if(parameterValueClass.isAssignableFrom(Integer.class)){
+                } else if (parameterValueClass.isAssignableFrom(Integer.class)) {
                     return getIntValue(parameter.getParameterValue());
-                }else if(parameterValueClass.isAssignableFrom(Boolean.class)){
+                } else if (parameterValueClass.isAssignableFrom(Boolean.class)) {
                     return getBooleanValue(parameter.getParameterValue());
-                }else if(parameterValueClass.isAssignableFrom(CorrelationMode.class)){
+                } else if (parameterValueClass.isAssignableFrom(CorrelationMode.class)) {
                     return getCorrelationMode(parameter.getParameterValue());
                 }
             }
@@ -33,34 +33,34 @@ public class ProjectParameterResolver {
 
     }
 
-    private static double getDoubleValue(String parameterValue){
+    private static double getDoubleValue(String parameterValue) {
 
-        try{
+        try {
             return Double.valueOf(parameterValue);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
             return -1.0;
         }
 
     }
 
-    private static int getIntValue(String parameterValue){
+    private static int getIntValue(String parameterValue) {
 
 
-        try{
+        try {
             return Integer.valueOf(parameterValue);
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
             return -1;
         }
     }
 
-    private static Boolean getBooleanValue(String parameterValue){
+    private static Boolean getBooleanValue(String parameterValue) {
 
-        if(parameterValue.equalsIgnoreCase("true")){
+        if (parameterValue.equalsIgnoreCase("true")) {
             return true;
         }
-        if(parameterValue.equalsIgnoreCase("false")){
+        if (parameterValue.equalsIgnoreCase("false")) {
             return false;
         }
 
@@ -68,19 +68,20 @@ public class ProjectParameterResolver {
 
     }
 
-    private static CorrelationMode getCorrelationMode(String parameterValue){
+    private static CorrelationMode getCorrelationMode(String parameterValue) {
 
-        switch (parameterValue.toLowerCase()){
+        switch (parameterValue.toLowerCase()) {
 
-            case "euclidian": return CorrelationMode.EUCLIDIAN;
-            case "scalar": return CorrelationMode.SCALAR;
-            default: return null;
+            case "euclidian":
+                return CorrelationMode.EUCLIDIAN;
+            case "scalar":
+                return CorrelationMode.SCALAR;
+            default:
+                return null;
 
         }
 
     }
-
-
 
 
 }

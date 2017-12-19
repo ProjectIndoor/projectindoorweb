@@ -17,14 +17,14 @@ public class Position {
     private double z;
     private boolean wgs84;
 
-    public Position(){
+    public Position() {
         this.x = 0.0;
         this.y = 0.0;
         this.z = 0.0;
         this.wgs84 = true;
     }
 
-    public Position(Position source){
+    public Position(Position source) {
         this.x = source.getX();
         this.y = source.getY();
         this.z = source.getZ();

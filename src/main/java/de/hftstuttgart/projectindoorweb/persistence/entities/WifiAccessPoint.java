@@ -1,6 +1,11 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class WifiAccessPoint {
@@ -14,7 +19,8 @@ public class WifiAccessPoint {
     @ManyToOne(targetEntity = Position.class, cascade = CascadeType.ALL)
     private Position position;
 
-    protected WifiAccessPoint(){}
+    protected WifiAccessPoint() {
+    }
 
     public WifiAccessPoint(String macAddress, Position position) {
         this.macAddress = macAddress;

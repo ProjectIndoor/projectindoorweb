@@ -4,13 +4,21 @@ package de.hftstuttgart.projectindoorweb.application;
 import com.fasterxml.classmate.TypeResolver;
 import de.hftstuttgart.projectindoorweb.application.internal.util.IndoorApiDescriptionHelper;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
+import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyServiceComponent;
 import de.hftstuttgart.projectindoorweb.persistence.RepositoryRegistry;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.FloorRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorComponent;
-import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingServiceComponent;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.web.BuildingController;
 import de.hftstuttgart.projectindoorweb.web.PositioningController;
@@ -27,8 +35,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 @SpringBootApplication
 @EnableSwagger2

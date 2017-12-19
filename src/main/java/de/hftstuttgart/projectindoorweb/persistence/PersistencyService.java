@@ -1,6 +1,10 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
@@ -13,9 +17,9 @@ public interface PersistencyService {
 
     /*Buildings and Floors*/
     long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                           BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
-                           BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
-                           BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
+                        BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
+                        BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
+                        BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
 
     List<Building> getAllBuildings();
 
@@ -59,7 +63,6 @@ public interface PersistencyService {
     List<Project> getAllProjects();
 
     Project getProjectById(long projectId);
-
 
 
 }

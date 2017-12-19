@@ -1,6 +1,11 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class RssiSignal {
@@ -16,7 +21,8 @@ public class RssiSignal {
     @ManyToOne(targetEntity = WifiAccessPoint.class, cascade = CascadeType.ALL)
     private WifiAccessPoint wifiAccessPoint;
 
-    protected RssiSignal(){}
+    protected RssiSignal() {
+    }
 
     public RssiSignal(double appTimestamp, double rssiSignalStrength,
                       boolean averagedSignalStrength, WifiAccessPoint emittedByAccessPoint) {
