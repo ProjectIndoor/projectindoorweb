@@ -10,7 +10,6 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
-import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -377,8 +376,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
                 if (floor != null) {
 
+                    floor.setFloorName(floorName);
                     File floorMapLocalFile = TransmissionHelper.convertMultipartFileToLocalFile(floorMapFile);
-                    return this.persistencyService.updateBuildingFloor(buildingFromDatabase, floor, floorMapLocalFile);
+                    return this.persistencyService.updateBuilding(buildingFromDatabase, floor, floorMapLocalFile);
                 }
             }
 

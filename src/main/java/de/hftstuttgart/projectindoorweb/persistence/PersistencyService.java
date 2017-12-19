@@ -25,7 +25,7 @@ public interface PersistencyService {
                            Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
                            double rotationAngle, double metersPerPixel);
 
-    boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException;
+    boolean updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException;
 
     File getFloorMapByFloorId(long floorId) throws IOException;
 

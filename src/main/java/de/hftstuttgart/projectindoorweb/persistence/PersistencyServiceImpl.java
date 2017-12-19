@@ -297,7 +297,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException {
+    public boolean updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException {
 
         AssertParam.throwIfNull(building, "building");
         AssertParam.throwIfNull(floor, "floor");
