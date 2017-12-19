@@ -142,7 +142,18 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
             if (correlationMode == CorrelationMode.EUCLIDIAN) {
                 positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
             } else if (correlationMode == CorrelationMode.SCALAR) {
-                positionWeight = WifiMathHelper.calculateScalarRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
+                Double lowestConsideredRssiValue = (Double) ProjectParameterResolver.retrieveParameterValue(project,
+                        "lowestConsideredRssiValue", Double.class);
+                if(lowestConsideredRssiValue == null){
+                    lowestConsideredRssiValue = ConfigContainer.LOWEST_RSSI_IN_SCALAR_MODE;
+                }
+                Double radioPropagationExponent = (Double) ProjectParameterResolver.retrieveParameterValue(project,
+                        "radioPropagationExponent", Double.class);
+                if(radioPropagationExponent == null){
+                    radioPropagationExponent = ConfigContainer.RADIO_PROPAGATION_EXPONENT;
+                }
+                positionWeight = WifiMathHelper.calculateScalarRssiDistance(rssiSignals, radioMapElement.getRssiSignals(),
+                        lowestConsideredRssiValue, radioPropagationExponent);
             } else {
                 /*
                 * Include further correlation modes here.

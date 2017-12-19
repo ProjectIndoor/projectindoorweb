@@ -52,7 +52,8 @@ public class WifiMathHelper {
         return result;
     }
 
-    public static double calculateScalarRssiDistance(List<RssiSignal> evaluationSignals, List<RssiSignal> radioMapSignals) {
+    public static double calculateScalarRssiDistance(List<RssiSignal> evaluationSignals, List<RssiSignal> radioMapSignals,
+                                                     double lowestConsideredRssiValue, double radioPropagationExponent) {
 
         double radioMapAddend;
         double evalAddend;
@@ -67,13 +68,13 @@ public class WifiMathHelper {
         for (int i = 0; i < maxIndex; i++) {
             try {
                 radioMapRssiSignal = radioMapSignals.get(i).getRssiSignalStrength();
-                radioMapAddend = calculatePropagationWeight(radioMapRssiSignal);
+                radioMapAddend = calculatePropagationWeight(radioMapRssiSignal, lowestConsideredRssiValue, radioPropagationExponent);
             } catch (IndexOutOfBoundsException ex) {
                 radioMapAddend = 0.0;
             }
             try {
                 evaluationRssiSignal = evaluationSignals.get(i).getRssiSignalStrength();
-                evalAddend = calculatePropagationWeight(evaluationRssiSignal);
+                evalAddend = calculatePropagationWeight(evaluationRssiSignal, lowestConsideredRssiValue, radioPropagationExponent);
             } catch (IndexOutOfBoundsException ex) {
                 evalAddend = 0.0;
             }
@@ -96,10 +97,7 @@ public class WifiMathHelper {
 
     }
 
-    public static double calculatePropagationWeight(double rssiSignal) {
-
-        double lowestConsideredRssiValue = ConfigContainer.LOWEST_RSSI_IN_SCALAR_MODE;
-        double propagationExponent = ConfigContainer.RADIO_PROPAGATION_EXPONENT;
+    public static double calculatePropagationWeight(double rssiSignal, double lowestConsideredRssiValue, double propagationExponent) {
 
         if (rssiSignal <= lowestConsideredRssiValue) {
             return 0.0;
