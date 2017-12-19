@@ -1,7 +1,10 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.List;
 
 @Entity
@@ -14,7 +17,8 @@ public class WifiBlock {
     @ElementCollection
     private List<String> wifiLines;
 
-    protected WifiBlock(){}
+    protected WifiBlock() {
+    }
 
     public WifiBlock(List<String> wifiLines) {
         this.wifiLines = wifiLines;

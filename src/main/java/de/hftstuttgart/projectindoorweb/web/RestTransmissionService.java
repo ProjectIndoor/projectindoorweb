@@ -1,10 +1,23 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
-import org.springframework.core.io.ClassPathResource;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateSinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllAlgorithmTypes;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllProjects;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.LoadSelectedProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.UpdateProject;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

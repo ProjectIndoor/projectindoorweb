@@ -7,7 +7,6 @@ package de.hftstuttgart.projectindoorweb.geoCalculator.internal;
 import java.io.Serializable;
 
 /**
- *
  * @author stefan
  */
 public class LatLongCoord implements Serializable {

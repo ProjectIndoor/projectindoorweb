@@ -1,6 +1,11 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllAlgorithmTypes;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllProjects;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.LoadSelectedProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.UpdateProject;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/project")
 public class ProjectController {
 
-   private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+    private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
 
     @ApiOperation(value = "Save a new project", nickname = "project/addNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)
@@ -51,7 +56,7 @@ public class ProjectController {
         return new ResponseEntity<LoadSelectedProject>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get all current projects", nickname = "project/getAllProjects", notes= TransmissionConstants.GET_ALL_PROJECT_NOTE)
+    @ApiOperation(value = "Get all current projects", nickname = "project/getAllProjects", notes = TransmissionConstants.GET_ALL_PROJECT_NOTE)
     @RequestMapping(path = "/getAllProjects", method = GET)
     public ResponseEntity<List<GetAllProjects>> getAllProjects() {
 

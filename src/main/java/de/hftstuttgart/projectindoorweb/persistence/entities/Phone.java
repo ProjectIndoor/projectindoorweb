@@ -1,6 +1,10 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 @Entity
@@ -17,7 +21,8 @@ public class Phone {
     @OneToMany(targetEntity = EvaalFile.class, mappedBy = "recordedByPhone")
     private List<EvaalFile> recordedFiles;
 
-    protected Phone(){}
+    protected Phone() {
+    }
 
     public Phone(String manufacturer, String model, int apiVersion, List<EvaalFile> recordedFiles) {
         this.manufacturer = manufacturer;

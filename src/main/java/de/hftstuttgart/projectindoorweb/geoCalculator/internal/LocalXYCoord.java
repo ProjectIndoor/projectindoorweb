@@ -7,7 +7,6 @@ package de.hftstuttgart.projectindoorweb.geoCalculator.internal;
 import de.hftstuttgart.projectindoorweb.geoCalculator.MyGeoMath;
 
 /**
- *
  * @author stefan
  */
 public class LocalXYCoord {

@@ -2,7 +2,9 @@ package de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility;
 
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.MathHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RssiSignal;
+import de.hftstuttgart.projectindoorweb.persistence.entities.WifiPositionResult;
 
 import java.util.List;
 
@@ -62,17 +64,17 @@ public class WifiMathHelper {
 
         double radioMapRssiSignal;
         double evaluationRssiSignal;
-        for(int i = 0; i < maxIndex; i++){
-            try{
+        for (int i = 0; i < maxIndex; i++) {
+            try {
                 radioMapRssiSignal = radioMapSignals.get(i).getRssiSignalStrength();
                 radioMapAddend = calculatePropagationWeight(radioMapRssiSignal);
-            }catch(IndexOutOfBoundsException ex){
+            } catch (IndexOutOfBoundsException ex) {
                 radioMapAddend = 0.0;
             }
-            try{
+            try {
                 evaluationRssiSignal = evaluationSignals.get(i).getRssiSignalStrength();
                 evalAddend = calculatePropagationWeight(evaluationRssiSignal);
-            }catch(IndexOutOfBoundsException ex){
+            } catch (IndexOutOfBoundsException ex) {
                 evalAddend = 0.0;
             }
             radioMapSignalSquareSum += Math.pow(radioMapAddend, 2);
@@ -80,7 +82,7 @@ public class WifiMathHelper {
             totalSum += radioMapAddend * evalAddend;
         }
 
-        if(radioMapSignalSquareSum == 0.0 || evaluationSignalSquareSum == 0.0 || totalSum == 0.0){
+        if (radioMapSignalSquareSum == 0.0 || evaluationSignalSquareSum == 0.0 || totalSum == 0.0) {
             return 0.0;
         }
 
@@ -94,12 +96,12 @@ public class WifiMathHelper {
 
     }
 
-    public static double calculatePropagationWeight(double rssiSignal){
+    public static double calculatePropagationWeight(double rssiSignal) {
 
         double lowestConsideredRssiValue = ConfigContainer.LOWEST_RSSI_IN_SCALAR_MODE;
         double propagationExponent = ConfigContainer.RADIO_PROPAGATION_EXPONENT;
 
-        if(rssiSignal <= lowestConsideredRssiValue){
+        if (rssiSignal <= lowestConsideredRssiValue) {
             return 0.0;
         }
 

@@ -1,7 +1,13 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.Map;
 
 @Entity
@@ -29,7 +35,8 @@ public class EvaalFile {
     @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
     private RadioMap radioMap;
 
-    protected EvaalFile(){}
+    protected EvaalFile() {
+    }
 
     public EvaalFile(boolean evaluationFile, String sourceFileName, String customFileName, int appVersion, Map<Integer, WifiBlock> wifiBlocks,
                      Building recordedInBuilding, Phone recordedByPhone, RadioMap radioMap) {

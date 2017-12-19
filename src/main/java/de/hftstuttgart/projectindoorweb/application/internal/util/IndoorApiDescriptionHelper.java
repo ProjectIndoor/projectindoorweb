@@ -21,12 +21,12 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 public class IndoorApiDescriptionHelper {
 
-    private static final String EXCLUDE_ERROR_PATH_REGEX="/error.*";
-    private static final String ROOT_PATH="/";
+    private static final String EXCLUDE_ERROR_PATH_REGEX = "/error.*";
+    private static final String ROOT_PATH = "/";
     public static final String EMPTY_STRING = "";
 
-    private static final String TAG_NAME="Indoor REST Service";
-    private static final String TAG_DESCRIPTION="Indoor REST API which provides services for positioning and project services.";
+    private static final String TAG_NAME = "Indoor REST Service";
+    private static final String TAG_DESCRIPTION = "Indoor REST API which provides services for positioning and project services.";
 
     private static final String VALIDATOR_URL = "validatorUrl";
     private static final String DOC_EXPANSION = "none";

@@ -1,6 +1,10 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -15,7 +19,8 @@ public class PositionResult {
     private double z;
     private boolean wgs84;
 
-    protected PositionResult(){}
+    protected PositionResult() {
+    }
 
     public PositionResult(double x, double y, double z, boolean wgs84) {
         this.x = x;

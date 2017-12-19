@@ -1,6 +1,12 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateSinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Api(value = "Position", description = "Operations for positions", tags = "Position")
@@ -32,9 +36,9 @@ public class PositioningController {
     public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE, required = true) String buildingIdentifier,
                                         @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
-                                        MultipartFile[] radioMapFiles,
+                                                MultipartFile[] radioMapFiles,
                                         @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
-                                        MultipartFile transformedPointsFile) {
+                                                MultipartFile transformedPointsFile) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFile);
     }
 
@@ -42,8 +46,8 @@ public class PositioningController {
     @RequestMapping(path = "/processEvalFiles", method = POST)
     public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                    @RequestParam (value = TransmissionConstants.EVAL_FILE_PARAM)
-                                    MultipartFile[] evalFiles) {
+                                    @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
+                                            MultipartFile[] evalFiles) {
         return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
     }
 
@@ -51,7 +55,7 @@ public class PositioningController {
     @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE)
     public boolean deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                                 String evaalFileIdentifier) {
+                                                   String evaalFileIdentifier) {
         return restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
     }
 

@@ -12,7 +12,7 @@ public class GetAllProjects {
     @JsonCreator
     public GetAllProjects(@JsonProperty("projectId") long projectId,
                           @JsonProperty("projectName") String projectName,
-                          @JsonProperty("buildingName") String buildingName){
+                          @JsonProperty("buildingName") String buildingName) {
         this.projectId = projectId;
         this.projectName = projectName;
         this.buildingName = buildingName;

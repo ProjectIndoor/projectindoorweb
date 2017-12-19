@@ -11,10 +11,10 @@ public class GetAllEvaalEntries {
     private String buildingName;
 
     @JsonCreator
-    public GetAllEvaalEntries(@JsonProperty("evaalFileId")Long evaalFileId,
-                              @JsonProperty("fileName")String fileName,
-                              @JsonProperty("type")String type,
-                              @JsonProperty("buildingName")String buildingName) {
+    public GetAllEvaalEntries(@JsonProperty("evaalFileId") Long evaalFileId,
+                              @JsonProperty("fileName") String fileName,
+                              @JsonProperty("type") String type,
+                              @JsonProperty("buildingName") String buildingName) {
         this.evaalFileId = evaalFileId;
         this.fileName = fileName;
         this.type = type;

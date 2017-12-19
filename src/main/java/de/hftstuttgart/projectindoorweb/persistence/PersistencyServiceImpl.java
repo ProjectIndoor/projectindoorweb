@@ -3,9 +3,19 @@ package de.hftstuttgart.projectindoorweb.persistence;
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
 import de.hftstuttgart.projectindoorweb.persistence.internal.util.PersistencyConstants;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.*;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.FloorRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
@@ -20,7 +30,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -297,7 +309,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateBuildingFloor(Building building, Floor floor, File floorMapFile) throws IOException {
+    public boolean updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException {
 
         AssertParam.throwIfNull(building, "building");
         AssertParam.throwIfNull(floor, "floor");
@@ -392,6 +404,15 @@ public class PersistencyServiceImpl implements PersistencyService {
         EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         return evaalFileRepository.findOne(evaalFileId);
+    }
+
+    @Override
+    public List<EvaalFile> getAllEvaalFiles() {
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        return (List<EvaalFile>) evaalFileRepository.findAll();
+
     }
 
 
