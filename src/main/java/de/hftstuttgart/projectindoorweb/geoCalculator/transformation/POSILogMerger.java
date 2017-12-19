@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 /**
  * Class that merges an Evaal-Logilfe with empty POSI-entries with a given list of reference points.
  */
-public class POSILogMerger {
+public final class POSILogMerger {
 
     /**
-     * Private constructor to prevent creating an object
+     * Private constructor to prevent creating an object.
      */
     private POSILogMerger() {
     }
