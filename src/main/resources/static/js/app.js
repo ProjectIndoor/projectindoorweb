@@ -170,8 +170,8 @@ function UploadService($http, toastService) {
             return promise;
         },
         uploadRadioMap: function (radioMapSet) {
-            if (radioMapSet.radioMapFiles[0] == null && radioMapSet.tpFiles[0] == null) {
-                if (radioMapSet.buildingIdentifier != 0) {
+            if (!radioMapSet.radioMapFiles) {
+                if (radioMapSet.buildingIdentifier !== 0) {
                     logMessage = "Please choose a file to upload";
                     toastService.showToast(logMessage, "error-toast");
                 }
@@ -179,10 +179,13 @@ function UploadService($http, toastService) {
                 // body content (log files and buildingId)
                 var formData = new FormData();
                 formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
-                formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
-                if (radioMapSet.tpFiles[0] == null) {
-                    formData.append('transformedPointsFiles', radioMapSet.tpFiles[0]);
+                for (var i = 0; i < radioMapSet.radioMapFiles.length; i++) {
+                    formData.append('radioMapFiles', radioMapSet.radioMapFiles[i]);
                 }
+                for (var j = 0; j < radioMapSet.tpFiles.length; j++) {
+                    formData.append('transformedPointsFiles', radioMapSet.tpFiles[j]);
+                }
+
 
                 $http({
                     method: 'POST',
@@ -206,8 +209,8 @@ function UploadService($http, toastService) {
             }
         },
         uploadEvaluationFile: function (evaluationSet) {
-            if (evaluationSet.evalFiles[0] == null) {
-                if (evaluationSet.buildingIdentifier != 0) {
+            if (evaluationSet.evalFiles[0] === null) {
+                if (evaluationSet.buildingIdentifier !== 0) {
                     logMessage = "Please choose a file to upload";
                     toastService.showToast(logMessage, "error-toast");
                 }
@@ -603,9 +606,9 @@ function CalculationService($http) {
                 toastService.showToast(logMessage, "success-toast");
                 return response.data;
             }, function errorCallback(response) {
-                 logMessage = "Error while saving Project";
-                 toastService.showToast(logMessage, "error-toast");
-             });
+                logMessage = "Error while saving Project";
+                toastService.showToast(logMessage, "error-toast");
+            });
             return promise;
         },
         loadDataFromProject: function (project) {
@@ -913,7 +916,7 @@ function MapService() {
 app.factory('mapService', MapService);
 
 // Toast service
- function ToastService($mdToast) {
+function ToastService($mdToast) {
     // toast service access function
     return {
         showToast: function (logMessage, customTheme) {
@@ -922,10 +925,10 @@ app.factory('mapService', MapService);
 
             $mdToast.show(
                 $mdToast.simple()
-                .textContent(logMessage)
-                .position(pinTo)
-                .hideDelay(3000)
-                .theme(customTheme)
+                    .textContent(logMessage)
+                    .position(pinTo)
+                    .hideDelay(3000)
+                    .theme(customTheme)
             );
         }
     };
@@ -1346,18 +1349,24 @@ function LogImportController($scope, uploadService, dataService) {
         tpFiles: []
     };
 
-    var formData = new FormData();
-
     $scope.getTheFiles = function ($files) {
         $scope.logFileParameters.radioMapFiles = $files;
+        // set filename on ui
         $scope.fileUploaded = $files[0].name;
+        if ($files.length > 1) {
+            $scope.fileUploaded += " and " + ($files.length - 1) + " more file(s)";
+        }
         // notify changed scope to display file name
         $scope.$apply();
     };
 
     $scope.getTpFiles = function ($files) {
         $scope.logFileParameters.tpFiles = $files;
+        // set filename on ui
         $scope.tpFileUploaded = $files[0].name;
+        if ($files.length > 1) {
+            $scope.tpFileUploaded += " and " + ($files.length - 1) + " more file(s)";
+        }
         // notify changed scope to display file name
         $scope.$apply();
     };
