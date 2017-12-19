@@ -181,7 +181,7 @@ function UploadService($http, toastService) {
                 formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
                 formData.append('radioMapFiles', radioMapSet.radioMapFiles[0]);
                 if (radioMapSet.tpFiles[0] == null) {
-                    formData.append('transformedPointsFile', radioMapSet.tpFiles[0]);
+                    formData.append('transformedPointsFiles', radioMapSet.tpFiles[0]);
                 }
 
                 $http({
