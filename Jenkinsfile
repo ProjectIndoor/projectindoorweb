@@ -12,9 +12,9 @@ pipeline {
               script { //wrap in script to make it compatible with blue ocean syntax
                   // Run the gradle build
                   if (isUnix()) {
-                     sh "./gradlew clean build --info"
+                     sh "./gradlew clean clientInstall build --info"
                   } else {
-                     bat "./gradlew.bat clean build --info"
+                     bat "./gradlew.bat clean clientInstall build --info"
                   }
               }
           }
