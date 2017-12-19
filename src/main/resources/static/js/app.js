@@ -296,6 +296,7 @@ function DataService($http, $mdToast) {
     var getEvalFilesUrl = 'position/getEvalFilesForBuildingId';
     var getRadiomapsUrl = 'position/getRadioMapsForBuildingId';
     var getAlgorithmTypesUrl = 'project/getAllAlgorithmTypes';
+    var getAllEvaalFilesUrl = 'position/getAllEvaalEntries';
     var deleteBuildingUrl = 'building/deleteSelectedBuilding';
     var deleteEvaalUrl = 'position/deleteSelectedEvaalFile';
     var deleteProjectUrl = 'project/deleteSelectedProject';
@@ -306,6 +307,7 @@ function DataService($http, $mdToast) {
     var evalFiles = [];
     var radiomaps = [];
     var algorithms = [];
+    var evaalFiles = [];
 
     // Service functions
     return {
@@ -373,18 +375,9 @@ function DataService($http, $mdToast) {
             return promise;
         },
         loadAllEvaals: function () {
-            //TODO replace with all evaal files
-            var config = {
-                params: {
-                    buildingIdentifier: 1
-                }
-            };
-            var promise = $http.get(getEvalFilesUrl, config).then(function (response) {
-                console.log("Retrieved eval files:");
-                console.log(response);
-
+            var promise = $http.get(getAllEvaalFilesUrl).then(function (response) {
                 // save response in cache
-                angular.copy(response.data, evalFiles);
+                angular.copy(response.data, evaalFiles);
 
                 return response.data;
             });
@@ -466,8 +459,7 @@ function DataService($http, $mdToast) {
             return [].concat(algorithms);
         },
         getAllEvaals: function () {
-            //TODO replace with all evaal files
-            return [].concat(evalFiles);
+            return [].concat(evaalFiles);
         }
     };
 

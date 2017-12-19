@@ -21,7 +21,7 @@
             <label>Floor</label>
             <md-select ng-model="selectedFloor">
                 <md-option ng-repeat="floor in floors()"
-                           ng-value="{{floor}}">Floor {{floor.floorName || floor.floorLevel}}
+                           ng-value="{{floor}}">{{floor.floorName || 'Floor ' + floor.floorLevel}}
                 </md-option>
             </md-select>
         </md-input-container>
