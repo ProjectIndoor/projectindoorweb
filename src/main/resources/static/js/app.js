@@ -139,7 +139,7 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 // ------------- Services
 
 // Upload service (send data to the server e.g. log files)
-function UploadService($http, $mdToast) {
+function UploadService($http, toastService) {
     //api endpoints
     var buildingUploadUrl = 'building/addNewBuilding';
     var logFileUploadUrl = 'position/processRadioMapFiles';
@@ -161,11 +161,11 @@ function UploadService($http, $mdToast) {
                 }
             }).then(function (response) {
                 logMessage = "Building Data uploaded successfully!";
-                showToast(logMessage, "success-toast");
+                toastService.showToast(logMessage, "success-toast");
                 return response.data;
             }, function errorCallback(response) {
                 logMessage = "Error while uploading Building Data";
-                showToast(logMessage, "error-toast");
+                toastService.showToast(logMessage, "error-toast");
             });
             return promise;
         },
@@ -173,7 +173,7 @@ function UploadService($http, $mdToast) {
             if (radioMapSet.radioMapFiles[0] == null && radioMapSet.tpFiles[0] == null) {
                 if (radioMapSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 }
             } else {
                 // body content (log files and buildingId)
@@ -197,11 +197,11 @@ function UploadService($http, $mdToast) {
                 }).then(function successCallback(response) {
                     // success
                     logMessage = "Radio map uploaded successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while uploading radio map data";
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             }
         },
@@ -209,7 +209,7 @@ function UploadService($http, $mdToast) {
             if (evaluationSet.evalFiles[0] == null) {
                 if (evaluationSet.buildingIdentifier != 0) {
                     logMessage = "Please choose a file to upload";
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 }
             } else {
                 // body content (eval files and buildingId)
@@ -230,18 +230,18 @@ function UploadService($http, $mdToast) {
                 }).then(function successCallback(response) {
                     // success
                     logMessage = "Evaluation file uploaded successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while uploading evaluation data";
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             }
         },
         uploadFloorMap: function (floorSet) {
             if (floorSet.floorFiles[0] == null) {
                 logMessage = "Please choose an image file to upload";
-                showToast(logMessage, "error-toast");
+                toastService.showToast(logMessage, "error-toast");
             } else {
                 // body content (floor file, floorId and buildingId)
                 var formData = new FormData();
@@ -263,34 +263,21 @@ function UploadService($http, $mdToast) {
                 }).then(function successCallback(response) {
                     // success
                     logMessage = "Floor map uploaded successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while uploading floor map";
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             }
         }
     };
-
-    // private functions
-    function showToast(logMessage, customTheme) {
-        var pinTo = "bottom center";
-
-        $mdToast.show(
-            $mdToast.simple()
-                .textContent(logMessage)
-                .position(pinTo)
-                .hideDelay(3000)
-                .theme(customTheme)
-        );
-    }
 }
 
 app.factory("uploadService", UploadService);
 
 // Data service (retrieve data from server e.g. get Buildings)
-function DataService($http, $mdToast) {
+function DataService($http, toastService) {
     // API endpoints
     var getBuildingsUrl = 'building/getAllBuildings';
     var getEvalFilesUrl = 'position/getEvalFilesForBuildingId';
@@ -393,13 +380,13 @@ function DataService($http, $mdToast) {
             var promise = $http.delete(deleteBuildingUrl, config)
                 .then(function (response) {
                     logMessage = "Building deleted successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while deleting building:" + buildingId;
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             return promise;
         },
@@ -412,13 +399,13 @@ function DataService($http, $mdToast) {
             var promise = $http.delete(deleteEvaalUrl, config)
                 .then(function (response) {
                     logMessage = "Evaal entry deleted successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while deleting evaal entry:" + evaalFileId;
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             return promise;
         },
@@ -431,13 +418,13 @@ function DataService($http, $mdToast) {
             var promise = $http.delete(deleteProjectUrl, config)
                 .then(function (response) {
                     logMessage = "Project deleted successfully!";
-                    showToast(logMessage, "success-toast");
+                    toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
                     logMessage = "Error while deleting project:" + projectId;
-                    showToast(logMessage, "error-toast");
+                    toastService.showToast(logMessage, "error-toast");
                 });
             return promise;
         },
@@ -462,20 +449,6 @@ function DataService($http, $mdToast) {
             return [].concat(evaalFiles);
         }
     };
-
-    // private functions
-    function showToast(logMessage, customTheme) {
-        var pinTo = "bottom center";
-
-        $mdToast.show(
-            $mdToast.simple()
-                .textContent(logMessage)
-                .position(pinTo)
-                .hideDelay(3000)
-                .theme(customTheme)
-        );
-    }
-
 }
 
 app.factory("dataService", DataService);
@@ -626,9 +599,13 @@ function CalculationService($http) {
                 }
             };
             var promise = $http.post(createProjectUrl, data, config).then(function (response) {
-                console.log("Saved project:" + projectName);
+                logMessage = "Project saved successfully!";
+                toastService.showToast(logMessage, "success-toast");
                 return response.data;
-            });
+            }, function errorCallback(response) {
+                 logMessage = "Error while saving Project";
+                 toastService.showToast(logMessage, "error-toast");
+             });
             return promise;
         },
         loadDataFromProject: function (project) {
@@ -934,6 +911,27 @@ function MapService() {
 }
 
 app.factory('mapService', MapService);
+
+// Toast service
+ function ToastService($mdToast) {
+    // toast service access function
+    return {
+        showToast: function (logMessage, customTheme) {
+            //Position of the toast
+            var pinTo = "bottom center";
+
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(logMessage)
+                .position(pinTo)
+                .hideDelay(3000)
+                .theme(customTheme)
+            );
+        }
+    };
+}
+
+app.factory('toastService', ToastService);
 
 // ------------- Controllers
 // controller which handels page navigation
