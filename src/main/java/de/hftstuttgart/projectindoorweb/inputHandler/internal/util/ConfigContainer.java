@@ -1,7 +1,6 @@
 package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
-import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 
 public class ConfigContainer {
 
@@ -24,8 +23,6 @@ public class ConfigContainer {
     public static final boolean USE_SHIFTED_POSI_REFERENCES = false;
 
     public static final CorrelationMode CORRELATION_MODE = CorrelationMode.EUCLIDIAN;
-
-
 
 
 }

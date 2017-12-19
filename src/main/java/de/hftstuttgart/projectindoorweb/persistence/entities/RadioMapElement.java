@@ -1,6 +1,12 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.List;
 
 @Entity
@@ -16,7 +22,8 @@ public class RadioMapElement {
     @OneToMany(targetEntity = RssiSignal.class, cascade = CascadeType.ALL)
     private List<RssiSignal> rssiSignals;
 
-    protected RadioMapElement(){}
+    protected RadioMapElement() {
+    }
 
     public RadioMapElement(PosiReference posiReference, List<RssiSignal> rssiSignals) {
         this.posiReference = posiReference;

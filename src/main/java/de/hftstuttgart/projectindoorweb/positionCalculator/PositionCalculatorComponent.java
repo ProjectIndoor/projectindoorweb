@@ -4,31 +4,32 @@ public class PositionCalculatorComponent {
 
     private static PositionCalculatorService theInstance;
 
-    private PositionCalculatorComponent(){}
+    private PositionCalculatorComponent() {
+    }
 
 
-    public static void initComponent(){
+    public static void initComponent() {
 
         theInstance = new WifiPositionCalculatorServiceImpl();
 
     }
 
-    public static void disposeComponent(){
+    public static void disposeComponent() {
 
-        if(theInstance != null){
+        if (theInstance != null) {
             theInstance = null;
         }
 
     }
 
-    public static PositionCalculatorService getPositionCalculator(){
+    public static PositionCalculatorService getPositionCalculator() {
 
-        if(theInstance != null){
+        if (theInstance != null) {
             return theInstance;
 
         }
 
-        throw new IllegalStateException("PositionCalculatorService was not initialized yet. Please call 'initComponent()' first." );
+        throw new IllegalStateException("PositionCalculatorService was not initialized yet. Please call 'initComponent()' first.");
     }
 
 }

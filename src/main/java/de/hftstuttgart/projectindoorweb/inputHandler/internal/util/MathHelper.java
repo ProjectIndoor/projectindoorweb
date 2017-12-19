@@ -2,7 +2,6 @@ package de.hftstuttgart.projectindoorweb.inputHandler.internal.util;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
 import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.WifiPositionResult;
 
 public class MathHelper {
 
@@ -29,7 +28,7 @@ public class MathHelper {
 
     }
 
-    public static Position multiplyPosition(double x, double y, double z, boolean wgs84, double factor){
+    public static Position multiplyPosition(double x, double y, double z, boolean wgs84, double factor) {
 
         return multiplyPosition(new Position(x, y, z, wgs84), factor);
     }

@@ -27,7 +27,7 @@ public class Project {
     @ManyToMany(targetEntity = EvaalFile.class)
     @JoinTable(name = "project_files",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "evaal_file_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "evaal_file_id", referencedColumnName = "id"))
     private List<EvaalFile> evaalFiles;
 
     protected Project() {

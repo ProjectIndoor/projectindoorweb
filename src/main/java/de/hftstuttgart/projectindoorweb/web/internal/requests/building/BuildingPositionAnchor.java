@@ -10,8 +10,8 @@ public class BuildingPositionAnchor {
 
 
     @JsonCreator
-    public BuildingPositionAnchor(@JsonProperty("latitude")double latitude,
-                                  @JsonProperty("longitude")double longitude) {
+    public BuildingPositionAnchor(@JsonProperty("latitude") double latitude,
+                                  @JsonProperty("longitude") double longitude) {
 
         this.latitude = latitude;
         this.longitude = longitude;

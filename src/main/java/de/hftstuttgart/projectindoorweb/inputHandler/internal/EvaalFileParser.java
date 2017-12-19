@@ -1,7 +1,13 @@
 package de.hftstuttgart.projectindoorweb.inputHandler.internal;
 
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.EvaalFileHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.PosiReference;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMapElement;
+import de.hftstuttgart.projectindoorweb.persistence.entities.RssiSignal;
+import de.hftstuttgart.projectindoorweb.persistence.entities.WifiBlock;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +61,7 @@ public class EvaalFileParser extends Parser {
                     .filter(this::isDataValidForWifi).collect(Collectors.toList());
 
 
-
-            if(posiLines != null && !posiLines.isEmpty()){
+            if (posiLines != null && !posiLines.isEmpty()) {
 
 
                 List<PosiReference> unshiftedPosiReferences
@@ -68,7 +73,6 @@ public class EvaalFileParser extends Parser {
                         = EvaalFileHelper.assembleRssiSignals(rssiLines);
                 radiomapElements
                         = assembleRadiomapElements(posiReferences, rssiSignals);
-
 
 
             }

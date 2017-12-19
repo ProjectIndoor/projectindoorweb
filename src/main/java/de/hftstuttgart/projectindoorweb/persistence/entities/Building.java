@@ -1,6 +1,12 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +46,8 @@ public class Building {
     @OneToMany(targetEntity = Floor.class, cascade = CascadeType.ALL)
     private List<Floor> buildingFloors;
 
-    protected Building(){}
+    protected Building() {
+    }
 
     public Building(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight, double rotationAngle,
                     double metersPerPixel, Position northWest, Position northEast, Position southEast, Position southWest,
@@ -177,10 +184,10 @@ public class Building {
         this.buildingFloors = buildingFloors;
     }
 
-    private void initInitialFloors(int numberOfFloors){
+    private void initInitialFloors(int numberOfFloors) {
 
         this.buildingFloors = new ArrayList<>(numberOfFloors);
-        for(int i = 0; i < numberOfFloors; i++){
+        for (int i = 0; i < numberOfFloors; i++) {
             this.buildingFloors.add(i, new Floor(i));
         }
 

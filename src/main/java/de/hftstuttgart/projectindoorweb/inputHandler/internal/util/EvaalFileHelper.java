@@ -7,7 +7,10 @@ import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.Transformat
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.ProjectParameterResolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EvaalFileHelper {
 
@@ -132,7 +135,7 @@ public class EvaalFileHelper {
 
         return new PosiReference(-1, a.getAvgNumber() + b.getAvgNumber(),
                 new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z, false),
-                -1, -1, -1, -1,null);
+                -1, -1, -1, -1, null);
 
     }
 
@@ -422,22 +425,22 @@ public class EvaalFileHelper {
         for (RadioMapElement radioMapElement :
                 radioMap.getRadioMapElements()) {
             candidate = radioMapElement.getPosiReference();
-            if(useShiftedPosiReferences){
+            if (useShiftedPosiReferences) {
                 intervalStart = candidate.getShiftedIntervalStart();
                 intervalEnd = candidate.getShiftedIntervalEnd();
-            }else{
+            } else {
                 intervalStart = candidate.getOriginalIntervalStart();
                 intervalEnd = candidate.getOriginalIntervalEnd();
             }
             timeDeltaToStart = Math.abs(intervalStart - resultAppTimestamp);
             timeDeltaToEnd = Math.abs(intervalEnd - resultAppTimestamp);
-            if(timeDeltaToEnd >= timeDeltaToStart){
+            if (timeDeltaToEnd >= timeDeltaToStart) {
                 timeDelta = timeDeltaToStart;
-            }else{
+            } else {
                 timeDelta = timeDeltaToEnd;
             }
             if (timeDelta <= maximumConfiguredTimeDelta) {
-                if(timeDelta < smallestEncounteredTimeDelta){
+                if (timeDelta < smallestEncounteredTimeDelta) {
                     smallestEncounteredTimeDelta = timeDelta;
                     result = candidate;
                 }

@@ -1,8 +1,10 @@
 package de.hftstuttgart.projectindoorweb.positionCalculator;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
+import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
+import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
 
-import java.io.File;
 import java.util.List;
 
 public interface PositionCalculatorService {

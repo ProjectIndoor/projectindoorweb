@@ -14,7 +14,8 @@ public class Parameter {
     private String parameterName;
     private String parameterValue;
 
-    protected Parameter(){}
+    protected Parameter() {
+    }
 
     public Parameter(String parameterName, String parameterValue) {
         this.parameterName = parameterName;

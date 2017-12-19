@@ -1,7 +1,5 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LocXYZ;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;

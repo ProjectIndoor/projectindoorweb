@@ -1,16 +1,13 @@
 package de.hftstuttgart.projectindoorweb.positionCalculator;
 
-import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
-import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
+import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.EvaalFileHelper;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.MathHelper;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.ProjectParameterResolver;
 import de.hftstuttgart.projectindoorweb.positionCalculator.internal.utility.WifiMathHelper;
-import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
-import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
-import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.MathHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.*;
-import sun.security.krb5.Config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,9 +141,9 @@ public class WifiPositionCalculatorServiceImpl implements PositionCalculatorServ
 
             if (correlationMode == CorrelationMode.EUCLIDIAN) {
                 positionWeight = WifiMathHelper.calculateEuclidianRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
-            } else if(correlationMode == CorrelationMode.SCALAR){
+            } else if (correlationMode == CorrelationMode.SCALAR) {
                 positionWeight = WifiMathHelper.calculateScalarRssiDistance(rssiSignals, radioMapElement.getRssiSignals());
-            }else{
+            } else {
                 /*
                 * Include further correlation modes here.
                 * */

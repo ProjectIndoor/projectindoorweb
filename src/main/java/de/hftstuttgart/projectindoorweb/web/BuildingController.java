@@ -1,10 +1,12 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,9 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Api(value = "Building", description = "Provides operations for interaction with Buildings.", tags = "Building")
