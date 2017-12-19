@@ -37,6 +37,8 @@ public interface PersistencyService {
 
     EvaalFile getEvaalFileForId(long evaalFileId);
 
+    List<EvaalFile> getAllEvaalFiles();
+
     List<EvaalFile> getEvaluationFilesForBuilding(Building building);
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);

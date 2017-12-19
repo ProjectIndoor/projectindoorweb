@@ -394,6 +394,15 @@ public class PersistencyServiceImpl implements PersistencyService {
         return evaalFileRepository.findOne(evaalFileId);
     }
 
+    @Override
+    public List<EvaalFile> getAllEvaalFiles() {
+
+        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
+
+        return (List<EvaalFile>) evaalFileRepository.findAll();
+
+    }
+
 
     @Override
     public List<EvaalFile> getEvaluationFilesForBuilding(Building building) {

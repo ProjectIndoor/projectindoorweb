@@ -10,6 +10,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
+import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -517,7 +518,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     public List<GetAllEvaalEntries> getAllEvaalEntries() {
         List<GetAllEvaalEntries> result = new ArrayList<>();
 
-        return result; //TODO implement when ready
+        List<EvaalFile> evaalFilesFromDatabase = this.persistencyService.getAllEvaalFiles();
+        result = TransmissionHelper.convertToGetAlLEvaalEntries(evaalFilesFromDatabase);
+
+        return result;
     }
 
     @Override

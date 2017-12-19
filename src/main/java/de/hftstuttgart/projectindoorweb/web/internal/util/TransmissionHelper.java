@@ -362,5 +362,25 @@ public class TransmissionHelper {
 
     }
 
+    public static List<GetAllEvaalEntries> convertToGetAlLEvaalEntries(List<EvaalFile> evaalFiles){
+
+        List<GetAllEvaalEntries> result = new ArrayList<>(evaalFiles.size());
+
+
+        Building building;
+        String buildingName;
+        String evaalFileType;
+        for (EvaalFile evaalFile:
+             evaalFiles) {
+            building = evaalFile.getRecordedInBuilding();
+            buildingName = building == null ? "" : building.getBuildingName();
+            evaalFileType = evaalFile.isEvaluationFile() ? "Evaluation File" : "Radiomap File";
+            result.add(new GetAllEvaalEntries(evaalFile.getId(), evaalFile.getSourceFileName(), evaalFileType, buildingName));
+        }
+
+        return result;
+
+    }
+
 
 }
