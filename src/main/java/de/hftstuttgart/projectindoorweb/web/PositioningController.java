@@ -38,8 +38,8 @@ public class PositioningController {
                                         @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
                                                 MultipartFile[] radioMapFiles,
                                         @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
-                                                MultipartFile transformedPointsFile) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFile);
+                                                MultipartFile[] transformedPointsFiles) {
+        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)

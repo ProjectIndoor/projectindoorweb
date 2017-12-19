@@ -76,7 +76,8 @@ public final class POSILogMerger {
      * @param height        height of the picture
      * @return List with all POSI-Lines with filled in coordinates, floor and building informations
      */
-    public static List<String> combineReferencePointsWithPOSILines(final List<String> posiLines, final File referenceFile, final Building b, final int width, final int height) {
+    public static List<String> combineReferencePointsWithPOSILines(final List<String> posiLines, final File referenceFile,
+                                                                   final Building b, final int width, final int height) {
 
         List<XYPoint> points = readValuesFromFile(referenceFile);
         List<LLPoint> transformedPoints = new ArrayList<LLPoint>();
@@ -96,14 +97,15 @@ public final class POSILogMerger {
                 LLPoint p = transformedPoints.get(i);
                 line[3] = Double.toString(p.getCoords().latitude);
                 line[4] = Double.toString(p.getCoords().longitude);
-                line[5] = Double.toString(p.getFloor());
-                line[6] = Double.toString(p.getBuilding());
+                line[5] = Integer.toString(p.getFloor());
+                line[6] = Integer.toString(p.getBuilding());
 
                 result.add(line[0] + ";" + line[1] + ";" + line[2] + ";" + line[3] + ";" + line[4] + ";" + line[5] + ";" + line[6] + ";");
             } else {
                 result.add(posiLines.get(i));
             }
         }
+
         return result;
     }
 }

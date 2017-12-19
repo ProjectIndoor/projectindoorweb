@@ -20,7 +20,18 @@ public interface PreProcessingService {
      * @param radioMapFiles The files the PreProcessingService implementation will handle.
      * @return An instance of class {@link EvaalFile} that contains the generated radio map along with some meta information.
      */
-    List<EvaalFile> processIntoLogFiles(Building building, boolean evaluationFiles, File... radioMapFiles);
+    List<EvaalFile> processEvaalFiles(Building building, boolean evaluationFiles, List<File> radioMapFiles);
 
+
+    /**
+     * Insert meaningful documentation here.
+     *
+     * @param building
+     * @param evaluationFiles
+     * @param emptyRadioMapFiles
+     * @param referencePointFiles
+     * @return
+     */
+    List<EvaalFile> processEmptyEvaalFiles(Building building, boolean evaluationFiles, List<File> emptyRadioMapFiles, List<File> referencePointFiles);
 
 }

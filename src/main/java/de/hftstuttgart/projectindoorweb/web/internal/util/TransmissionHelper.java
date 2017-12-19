@@ -398,6 +398,23 @@ public class TransmissionHelper {
 
     }
 
+    public static List<File> convertMulipartFileBatchToLocalFileBatch(MultipartFile[] multipartFiles){
+
+        List<File> localFiles = new ArrayList<>(multipartFiles.length);
+
+        try {
+            for (int i = 0; i < multipartFiles.length; i++) {
+                localFiles.add(TransmissionHelper.convertMultipartFileToLocalFile(multipartFiles[i]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return localFiles;
+
+    }
+
 
 
 
