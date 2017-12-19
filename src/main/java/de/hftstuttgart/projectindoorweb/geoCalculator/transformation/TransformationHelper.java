@@ -16,11 +16,10 @@ import java.util.Iterator;
 /**
  * Helper-Class for coordinate-Transformation.
  */
-public class TransformationHelper {
-
+public final class TransformationHelper {
 
     /**
-     * Private constructor to prevent creating an object
+     * Private constructor to prevent creating an object.
      */
     private TransformationHelper() {
 

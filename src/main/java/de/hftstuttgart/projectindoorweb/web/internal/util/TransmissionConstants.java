@@ -29,7 +29,7 @@ public class TransmissionConstants { //TODO move to config container file and mo
     public static final String EVAAL_FILE_IDENTIFIER_PARAM = "evaalFileIdentifier";
     public static final String WITH_PIXEL_POSITION_PARAM = "withPixelPosition";
 
-    public static final String TRANSFORMED_POINTS_FILE_PARAM = "transformedPointsFile";
+    public static final String TRANSFORMED_POINTS_FILE_PARAM = "transformedPointsFiles";
 
     public static final String SAVE_NEW_PROJECT_NOTE = "Saves a new project in the database and returns its unique identifier. Returns -1 if save was not successful or given data was invalid.";
     public static final String SAVE_CURRENT_PROJECT_DATA_NOTE = "Overrides a given project with the given project data, based on the given project identifier. Returns true if successful, otherwise false.";
