@@ -1,16 +1,13 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllAlgorithmTypes;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllProjects;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.LoadSelectedProject;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.UpdateProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,12 +17,14 @@ import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+@Controller
 @RestController
 @Api(value = "/Project", description = "Operations for projects", tags = "Project")
 @RequestMapping("/project")
 public class ProjectController {
 
-    private RestTransmissionService restTransmissionService = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+    @Autowired
+    private RestTransmissionService restTransmissionService;
 
     @ApiOperation(value = "Save a new project", nickname = "project/addNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)

@@ -15,7 +15,7 @@ public class RestTransmissionServiceComponent {
     public static void initComponent(PersistencyService persistencyService, PreProcessingService preProcessingService,
                                      PositionCalculatorService positionCalculatorService) {
 
-        instance = new RestTransmissionServiceImpl(persistencyService, preProcessingService, positionCalculatorService);
+        //instance = new RestTransmissionServiceImpl(persistencyService, preProcessingService, positionCalculatorService);
     }
 
     public static void disposeComponent() {

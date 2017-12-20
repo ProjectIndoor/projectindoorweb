@@ -3,38 +3,16 @@ package de.hftstuttgart.projectindoorweb.web;
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.inputHandler.PreProcessingService;
 import de.hftstuttgart.projectindoorweb.persistence.PersistencyService;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.persistence.entities.WifiPositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.PositionCalculatorService;
 import de.hftstuttgart.projectindoorweb.positionCalculator.WifiPositionCalculatorServiceImpl;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.CalculatedPosition;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateSinglePositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.ReferencePosition;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllAlgorithmTypes;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllProjects;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.LoadSelectedProject;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.UpdateProject;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -44,18 +22,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class RestTransmissionServiceImpl implements RestTransmissionService {
 
+    @Autowired
     private PersistencyService persistencyService;
+    @Autowired
     private PreProcessingService preProcessingService;
+    @Autowired
     private PositionCalculatorService positionCalculatorService;
-
-    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService,
-                                       PositionCalculatorService positionCalculatorService) {
-        this.persistencyService = persistencyService;
-        this.preProcessingService = preProcessingService;
-        this.positionCalculatorService = positionCalculatorService;
-    }
 
     @Override
     public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles,

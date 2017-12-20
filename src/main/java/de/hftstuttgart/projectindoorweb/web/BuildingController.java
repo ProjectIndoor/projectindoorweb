@@ -7,10 +7,12 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBui
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,13 +26,14 @@ import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+@Controller
 @RestController
 @Api(value = "Building", description = "Provides operations for interaction with Buildings.", tags = "Building")
 @RequestMapping("/building")
 public class BuildingController {
 
-    private RestTransmissionService restTransmissionService
-            = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+    @Autowired
+    private RestTransmissionService restTransmissionService;
 
     @ApiOperation(value = "Add a new building", nickname = "building/addNewBuilding",
             notes = TransmissionConstants.ADD_NEW_BUILDING_NOTE)
