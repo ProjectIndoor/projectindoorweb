@@ -1,17 +1,13 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateSinglePositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,13 +18,14 @@ import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+@Controller
 @RestController
 @Api(value = "Position", description = "Operations for positions", tags = "Position")
 @RequestMapping("/position")
 public class PositioningController {
 
-    private RestTransmissionService restTransmissionService
-            = RestTransmissionServiceComponent.getRestTransmissionServiceInstance();
+    @Autowired
+    private RestTransmissionService restTransmissionService;
 
 
     @ApiOperation(value = "Processes Radio Map files", nickname = "position/processRadioMapFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)

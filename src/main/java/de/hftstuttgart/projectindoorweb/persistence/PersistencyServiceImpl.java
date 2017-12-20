@@ -3,19 +3,9 @@ package de.hftstuttgart.projectindoorweb.persistence;
 import de.hftstuttgart.projectindoorweb.application.internal.AssertParam;
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
-import de.hftstuttgart.projectindoorweb.persistence.entities.RadioMap;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.persistence.internal.util.PersistencyConstants;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.EvaalFileRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.FloorRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.RadioMapRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
@@ -23,6 +13,8 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewPro
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +30,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class PersistencyServiceImpl implements PersistencyService {
+
+    @Autowired
+    BuildingRepository buildingRepository;
+    @Autowired
+    EvaalFileRepository evaalFileRepository;
+    @Autowired
+    ProjectRepository projectRepository;
+    @Autowired
+    FloorRepository floorRepository;
 
     @Override
     public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
@@ -47,9 +49,6 @@ public class PersistencyServiceImpl implements PersistencyService {
         AssertParam.throwIfNullOrEmpty(projectName, "projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
         //AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
-
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
         if (calculationAlgorithm == null) {
@@ -75,7 +74,6 @@ public class PersistencyServiceImpl implements PersistencyService {
             projectToBeSaved = new Project(projectName, calculationAlgorithm, parametersAsList, building, evaluationFile, evaalFileList);
         }
 
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
         projectToBeSaved = projectRepository.save(projectToBeSaved);
 
         if (projectToBeSaved != null) {
@@ -98,10 +96,6 @@ public class PersistencyServiceImpl implements PersistencyService {
         AssertParam.throwIfNull(buildingIdentifier, "buildingIdentifier");
         AssertParam.throwIfNull(evalFileIdentifier, "evalFileIdentifier");
         AssertParam.throwIfNull(radioMapFileIdentifiers, "radioMapFileIdentifiers");
-
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         Project projectToBeUpdated = projectRepository.findOne(projectId);
 
@@ -147,8 +141,6 @@ public class PersistencyServiceImpl implements PersistencyService {
     public boolean deleteProject(long projectId) {
 
         AssertParam.throwIfNull(projectId, "projectId");
-
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         projectRepository.delete(projectId);
         Project project = projectRepository.findOne(projectId);
@@ -214,7 +206,6 @@ public class PersistencyServiceImpl implements PersistencyService {
                 rotationAngle, metersPerPixel, northWestPosition, northEastPosition, southEastPosition,
                 southWestPosition, buildingCenterPosition);
 
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
 
         if (buildingToBeSaved != null) {
@@ -232,16 +223,12 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(projectId, "projectId");
 
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
-
         return projectRepository.findOne(projectId);
 
     }
 
     @Override
     public List<Project> getAllProjects() {
-
-        ProjectRepository projectRepository = (ProjectRepository) RepositoryRegistry.getRepositoryByEntityName(Project.class.getName());
 
         return (List<Project>) projectRepository.findAll();
 
@@ -250,10 +237,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public List<Building> getAllBuildings() {
 
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
-
         return (List<Building>) buildingRepository.findAll();
-
 
     }
 
@@ -261,8 +245,6 @@ public class PersistencyServiceImpl implements PersistencyService {
     public Building getBuildingById(long buildingId) {
 
         AssertParam.throwIfNull(buildingId, "buildingId");
-
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
 
         return buildingRepository.findOne(buildingId);
 
@@ -299,7 +281,6 @@ public class PersistencyServiceImpl implements PersistencyService {
             buildingToBeUpdated.setRotationAngle(rotationAngle);
             buildingToBeUpdated.setMetersPerPixel(metersPerPixel);
 
-            BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
             return buildingRepository.save(buildingToBeUpdated) != null;
         }
 
@@ -345,7 +326,6 @@ public class PersistencyServiceImpl implements PersistencyService {
             floor.setFloorMapUrl(cleanFloorMapUrl);
         }
 
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         return fileWriteSuccess && buildingRepository.save(building) != null;
 
     }
@@ -353,7 +333,6 @@ public class PersistencyServiceImpl implements PersistencyService {
     @Override
     public File getFloorMapByFloorId(long floorId) throws IOException {
 
-        FloorRepository floorRepository = (FloorRepository) RepositoryRegistry.getRepositoryByEntityName(Floor.class.getName());
         Floor floorFromDatabase = floorRepository.findOne(floorId);
 
         if (floorFromDatabase != null) {
@@ -375,7 +354,6 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(buildingId, "buildingId");
 
-        BuildingRepository buildingRepository = (BuildingRepository) RepositoryRegistry.getRepositoryByEntityName(Building.class.getName());
         buildingRepository.delete(buildingId);
         Building deletedBuilding = buildingRepository.findOne(buildingId);
         return deletedBuilding == null;
@@ -388,8 +366,6 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(evaalFiles, "evaalFiles");
 
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
-
         Iterable<EvaalFile> saved = evaalFileRepository.save(evaalFiles);
 
         return saved != null;
@@ -401,15 +377,11 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(evaalFileId, "evaalFileId");
 
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
-
         return evaalFileRepository.findOne(evaalFileId);
     }
 
     @Override
     public List<EvaalFile> getAllEvaalFiles() {
-
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         return (List<EvaalFile>) evaalFileRepository.findAll();
 
@@ -421,8 +393,6 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(building, "building");
 
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
-
         return evaalFileRepository.findByRecordedInBuildingAndAndEvaluationFileTrue(building);
 
     }
@@ -431,8 +401,6 @@ public class PersistencyServiceImpl implements PersistencyService {
     public List<EvaalFile> getRadioMapFilesForBuiling(Building building) {
 
         AssertParam.throwIfNull(building, "building");
-
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
 
         return evaalFileRepository.findByRecordedInBuildingAndEvaluationFileFalse(building);
 
@@ -443,7 +411,6 @@ public class PersistencyServiceImpl implements PersistencyService {
 
         AssertParam.throwIfNull(evaalFileId, "evaalFileId");
 
-        EvaalFileRepository evaalFileRepository = (EvaalFileRepository) RepositoryRegistry.getRepositoryByEntityName(EvaalFile.class.getName());
         evaalFileRepository.delete(evaalFileId);
         EvaalFile deletedEvaalFile = evaalFileRepository.findOne(evaalFileId);
         return deletedEvaalFile == null;
