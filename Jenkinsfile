@@ -21,7 +21,7 @@ pipeline {
        }
        stage('Check') {
           steps{
-              // Run checkstyle and show results
+              // Collect checkstyle findbugs and pmd results
               step([$class: "CheckStylePublisher",
                     canComputeNew: false,
                     defaultEncoding: "",
@@ -35,6 +35,7 @@ pipeline {
    }
    post {
        failure {
+            // Send a slack message when a build fails
             slackSend color: '#FF5555', message: 'Build failed!'
        }
 
