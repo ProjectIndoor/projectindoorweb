@@ -32,6 +32,17 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Autowired
     private PositionCalculatorService positionCalculatorService;
 
+    public RestTransmissionServiceImpl() {
+        //Nothing to do here
+    }
+
+    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService,
+                                       PositionCalculatorService positionCalculatorService) {
+        this.persistencyService = persistencyService;
+        this.preProcessingService = preProcessingService;
+        this.positionCalculatorService = positionCalculatorService;
+    }
+
     @Override
     public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles,
                                      MultipartFile[] radioMapFiles, MultipartFile[] transformedPointsFiles) {
