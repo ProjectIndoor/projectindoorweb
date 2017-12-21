@@ -67,7 +67,8 @@ public class BuildingController {
     @RequestMapping(path = "/updateBuilding", method = POST)
     public boolean updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
 
-        return restTransmissionService.updateBuilding(updateBuilding);
+        String operationResult = restTransmissionService.updateBuilding(updateBuilding);
+        return true;//TODO Do useful stuff with 'operationResult'
 
     }
 
@@ -106,7 +107,8 @@ public class BuildingController {
     public boolean deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                   String buildingIdentifier) {
-        return restTransmissionService.deleteBuilding(buildingIdentifier);
+        String operationResult = restTransmissionService.deleteBuilding(buildingIdentifier);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 
     @ApiOperation(value = "Add a new floor to a given building", nickname = "building/addFloorToBuilding",
@@ -123,6 +125,7 @@ public class BuildingController {
                                               String floorName,
                                       @RequestParam(value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
                                               MultipartFile floorMapFile) {
-        return restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
+        String operationResult = restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 }

@@ -35,7 +35,8 @@ public class ProjectController {
     @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
     @RequestMapping(path = "/saveCurrentProject", method = POST)
     public boolean saveCurrentProject(@RequestBody UpdateProject updateProject) {
-        return restTransmissionService.updateProject(updateProject);
+        String operationResult = restTransmissionService.updateProject(updateProject);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 
     @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)
@@ -43,7 +44,8 @@ public class ProjectController {
     public boolean deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                  String projectIdentifier) {
-        return restTransmissionService.deleteProject(projectIdentifier);
+        String operationResult = restTransmissionService.deleteProject(projectIdentifier);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 
 

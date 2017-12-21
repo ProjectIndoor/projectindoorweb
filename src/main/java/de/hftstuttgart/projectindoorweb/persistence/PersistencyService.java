@@ -25,19 +25,19 @@ public interface PersistencyService {
 
     Building getBuildingById(long buildingId);
 
-    boolean updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
+    String updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
                            Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
                            double rotationAngle, double metersPerPixel);
 
-    boolean updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException;
+    String updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException;
 
     File getFloorMapByFloorId(long floorId) throws IOException;
 
-    boolean deleteBuilding(long buildingId);
+    String deleteBuilding(long buildingId);
 
 
     /*Evaal files*/
-    boolean saveEvaalFiles(List<EvaalFile> evaalFiles);
+    String saveEvaalFiles(List<EvaalFile> evaalFiles);
 
     EvaalFile getEvaalFileForId(long evaalFileId);
 
@@ -47,18 +47,18 @@ public interface PersistencyService {
 
     List<EvaalFile> getRadioMapFilesForBuiling(Building building);
 
-    boolean deleteEvaalFile(long evaalFileId);
+    String deleteEvaalFile(long evaalFileId);
 
 
     /*Projects*/
     long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
                           long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers);
 
-    boolean updateProject(long projectId, String newProjectName, String newAlgorithmType,
+    String updateProject(long projectId, String newProjectName, String newAlgorithmType,
                           Set<SaveNewProjectParameters> newSaveNewProjectParameters, long buildingIdentifier,
                           long evalFileIdentifier, long[] radioMapFileIdentifiers);
 
-    boolean deleteProject(long projectId);
+    String deleteProject(long projectId);
 
     List<Project> getAllProjects();
 

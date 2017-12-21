@@ -36,7 +36,9 @@ public class PositioningController {
                                                 MultipartFile[] radioMapFiles,
                                         @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
                                                 MultipartFile[] transformedPointsFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
+        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
+        return true;//TODO Do useful stuff with 'operationResult'
+
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
@@ -45,7 +47,8 @@ public class PositioningController {
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                     @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
                                             MultipartFile[] evalFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 
     @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
@@ -53,7 +56,9 @@ public class PositioningController {
     public boolean deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                    String evaalFileIdentifier) {
-        return restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
+
+        String operationResult = restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
+        return true;//TODO Do useful stuff with 'operationResult'
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
