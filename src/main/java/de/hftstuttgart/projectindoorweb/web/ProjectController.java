@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
@@ -34,18 +35,18 @@ public class ProjectController {
 
     @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
     @RequestMapping(path = "/saveCurrentProject", method = POST)
-    public boolean saveCurrentProject(@RequestBody UpdateProject updateProject) {
+    public ResponseEntity saveCurrentProject(@RequestBody UpdateProject updateProject) {
         String operationResult = restTransmissionService.updateProject(updateProject);
-        return true;//TODO Do useful stuff with 'operationResult'
+        return HttpResultHandler.getInstance().handleSimpleProjectResult(operationResult);
     }
 
     @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)
     @RequestMapping(path = "/deleteSelectedProject", method = DELETE)
-    public boolean deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
+    public ResponseEntity deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                  String projectIdentifier) {
         String operationResult = restTransmissionService.deleteProject(projectIdentifier);
-        return true;//TODO Do useful stuff with 'operationResult'
+        return HttpResultHandler.getInstance().handleSimpleProjectResult(operationResult);
     }
 
 
