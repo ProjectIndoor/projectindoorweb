@@ -22,17 +22,17 @@ app.config(['$routeProvider',
                 controller: 'MapCtrl'
             })
             .when('/edit', {
-                title: 'Edit',
+                title: 'Manage Data',
                 templateUrl: 'pages/edit.html',
                 controller: 'LogImportCtrl'
             })
             .when('/import', {
-                title: 'Import',
+                title: 'Import Data',
                 templateUrl: 'pages/import.html',
                 controller: 'LogImportCtrl'
             })
             .when('/project', {
-                title: 'Project',
+                title: 'Projects',
                 templateUrl: 'pages/project.html',
                 controller: 'ProjectCtrl'
             })
@@ -938,21 +938,44 @@ app.factory('toastService', ToastService);
 
 // ------------- Controllers
 // controller which handels page navigation
-app.controller('NavToolbarCtrl', function ($scope, $timeout) {
+function NavigationController($scope, $mdSidenav) {
+    // Logic to open/hide navigation sidebar
+    $scope.toggleLeft = buildToggler('left');
+    $scope.toggleRight = buildToggler('right');
+
+
     $scope.currentTitle = 'Map View';
 
     // change Toolbar title when route changes
     $scope.$on('$routeChangeSuccess', function (event, current) {
         $scope.currentTitle = current.title;
+        $scope.currentLink = getCurrentLinkFromRoute(current);
     });
 
-});
+    $scope.isCurrent = function (link) {
+        return $scope.currentLink === link;
+    };
+
+    function buildToggler(componentId) {
+        return function () {
+            $mdSidenav(componentId).toggle();
+        };
+    }
+
+    function getCurrentLinkFromRoute(current) {
+        if (current.$$route.originalPath.substring(0, 1) == '/') {
+            return current.$$route.originalPath.substring(1)
+        }
+        else {
+            return current.$$route.originalPath
+        }
+    }
+}
+app.controller('NavigationCtrl', NavigationController);
 
 // controller which handles map configuration panel
-app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calculationService, mapService) {
+function MapSettingsController($scope, $timeout, $mdSidenav, calculationService, mapService) {
     // Logic to open/hide sidebar
-    $scope.toggleLeft = buildToggler('left');
-    $scope.toggleRight = buildToggler('right');
 
     $scope.markerShow = {
         showRefVal: true,
@@ -998,11 +1021,7 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
         }
     };
 
-    function buildToggler(componentId) {
-        return function () {
-            $mdSidenav(componentId).toggle();
-        };
-    }
+    $scope.clearMap = mapService.clearMap;
 
     // project settings
     // properties
@@ -1014,7 +1033,9 @@ app.controller('MapSettingsCtrl', function ($scope, $timeout, $mdSidenav, calcul
 
     // decide when to hide/show project interface
     $scope.projectShow = calculationService.isAlgorithmReady;
-});
+}
+app.controller('MapSettingsCtrl', MapSettingsController);
+
 
 // controller which handles the map
 function MapController($scope, mapService) {
@@ -1031,8 +1052,6 @@ function MapController($scope, mapService) {
         noRefCalcPoints: mapService.noRefCalcPoints,
         pathsLayer: mapService.pathsLayer
     });
-
-
 }
 
 app.controller('MapCtrl', MapController);

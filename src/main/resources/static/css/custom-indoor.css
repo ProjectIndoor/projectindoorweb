@@ -37,14 +37,34 @@
 }
 
 /* ----------- Own CSS */
+.md-sidenav-right.indoor-nav {
+    width: 550px;
+    max-width: 100%;
+}
+
 .md-sidenav-left.indoor-nav {
-    width: 30%;
+    width: 400px;
     max-width: 100%;
 }
 
 .indoor-toolbar {
     top: 0;
     position: fixed;
+}
+
+.nav-icon {
+    padding-left: 5px;
+    padding-right: 35px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.nav-active {
+    color: #a11657;
+}
+
+.nav-inactive {
+    color: #07405b;
 }
 
 .mapview {
@@ -109,7 +129,7 @@
     max-height: 70%;
 }
 
-.project-dialog-content {
+.dialog-content {
     padding: 0 15px;
     width: 100%;
     max-height: 50vh;

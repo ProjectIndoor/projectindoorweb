@@ -24,27 +24,61 @@
 -->
 <!-- Toolbar -->
 <md-toolbar class="">
-    <div ng-controller="NavToolbarCtrl" class="md-toolbar-tools">
-        <md-button ng-controller="MapSettingsCtrl" ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
+    <div ng-controller="NavigationCtrl" class="md-toolbar-tools">
+        <md-button ng-click="toggleLeft()" class="md-icon-button" aria-label="Menu">
             <i class="material-icons">menu</i>
         </md-button>
 
         <h2 flex md-truncate>{{ currentTitle }}</h2>
 
-        <a href="#map" class="md-button" aria-label="Map">
-            Map
-        </a>
-        <a href="#edit" class="md-button" aria-label="Edit">
-            Edit
-        </a>
-        <a href="#import" class="md-button" aria-label="Import Data">
-            Import Data
-        </a>
-        <a href="#project" class="md-button" aria-label="Project">
-            Project
-        </a>
+        <md-button ng-show="isCurrent('map')" ng-controller="NavigationCtrl" ng-click="toggleRight()" class="md-icon-button" aria-label="Menu">
+            <i class="material-icons">settings</i>
+        </md-button>
     </div>
 </md-toolbar>
+
+<!-- Sidebar definition for the map editor -->
+<md-sidenav class="md-sidenav-left indoor-nav" md-component-id="left"
+            md-whiteframe="4">
+
+    <!-- Toolbar title -->
+    <md-toolbar ng-controller="NavigationCtrl" class="md-theme-indigo" layout="row" layout-align="start center">
+        <md-button class="md-icon-button" ng-click="toggleLeft()">
+            <i class="material-icons">arrow_back</i>
+        </md-button>
+        <h1 class="md-toolbar-tools">Navigate</h1>
+    </md-toolbar>
+
+    <md-content ng-controller="NavigationCtrl">
+
+        <md-list ng-cloak>
+
+            <md-list-item href="#map" ng-click="toggleLeft()" aria-label="Maps"
+                          ng-class="{true: 'nav-active', false: 'nav-inactive'}[isCurrent('map')]">
+                <i class="material-icons nav-icon">map</i>
+                <p>Map View</p>
+            </md-list-item>
+            <md-list-item href="#project" ng-click="toggleLeft()" aria-label="Project"
+                          ng-class="{true: 'nav-active', false: 'nav-inactive'}[isCurrent('project')]">
+                <i class="material-icons nav-icon">assignment</i>
+                <p> View Projects </p>
+            </md-list-item>
+            <md-list-item href="#import" ng-click="toggleLeft()" aria-label="Import Data"
+                          ng-class="{true: 'nav-active', false: 'nav-inactive'}[isCurrent('import')]">
+                <i class="material-icons nav-icon">import_export</i>
+                <p>Import Data</p>
+            </md-list-item>
+            <md-list-item href="#edit" ng-click="toggleLeft()" aria-label="Edit"
+                          ng-class="{true: 'nav-active', false: 'nav-inactive'}[isCurrent('edit')]">
+                <i class="material-icons nav-icon">edit</i>
+                <p>Manage Data</p>
+            </md-list-item>
+
+        </md-list>
+
+    </md-content>
+
+</md-sidenav>
 
 <!-- Content -->
 <md-content flex>
