@@ -974,9 +974,7 @@ function NavigationController($scope, $mdSidenav) {
 app.controller('NavigationCtrl', NavigationController);
 
 // controller which handles map configuration panel
-function MapSettingsController($scope, $timeout, $mdSidenav, calculationService, mapService) {
-    // Logic to open/hide sidebar
-
+function MapSettingsController($scope, calculationService, mapService) {
     $scope.markerShow = {
         showRefVal: true,
         showPosVal: true,

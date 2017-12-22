@@ -3,9 +3,10 @@
   "short_name": "Project Indoor ",
   "description": "An application to evaluate the performance of indoor positioning algorithms",
   "lang": "en-US",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "theme_color": "#a11657",
+  "background_color": "#FAFAFA",
   "icons": [
     {
       "src": "icons/launcher-icon-1x.png",
@@ -20,6 +21,11 @@
     {
       "src": "icons/launcher-icon-4x.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/launcher-icon-4x.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
