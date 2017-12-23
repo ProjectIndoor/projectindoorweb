@@ -40,7 +40,7 @@ public class TransmissionHelper {
 
     public static File convertMultipartFileToLocalFile(MultipartFile multipartFile) throws IOException {
 
-        File convertedFile = new File(multipartFile.getOriginalFilename());
+        File convertedFile = new File(System.getProperty("java.io.tmpdir"), multipartFile.getOriginalFilename());
         convertedFile.createNewFile();
         FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
         fileOutputStream.write(multipartFile.getBytes());

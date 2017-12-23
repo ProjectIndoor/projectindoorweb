@@ -356,7 +356,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             long buildingId = Long.valueOf(buildingIdentifier);
             Building building = this.persistencyService.getBuildingById(buildingId);
 
-            result = TransmissionHelper.convertToGetSingleBuildingResultObject(building);
+            if(building != null){
+                result = TransmissionHelper.convertToGetSingleBuildingResultObject(building);
+            }
 
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
