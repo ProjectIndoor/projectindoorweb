@@ -10,6 +10,7 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
+import de.hftstuttgart.projectindoorweb.web.internal.util.ResponseConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,24 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     @Autowired
     private PositionCalculatorService positionCalculatorService;
 
+    public RestTransmissionServiceImpl() {
+        //Nothing to do here
+    }
+
+    public RestTransmissionServiceImpl(PersistencyService persistencyService, PreProcessingService preProcessingService,
+                                       PositionCalculatorService positionCalculatorService) {
+        this.persistencyService = persistencyService;
+        this.preProcessingService = preProcessingService;
+        this.positionCalculatorService = positionCalculatorService;
+    }
+
     @Override
-    public boolean processEvaalFiles(String buildingIdentifier, boolean evaluationFiles,
+    public String processEvaalFiles(String buildingIdentifier, boolean evaluationFiles,
                                      MultipartFile[] radioMapFiles, MultipartFile[] transformedPointsFiles) {
 
         if (buildingIdentifier == null || buildingIdentifier.isEmpty()
                 || radioMapFiles == null || radioMapFiles.length == 0) {
-            return false;
+            return ResponseConstants.EVAAL_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
         if (transformedPointsFiles == null || transformedPointsFiles.length == 0) {
@@ -50,9 +62,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean deleteEvaalFile(String evaalFileIdentifier) {
+    public String deleteEvaalFile(String evaalFileIdentifier) {
         if (AssertParam.isNullOrEmpty(evaalFileIdentifier)) {
-            return false;
+            return ResponseConstants.EVAAL_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
         try {
@@ -60,7 +72,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return this.persistencyService.deleteEvaalFile(evaalFileId);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
-            return false;
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
 
     }
@@ -236,11 +248,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean updateProject(UpdateProject updateProject) {
+    public String updateProject(UpdateProject updateProject) {
 
 
         if (updateProject == null) {
-            return false;
+            return ResponseConstants.PROJECT_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
 
@@ -256,17 +268,18 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean deleteProject(String projectIdentifier) {
+    public String deleteProject(String projectIdentifier) {
 
         if (AssertParam.isNullOrEmpty(projectIdentifier)) {
-            return false;
+            return ResponseConstants.PROJECT_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
         try {
             long projectId = Long.parseLong(projectIdentifier);
             return this.persistencyService.deleteProject(projectId);
         } catch (NumberFormatException ex) {
-            return false;
+            ex.printStackTrace();
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
 
     }
@@ -343,7 +356,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             long buildingId = Long.valueOf(buildingIdentifier);
             Building building = this.persistencyService.getBuildingById(buildingId);
 
-            result = TransmissionHelper.convertToGetSingleBuildingResultObject(building);
+            if(building != null){
+                result = TransmissionHelper.convertToGetSingleBuildingResultObject(building);
+            }
 
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
@@ -355,10 +370,10 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean updateBuilding(UpdateBuilding updateBuilding) {
+    public String updateBuilding(UpdateBuilding updateBuilding) {
 
         if (updateBuilding == null) {
-            return false;
+            return ResponseConstants.BUILDING_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
         long buildingId = updateBuilding.getBuildingId();
@@ -383,11 +398,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile) {
+    public String addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile) {
 
         if (AssertParam.isNullOrEmpty(buildingIdentifier) || AssertParam.isNullOrEmpty(floorIdentifier) ||
                 AssertParam.isNullOrEmpty(floorName) || floorMapFile == null) {
-            return false;
+            return ResponseConstants.FLOOR_UPDATE_FAILURE_INVALID_DATA_RECEIVED;
         }
 
         try {
@@ -404,14 +419,20 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                     floor.setFloorName(floorName);
                     File floorMapLocalFile = TransmissionHelper.convertMultipartFileToLocalFile(floorMapFile);
                     return this.persistencyService.updateBuilding(buildingFromDatabase, floor, floorMapLocalFile);
+                }else{
+                    return ResponseConstants.FLOOR_UPDATE_FAILURE_ID_NOT_FOUND;
                 }
+
+            }else{
+                return ResponseConstants.BUILDING_GENERAL_FAILURE_ID_NOT_FOUND;
             }
 
         } catch (NumberFormatException | IOException e) {
             e.printStackTrace();
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
 
-        return false;
+
 
 
     }
@@ -434,9 +455,9 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
     }
 
     @Override
-    public boolean deleteBuilding(String buildingIdentifier) {
+    public String deleteBuilding(String buildingIdentifier) {
         if (AssertParam.isNullOrEmpty(buildingIdentifier)) {
-            return false;
+            return ResponseConstants.BUILDING_GENERAL_FAILURE_NO_DATA_RECEIVED;
         }
 
         try {
@@ -444,7 +465,7 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
             return this.persistencyService.deleteBuilding(buildingId);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
-            return false;
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
 
     }
@@ -576,12 +597,12 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
         }
     }
 
-    private boolean processEvaalFilesWithoutTransformedPoints(String buildingIdentifier, boolean evaluationFiles,
+    private String processEvaalFilesWithoutTransformedPoints(String buildingIdentifier, boolean evaluationFiles,
                                                               MultipartFile[] radioMapFiles) {
 
         List<File> radioMapList = TransmissionHelper.convertMulipartFileBatchToLocalFileBatch(radioMapFiles);
         if (radioMapList == null) {
-            return false;
+            return ResponseConstants.EVAAL_PROCESSING_GENERAL_FAILURE_RADIOMAPS_NULL;
         }
 
         try {
@@ -592,21 +613,22 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                 List<EvaalFile> processedEvaalFiles = this.preProcessingService.processEvaalFiles(building, evaluationFiles, radioMapList);
                 return this.persistencyService.saveEvaalFiles(processedEvaalFiles);
             } else {
-                return false;
+                return ResponseConstants.BUILDING_GENERAL_FAILURE_ID_NOT_FOUND;
             }
 
 
         } catch (NumberFormatException ex) {
-            return false;
+            ex.printStackTrace();
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
     }
 
 
-    private boolean processEvaalFilesWithTransformedPoints(String buildingIdentifier, boolean evaluationFiles,
+    private String processEvaalFilesWithTransformedPoints(String buildingIdentifier, boolean evaluationFiles,
                                                            MultipartFile[] radioMapFiles, MultipartFile[] transformedPointsFile) {
 
         if (radioMapFiles.length != transformedPointsFile.length) {
-            return false;
+            return ResponseConstants.EVAAL_PROCESSING_FAILURE_FILE_LIST_LENGTH_UNEQUAL;
         }
 
         List<File> emptyRadioMapFiles = TransmissionHelper.convertMulipartFileBatchToLocalFileBatch(radioMapFiles);
@@ -621,10 +643,11 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
                         .processEmptyEvaalFiles(building, evaluationFiles, emptyRadioMapFiles, referencePointFiles);
                 return this.persistencyService.saveEvaalFiles(processedEvalFiles);
             } else {
-                return false;
+                return ResponseConstants.BUILDING_GENERAL_FAILURE_ID_NOT_FOUND;
             }
         } catch (NumberFormatException ex) {
-            return false;
+            ex.printStackTrace();
+            return ResponseConstants.GENERAL_FAILURE_UNPARSABLE_NUMBER;
         }
 
 

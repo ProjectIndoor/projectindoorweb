@@ -11,9 +11,11 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingP
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAlgorithmParameters;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import de.hftstuttgart.projectindoorweb.web.internal.util.ParameterHelper;
+import de.hftstuttgart.projectindoorweb.web.internal.util.ResponseConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -86,8 +88,8 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParameters,
-                                 long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers) {
+    public String updateProject(long projectId, String newProjectName, String newAlgorithmType, Set<SaveNewProjectParameters> newSaveNewProjectParameters,
+                                long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers) {
 
         AssertParam.throwIfNull(projectId, "projectId");
         AssertParam.throwIfNullOrEmpty(newProjectName, "newProjectName");
@@ -102,7 +104,7 @@ public class PersistencyServiceImpl implements PersistencyService {
         if (projectToBeUpdated != null) {
             CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(newAlgorithmType);
             if (calculationAlgorithm == null) {
-                return false;
+                return ResponseConstants.PROJECT_UPDATE_FAILURE_ALGORITHM_NULL;
             }
 
             List<Parameter> parametersAsList = convertToEntityParameters(newSaveNewProjectParameters);
@@ -127,25 +129,38 @@ public class PersistencyServiceImpl implements PersistencyService {
                 projectToBeUpdated.setProjectParameters(projectParameters);
                 projectToBeUpdated.setEvaluationFile(evaluationFile);
                 projectToBeUpdated.setEvaalFiles(evaalFileList);
-                return projectRepository.save(projectToBeUpdated) != null;
+
+                boolean operationSuccessful = projectRepository.save(projectToBeUpdated) != null;
+                if (operationSuccessful) {
+                    return ResponseConstants.PROJECT_UPDATE_SUCCESS;
+                } else {
+                    return ResponseConstants.PROJECT_UPDATE_FAILURE_DB_WRITE;
+                }
+            }else{
+                return ResponseConstants.PROJECT_UPDATE_FAILURE_INVALID_DATA;
             }
+        } else {
+            return ResponseConstants.PROJECT_UPDATE_FAILURE_ID_NOT_FOUND;
         }
 
-
-        return false;
 
     }
 
 
     @Override
-    public boolean deleteProject(long projectId) {
+    public String deleteProject(long projectId) {
 
         AssertParam.throwIfNull(projectId, "projectId");
 
         projectRepository.delete(projectId);
         Project project = projectRepository.findOne(projectId);
 
-        return project == null;
+        boolean operationSuccessful =  project == null;
+        if(operationSuccessful){
+            return ResponseConstants.PROJECT_DELETE_SUCCESS;
+        }else{
+            return ResponseConstants.PROJECT_DELETE_FAILURE_DB_WRITE;
+        }
 
     }
 
@@ -251,9 +266,9 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
-                                  Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
-                                  double rotationAngle, double metersPerPixel) {
+    public String updateBuilding(long buildingId, String buildingName, int imagePixelWidth, int imagePixelHeight,
+                                 Position northWest, Position northEast, Position southEast, Position southWest, Position buildingCenterPoint,
+                                 double rotationAngle, double metersPerPixel) {
 
         AssertParam.throwIfNull(buildingId, "buildingId");
         AssertParam.throwIfNullOrEmpty(buildingName, "buildingName");
@@ -281,16 +296,21 @@ public class PersistencyServiceImpl implements PersistencyService {
             buildingToBeUpdated.setRotationAngle(rotationAngle);
             buildingToBeUpdated.setMetersPerPixel(metersPerPixel);
 
-            return buildingRepository.save(buildingToBeUpdated) != null;
+            boolean operationSuccessful = buildingRepository.save(buildingToBeUpdated) != null;
+            if (operationSuccessful) {
+                return ResponseConstants.BUILDING_UPDATE_SUCCESS;
+            } else {
+                return ResponseConstants.BUILDING_UPDATE_FAILURE_DB_WRITE;
+            }
+        } else {
+            return ResponseConstants.BUILDING_GENERAL_FAILURE_ID_NOT_FOUND;
         }
-
-        return false;
 
 
     }
 
     @Override
-    public boolean updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException {
+    public String updateBuilding(Building building, Floor floor, File floorMapFile) throws IOException {
 
         AssertParam.throwIfNull(building, "building");
         AssertParam.throwIfNull(floor, "floor");
@@ -302,7 +322,7 @@ public class PersistencyServiceImpl implements PersistencyService {
         }
 
 
-        boolean fileWriteSuccess = doInitialImageFolderSetup(buildingName);
+        boolean fileWriteLocalFsSuccess = doInitialImageFolderSetup(buildingName);
 
         String localTargetFileName = replaceFileEnding(floorMapFile, PersistencyConstants.IMAGE_TARGET_FILE_ENDING);
         String separator = File.separator;
@@ -313,11 +333,11 @@ public class PersistencyServiceImpl implements PersistencyService {
         if (!Files.exists(localFilePath)) {
             OutputStream outputStream = new FileOutputStream(localFilePath.toFile());
             BufferedImage bufferedImage = ImageIO.read(floorMapFile);
-            fileWriteSuccess = ImageIO.write(bufferedImage, PersistencyConstants.IMAGE_TARGET_FILE_ENDING, outputStream);
+            fileWriteLocalFsSuccess = ImageIO.write(bufferedImage, PersistencyConstants.IMAGE_TARGET_FILE_ENDING, outputStream);
         }
 
 
-        if (fileWriteSuccess) {
+        if (fileWriteLocalFsSuccess) {
             String cleanFloorMapPath = String.format("%s%s%s%s%s", PersistencyConstants.LOCAL_MAPS_DIR, separator,
                     building.getBuildingName(), separator, localFile.getName());
             floor.setFloorMapPath(cleanFloorMapPath);
@@ -326,7 +346,19 @@ public class PersistencyServiceImpl implements PersistencyService {
             floor.setFloorMapUrl(cleanFloorMapUrl);
         }
 
-        return fileWriteSuccess && buildingRepository.save(building) != null;
+        boolean fileWriteDatabaseSuccess = buildingRepository.save(building) != null;
+        boolean operationSuccessful = fileWriteLocalFsSuccess && fileWriteDatabaseSuccess;
+
+        if (operationSuccessful) {
+            return ResponseConstants.FLOOR_UPDATE_SUCCESS;
+        } else {
+            if (!fileWriteLocalFsSuccess) {
+                return ResponseConstants.FLOOR_UPDATE_FAILURE_LOCAL_WRITE;
+            } else {
+                return ResponseConstants.FLOOR_UPDATE_FAILURE_DB_WRITE;
+            }
+
+        }
 
     }
 
@@ -350,25 +382,43 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean deleteBuilding(long buildingId) {
+    public String deleteBuilding(long buildingId) {
 
         AssertParam.throwIfNull(buildingId, "buildingId");
 
-        buildingRepository.delete(buildingId);
-        Building deletedBuilding = buildingRepository.findOne(buildingId);
-        return deletedBuilding == null;
+        try {
+            buildingRepository.delete(buildingId);
+            Building deletedBuilding = buildingRepository.findOne(buildingId);
+            boolean operationSuccessful = deletedBuilding == null;
+
+            if (operationSuccessful) {
+                return ResponseConstants.BUILDING_DELETE_SUCCESS;
+            } else {
+                return ResponseConstants.BUILDING_DELETE_FAILURE_DB_WRITE;
+            }
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return ResponseConstants.BUILDING_DELETE_FAILURE_CONSTRAINT_VIOLATION;
+        }
+
 
     }
 
 
     @Override
-    public boolean saveEvaalFiles(List<EvaalFile> evaalFiles) {
+    public String saveEvaalFiles(List<EvaalFile> evaalFiles) {
 
         AssertParam.throwIfNull(evaalFiles, "evaalFiles");
 
         Iterable<EvaalFile> saved = evaalFileRepository.save(evaalFiles);
 
-        return saved != null;
+        boolean operationSuccess = saved != null;
+
+        if(operationSuccess){
+            return ResponseConstants.EVAAL_PROCESSING_SUCCESS;
+        }else{
+            return ResponseConstants.EVAAL_SAVE_FAILURE_DB_WRITE;
+        }
 
     }
 
@@ -407,13 +457,26 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public boolean deleteEvaalFile(long evaalFileId) {
+    public String deleteEvaalFile(long evaalFileId) {
 
         AssertParam.throwIfNull(evaalFileId, "evaalFileId");
 
-        evaalFileRepository.delete(evaalFileId);
-        EvaalFile deletedEvaalFile = evaalFileRepository.findOne(evaalFileId);
-        return deletedEvaalFile == null;
+        try{
+            evaalFileRepository.delete(evaalFileId);
+            EvaalFile deletedEvaalFile = evaalFileRepository.findOne(evaalFileId);
+            boolean operationSuccess = deletedEvaalFile == null;
+
+            if(operationSuccess){
+                return ResponseConstants.EVAAL_DELETE_SUCCESS;
+            }else{
+                return ResponseConstants.EVAAL_DELETE_FAILURE_DB_WRITE;
+            }
+        }catch(DataIntegrityViolationException e){
+            e.printStackTrace();
+            return ResponseConstants.EVAAL_DELETE_FAILURE_CONSTRAINT_VIOLATION;
+        }
+
+
     }
 
 

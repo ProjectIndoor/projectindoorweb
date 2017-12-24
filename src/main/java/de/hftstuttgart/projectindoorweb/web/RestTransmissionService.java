@@ -26,10 +26,10 @@ import java.util.List;
 public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
 
     /*Evaal file processing and generating position results*/
-    boolean processEvaalFiles(String buildingId, boolean evaluationFiles,
+    String processEvaalFiles(String buildingId, boolean evaluationFiles,
                               MultipartFile[] radioMapFiles, MultipartFile[] transformedPointsFile);
 
-    boolean deleteEvaalFile(String evaalFileIdentifier);
+    String deleteEvaalFile(String evaalFileIdentifier);
 
     List<BatchPositionResult> generatePositionResults(GenerateBatchPositionResults generateBatchPositionResults);
 
@@ -46,9 +46,9 @@ public interface RestTransmissionService { //If too many methods get introduced,
     /*Projects*/
     long addNewProject(AddNewProject addNewProject);
 
-    boolean updateProject(UpdateProject updateProject);
+    String updateProject(UpdateProject updateProject);
 
-    boolean deleteProject(String projectIdentifier);
+    String deleteProject(String projectIdentifier);
 
     LoadSelectedProject loadSelectedProject(String projectIdentifier);
 
@@ -69,11 +69,11 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
     GetSingleBuilding getSingleBuilding(String buildingIdentifier);
 
-    boolean updateBuilding(UpdateBuilding updateBuilding);
+    String updateBuilding(UpdateBuilding updateBuilding);
 
-    boolean addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile);
+    String addFloorToBuilding(String buildingIdentifier, String floorIdentifier, String floorName, MultipartFile floorMapFile);
 
     File getFloorMap(String floorIdentifier);
 
-    boolean deleteBuilding(String buildingIdentifier);
+    String deleteBuilding(String buildingIdentifier);
 }

@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
@@ -65,9 +66,10 @@ public class BuildingController {
     @ApiOperation(value = "Updates a given building by the given JSON body.", nickname = "building/updateBuilding",
             notes = TransmissionConstants.UPDATE_BUILDING_NOTE)
     @RequestMapping(path = "/updateBuilding", method = POST)
-    public boolean updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
+    public ResponseEntity updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
 
-        return restTransmissionService.updateBuilding(updateBuilding);
+        String operationResult = restTransmissionService.updateBuilding(updateBuilding);
+        return HttpResultHandler.getInstance().handleSimpleBuildingResult(operationResult);
 
     }
 
@@ -103,16 +105,17 @@ public class BuildingController {
     @ApiOperation(value = "Deletes a selected building with a given building identifier",
             nickname = "project/deleteBuilding", notes = TransmissionConstants.DELETE_BUILDING_NOTE)
     @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE)
-    public boolean deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+    public ResponseEntity deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                   String buildingIdentifier) {
-        return restTransmissionService.deleteBuilding(buildingIdentifier);
+        String operationResult = restTransmissionService.deleteBuilding(buildingIdentifier);
+        return HttpResultHandler.getInstance().handleSimpleBuildingResult(operationResult);
     }
 
     @ApiOperation(value = "Add a new floor to a given building", nickname = "building/addFloorToBuilding",
             notes = TransmissionConstants.ADD_FLOOR_TO_BUILDING_NOTE)
     @RequestMapping(path = "/addFloorToBuilding", method = POST)
-    public boolean addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+    public ResponseEntity addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                               String buildingIdentifier,
                                       @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
@@ -123,6 +126,7 @@ public class BuildingController {
                                               String floorName,
                                       @RequestParam(value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
                                               MultipartFile floorMapFile) {
-        return restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
+        String operationResult = restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
+        return HttpResultHandler.getInstance().handleSimpleBuildingResult(operationResult);
     }
 }

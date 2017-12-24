@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
@@ -30,30 +31,35 @@ public class PositioningController {
 
     @ApiOperation(value = "Processes Radio Map files", nickname = "position/processRadioMapFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processRadioMapFiles", method = POST)
-    public boolean processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+    public ResponseEntity processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE, required = true) String buildingIdentifier,
                                         @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
                                                 MultipartFile[] radioMapFiles,
                                         @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
                                                 MultipartFile[] transformedPointsFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
+        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
+        return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
+
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
     @RequestMapping(path = "/processEvalFiles", method = POST)
-    public boolean processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
+    public ResponseEntity processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                     @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
                                             MultipartFile[] evalFiles) {
-        return restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+        return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
 
     @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
     @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE)
-    public boolean deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
+    public ResponseEntity deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                    String evaalFileIdentifier) {
-        return restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
+
+        String operationResult = restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
+        return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
 
     @ApiOperation(value = "Generate position results", nickname = "position/generateBatchPositionResults", notes = TransmissionConstants.GENERATE_POSITIONRESULTS_NOTE)
