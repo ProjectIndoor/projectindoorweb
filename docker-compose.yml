@@ -1,6 +1,17 @@
 version: '3'
 services:
-  web:
-    image: cc49642f7a10
+  indoordb:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=indoor
+      - MYSQL_DATABASE=indoor
+      - MYSQL_USER=indoor
+      - MYSQL_PASSWORD=indoor
+  indoorweb:
+    image: hftstuttgart/indoorweb
     ports:
-    - "8080:8080"
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE="prod"
+    depends_on:
+      - indoordb
