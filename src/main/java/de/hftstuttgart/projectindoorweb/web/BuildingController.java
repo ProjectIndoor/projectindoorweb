@@ -65,7 +65,7 @@ public class BuildingController {
 
     @ApiOperation(value = "Updates a given building by the given JSON body.", nickname = "building/updateBuilding",
             notes = TransmissionConstants.UPDATE_BUILDING_NOTE)
-    @RequestMapping(path = "/updateBuilding", method = POST)
+    @RequestMapping(path = "/updateBuilding", method = POST, produces = "text/plain")
     public ResponseEntity updateBuilding(@RequestBody UpdateBuilding updateBuilding) {
 
         String operationResult = restTransmissionService.updateBuilding(updateBuilding);
@@ -104,7 +104,7 @@ public class BuildingController {
 
     @ApiOperation(value = "Deletes a selected building with a given building identifier",
             nickname = "project/deleteBuilding", notes = TransmissionConstants.DELETE_BUILDING_NOTE)
-    @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE)
+    @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                   String buildingIdentifier) {
@@ -114,7 +114,7 @@ public class BuildingController {
 
     @ApiOperation(value = "Add a new floor to a given building", nickname = "building/addFloorToBuilding",
             notes = TransmissionConstants.ADD_FLOOR_TO_BUILDING_NOTE)
-    @RequestMapping(path = "/addFloorToBuilding", method = POST)
+    @RequestMapping(path = "/addFloorToBuilding", method = POST, produces = "text/plain")
     public ResponseEntity addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                               String buildingIdentifier,
