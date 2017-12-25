@@ -34,14 +34,14 @@ public class ProjectController {
     }
 
     @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
-    @RequestMapping(path = "/saveCurrentProject", method = POST)
+    @RequestMapping(path = "/saveCurrentProject", method = POST, produces = "text/plain")
     public ResponseEntity saveCurrentProject(@RequestBody UpdateProject updateProject) {
         String operationResult = restTransmissionService.updateProject(updateProject);
         return HttpResultHandler.getInstance().handleSimpleProjectResult(operationResult);
     }
 
     @ApiOperation(value = "Delete a selected project with a project identifier", nickname = "project/deleteProject", notes = TransmissionConstants.DELETE_PROJECT_NOTE)
-    @RequestMapping(path = "/deleteSelectedProject", method = DELETE)
+    @RequestMapping(path = "/deleteSelectedProject", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedProject(@RequestParam(value = TransmissionConstants.PROJECT_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                  String projectIdentifier) {

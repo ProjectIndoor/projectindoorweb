@@ -30,7 +30,7 @@ public class PositioningController {
 
 
     @ApiOperation(value = "Processes Radio Map files", nickname = "position/processRadioMapFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
-    @RequestMapping(path = "/processRadioMapFiles", method = POST)
+    @RequestMapping(path = "/processRadioMapFiles", method = POST, produces = "text/plain")
     public ResponseEntity processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE, required = true) String buildingIdentifier,
                                         @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
@@ -43,7 +43,7 @@ public class PositioningController {
     }
 
     @ApiOperation(value = "Processes Eval files.", nickname = "position/processEvalFiles", notes = TransmissionConstants.GENERATE_RADIOMAPS_NOTE)
-    @RequestMapping(path = "/processEvalFiles", method = POST)
+    @RequestMapping(path = "/processEvalFiles", method = POST, produces = "text/plain")
     public ResponseEntity processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                     @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
@@ -53,7 +53,7 @@ public class PositioningController {
     }
 
     @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
-    @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE)
+    @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
                                                    String evaalFileIdentifier) {
