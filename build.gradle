@@ -103,6 +103,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.apache.commons:commons-csv:1.5")
+    compile("commons-fileupload:commons-fileupload:1.2.1")
     compile 'mysql:mysql-connector-java'
     compile("com.h2database:h2")
     compile "io.springfox:springfox-swagger2:2.7.0"

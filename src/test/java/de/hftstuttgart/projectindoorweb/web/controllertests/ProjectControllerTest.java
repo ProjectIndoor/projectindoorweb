@@ -1,7 +1,6 @@
-package de.hftstuttgart.projectindoorweb.web;
+package de.hftstuttgart.projectindoorweb.web.controllertests;
 
 import de.hftstuttgart.projectindoorweb.Application;
-import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -20,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
