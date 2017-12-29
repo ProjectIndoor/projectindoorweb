@@ -41,12 +41,10 @@ public class BuildingController {
     @ApiOperation(value = "Add a new building", nickname = "building/addNewBuilding",
             notes = TransmissionConstants.ADD_NEW_BUILDING_NOTE)
     @RequestMapping(path = "/addNewBuilding", method = POST)
-    public long addNewBuilding(@RequestBody AddNewBuilding buildingJsonWrapper) {
+    public ResponseEntity addNewBuilding(@RequestBody AddNewBuilding buildingJsonWrapper) {
 
-        //ResponseWrapper responseWrapper = restTransmissionService.addNewBuilding(buildingJsonWrapper);
-        //TODO Give back correct ResponseEntity
-        return restTransmissionService.addNewBuilding(buildingJsonWrapper).getId();
-
+        ResponseWrapper result = restTransmissionService.addNewBuilding(buildingJsonWrapper);
+        return HttpResultHandler.getInstance().handleLongBuildingResult(result);
     }
 
     @ApiOperation(value = "Get all buildings", nickname = "building/getAllBuildings", notes = TransmissionConstants.GET_ALL_BUILDINGS_NOTE)

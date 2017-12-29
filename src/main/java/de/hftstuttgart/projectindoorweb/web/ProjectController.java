@@ -30,10 +30,9 @@ public class ProjectController {
 
     @ApiOperation(value = "Save a new project", nickname = "project/addNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)
-    public long saveNewProject(@RequestBody AddNewProject addNewProject) {
-        //ResponseWrapper responseWrapper = restTransmissionService.addNewProject(addNewProject);
-        //TODO Give back correct ResponseEntity
-        return restTransmissionService.addNewProject(addNewProject).getId();
+    public ResponseEntity saveNewProject(@RequestBody AddNewProject addNewProject) {
+        ResponseWrapper result = restTransmissionService.addNewProject(addNewProject);
+        return HttpResultHandler.getInstance().handleLongProjectResult(result);
     }
 
     @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)
