@@ -145,13 +145,13 @@ public class HttpResultHandler {
         return createSimpleResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN);
     }
 
-    private ResponseEntity getLongResponseEntity(Map<String, HttpStatus> operationResultMap, ResponseWrapper projectResponseWrapper) {
+    private ResponseEntity getLongResponseEntity(Map<String, HttpStatus> operationResultMap, ResponseWrapper responseWrapper) {
         for (Map.Entry<String, HttpStatus> entry : operationResultMap.entrySet()) {
             String actualOperationResult = entry.getKey();
             HttpStatus actualHttpStatus = entry.getValue();
 
-            if (actualOperationResult.equals(projectResponseWrapper.getMessage())) {
-                return createLongResponseEntity(actualHttpStatus, projectResponseWrapper);
+            if (actualOperationResult.equals(responseWrapper.getMessage())) {
+                return createLongResponseEntity(actualHttpStatus, responseWrapper);
             }
         }
 
@@ -164,9 +164,9 @@ public class HttpResultHandler {
                 .body(messageBody);
     }
 
-    private ResponseEntity createLongResponseEntity(HttpStatus status, ResponseWrapper projectResponseWrapper) {
+    private ResponseEntity createLongResponseEntity(HttpStatus status, ResponseWrapper responseWrapper) {
         return ResponseEntity
                 .status(status)
-                .body(projectResponseWrapper);
+                .body(responseWrapper);
     }
 }
