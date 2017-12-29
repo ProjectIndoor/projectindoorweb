@@ -1,6 +1,7 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
@@ -30,7 +31,9 @@ public class ProjectController {
     @ApiOperation(value = "Save a new project", nickname = "project/addNewProject", notes = TransmissionConstants.SAVE_NEW_PROJECT_NOTE)
     @RequestMapping(path = "/saveNewProject", method = POST)
     public long saveNewProject(@RequestBody AddNewProject addNewProject) {
-        return restTransmissionService.addNewProject(addNewProject);
+        //ResponseWrapper responseWrapper = restTransmissionService.addNewProject(addNewProject);
+        //TODO Give back correct ResponseEntity
+        return restTransmissionService.addNewProject(addNewProject).getId();
     }
 
     @ApiOperation(value = "Save a current project", nickname = "project/updateProject", notes = TransmissionConstants.SAVE_CURRENT_PROJECT_NOTE)

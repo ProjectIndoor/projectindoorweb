@@ -1,6 +1,8 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.GenericResponse;
 import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
@@ -41,7 +43,9 @@ public class BuildingController {
     @RequestMapping(path = "/addNewBuilding", method = POST)
     public long addNewBuilding(@RequestBody AddNewBuilding buildingJsonWrapper) {
 
-        return restTransmissionService.addNewBuilding(buildingJsonWrapper);
+        //ResponseWrapper responseWrapper = restTransmissionService.addNewBuilding(buildingJsonWrapper);
+        //TODO Give back correct ResponseEntity
+        return restTransmissionService.addNewBuilding(buildingJsonWrapper).getId();
 
     }
 

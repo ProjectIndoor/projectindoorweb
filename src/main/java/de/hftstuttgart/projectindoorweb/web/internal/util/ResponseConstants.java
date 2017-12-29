@@ -10,6 +10,8 @@ public class ResponseConstants {
     public static final String BUILDING_GENERAL_FAILURE_ID_NOT_FOUND = "Unable to perform operation on building: Building with given ID does not exist.";
     public static final String BUILDING_GENERAL_FAILURE_NO_DATA_RECEIVED = "Unable to perform operation on building: Received no data.";
 
+    public static final String BUILDING_CREATION_SUCCESS = "Building created successfully.";
+    public static final String BUILDING_CREATION_FAILURE = "Unable to create building: Database returned no entity.";
     public static final String BUILDING_UPDATE_SUCCESS = "Building updated successfully.";
     public static final String BUILDING_UPDATE_FAILURE_DB_WRITE = "Unable to update building: Could not write entity to database.";
 
@@ -26,10 +28,14 @@ public class ResponseConstants {
     /*Projects*/
     public static final String PROJECT_GENERAL_FAILURE_NO_DATA_RECEIVED = "Unable to perform operation on project: No data received.";
 
+    public static final String PROJECT_CREATION_SUCCESS = "Project created successfully.";
+    public static final String PROJECT_CREATION_FAILURE = "Unable to create project: Database returned no entity.";
+    public static final String PROJECT_CREATION_FAILURE_ALGORITHM_NULL = "Unable to create project: Unspecified calculation algorithm.";
+
     public static final String PROJECT_UPDATE_FAILURE_INVALID_DATA = "Unable to update project: Invalid or incomplete data received.";
     public static final String PROJECT_UPDATE_FAILURE_ALGORITHM_NULL = "Unable to update project: Unspecified calculation algorithm.";
     public static final String PROJECT_UPDATE_FAILURE_ID_NOT_FOUND = "Unable to update project: The project with the given ID does not exist.";
-    public static final String PROJECT_UPDATE_SUCCESS = "Project updates successfully.";
+    public static final String PROJECT_UPDATE_SUCCESS = "Project updated successfully.";
     public static final String PROJECT_UPDATE_FAILURE_DB_WRITE = "Unable to update project: Could not write entity to database.";
 
     public static final String PROJECT_DELETE_SUCCESS = "Project deleted successfully.";

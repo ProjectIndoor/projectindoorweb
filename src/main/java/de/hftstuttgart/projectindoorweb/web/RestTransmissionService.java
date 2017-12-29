@@ -1,6 +1,8 @@
 package de.hftstuttgart.projectindoorweb.web;
 
 
+import de.hftstuttgart.projectindoorweb.persistence.entities.GenericResponse;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
@@ -44,7 +46,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
     List<GetAllEvaalEntries> getAllEvaalEntries();
 
     /*Projects*/
-    long addNewProject(AddNewProject addNewProject);
+    ResponseWrapper addNewProject(AddNewProject addNewProject);
 
     String updateProject(UpdateProject updateProject);
 
@@ -63,7 +65,7 @@ public interface RestTransmissionService { //If too many methods get introduced,
 
 
     /*Buildings*/
-    long addNewBuilding(AddNewBuilding addNewBuilding);
+    ResponseWrapper addNewBuilding(AddNewBuilding addNewBuilding);
 
     List<GetAllBuildings> getAllBuildings();
 

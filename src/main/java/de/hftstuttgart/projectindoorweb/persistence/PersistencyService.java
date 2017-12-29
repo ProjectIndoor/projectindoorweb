@@ -1,10 +1,6 @@
 package de.hftstuttgart.projectindoorweb.persistence;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Project;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 
@@ -16,10 +12,10 @@ import java.util.Set;
 public interface PersistencyService {
 
     /*Buildings and Floors*/
-    long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
-                        BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
-                        BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
-                        BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
+    GenericResponse addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+                                   BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
+                                   BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
+                                   BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel);
 
     List<Building> getAllBuildings();
 
@@ -51,7 +47,7 @@ public interface PersistencyService {
 
 
     /*Projects*/
-    long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
+    GenericResponse createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
                           long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers);
 
     String updateProject(long projectId, String newProjectName, String newAlgorithmType,
