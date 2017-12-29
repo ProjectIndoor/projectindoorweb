@@ -45,16 +45,16 @@ public class PersistencyServiceImpl implements PersistencyService {
     FloorRepository floorRepository;
 
     @Override
-    public long createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
+    public GenericResponse createNewProject(String projectName, String algorithmType, Set<SaveNewProjectParameters> saveNewProjectParameters,
                                  long buildingIdentifier, long evalFileIdentifier, long[] radioMapFileIdentifiers) {
 
         AssertParam.throwIfNullOrEmpty(projectName, "projectName");
         AssertParam.throwIfNullOrEmpty(algorithmType, "algorithmType");
-        //AssertParam.throwIfNull(saveNewProjectParameters, "saveNewProjectParameters");
 
         CalculationAlgorithm calculationAlgorithm = getAlgorithmFromText(algorithmType);
+
         if (calculationAlgorithm == null) {
-            return -1;
+            return new GenericResponse(-1, ResponseConstants.PROJECT_CREATION_FAILURE_ALGORITHM_NULL);
         }
 
         List<Parameter> parametersAsList = convertToEntityParameters(saveNewProjectParameters);
@@ -79,10 +79,10 @@ public class PersistencyServiceImpl implements PersistencyService {
         projectToBeSaved = projectRepository.save(projectToBeSaved);
 
         if (projectToBeSaved != null) {
-            return projectToBeSaved.getId();
+            return new GenericResponse(projectToBeSaved.getId(), ResponseConstants.PROJECT_CREATION_SUCCESS);
         }
 
-        return -1;
+        return new GenericResponse(-1, ResponseConstants.PROJECT_CREATION_FAILURE);
 
 
     }
@@ -165,7 +165,7 @@ public class PersistencyServiceImpl implements PersistencyService {
     }
 
     @Override
-    public long addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
+    public GenericResponse addNewBuilding(String buildingName, int numberOfFloors, int imagePixelWidth, int imagePixelHeight,
                                BuildingPositionAnchor southEastAnchor, BuildingPositionAnchor southWestAnchor,
                                BuildingPositionAnchor northEastAnchor, BuildingPositionAnchor northWestAnchor,
                                BuildingPositionAnchor buildingCenterPoint, double rotationAngle, double metersPerPixel) {
@@ -224,10 +224,10 @@ public class PersistencyServiceImpl implements PersistencyService {
         buildingToBeSaved = buildingRepository.save(buildingToBeSaved);
 
         if (buildingToBeSaved != null) {
-            return buildingToBeSaved.getId();
+            return new GenericResponse(buildingToBeSaved.getId(), ResponseConstants.BUILDING_CREATION_SUCCESS);
         }
 
-        return -1;
+        return new GenericResponse(-1, ResponseConstants.BUILDING_CREATION_FAILURE);
 
 
     }

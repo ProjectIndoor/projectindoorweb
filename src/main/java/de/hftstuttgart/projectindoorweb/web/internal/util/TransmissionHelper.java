@@ -2,14 +2,9 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Building;
-import de.hftstuttgart.projectindoorweb.persistence.entities.EvaalFile;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Floor;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Parameter;
-import de.hftstuttgart.projectindoorweb.persistence.entities.Position;
-import de.hftstuttgart.projectindoorweb.persistence.entities.PositionResult;
-import de.hftstuttgart.projectindoorweb.persistence.entities.WifiPositionResult;
+import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetAllBuildings;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetFloor;
@@ -412,6 +407,18 @@ public class TransmissionHelper {
         }
 
         return localFiles;
+
+    }
+
+    public static ResponseWrapper convertToExternalSimpleResponseWrapper(GenericResponse genericResponse){
+
+        return new ResponseWrapper(genericResponse.getResultId(), genericResponse.getResultMessage());
+
+    }
+
+    public static ResponseWrapper createExternalSimpleResponseWrapper(long resultId, String resultMessage){
+
+        return new ResponseWrapper(resultId, resultMessage);
 
     }
 

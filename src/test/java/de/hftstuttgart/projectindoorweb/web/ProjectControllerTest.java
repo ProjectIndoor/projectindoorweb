@@ -114,7 +114,7 @@ public class ProjectControllerTest {
     @Test
     public void DreadSelectedProjectTest() throws Exception {
         mockMvc.perform(get("/project/loadSelectedProject?projectIdentifier="
-                +updateProjectElement.getProjectIdentifier())
+                + updateProjectElement.getProjectIdentifier())
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string(this.json(this.loadSelectedProjectElement)));
@@ -123,7 +123,7 @@ public class ProjectControllerTest {
     @Test
     public void EdeleteProjectTest() throws Exception {
         mockMvc.perform(delete("/project/deleteSelectedProject?projectIdentifier="
-                +updateProjectElement.getProjectIdentifier())
+                + updateProjectElement.getProjectIdentifier())
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
     }
@@ -141,9 +141,9 @@ public class ProjectControllerTest {
         GetAllProjects getAllProjectsElement = new GetAllProjects(1, DUMMY, EMPTY_STRING);
         getAllProjectsElementList.add(getAllProjectsElement);
 
-        updateProjectElement = new UpdateProject(1l,emptyParameterSet,OTHER_DUMMY, ALGORITHM_TYPE,0l,0l,emptyRadioMapIdArray );
+        updateProjectElement = new UpdateProject(1l, emptyParameterSet, OTHER_DUMMY, ALGORITHM_TYPE, 0l, 0l, emptyRadioMapIdArray);
 
-        loadSelectedProjectElement = new LoadSelectedProject(1l, emptyParameterSet, OTHER_DUMMY, ALGORITHM_TYPE,-1l,-1l,negativeRadioMapIdArray);
+        loadSelectedProjectElement = new LoadSelectedProject(1l, emptyParameterSet, OTHER_DUMMY, ALGORITHM_TYPE, -1l, -1l, negativeRadioMapIdArray);
     }
 
 }
