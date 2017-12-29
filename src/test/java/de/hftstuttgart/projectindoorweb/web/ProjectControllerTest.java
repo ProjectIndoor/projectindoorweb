@@ -138,7 +138,7 @@ public class ProjectControllerTest {
     private void initBuildingElements() {
         addNewProjectElement = new AddNewProject(emptyParameterSet, DUMMY, ALGORITHM_TYPE, 0l, 0l, emptyRadioMapIdArray);
 
-        GetAllProjects getAllProjectsElement = new GetAllProjects(1, DUMMY, EMPTY_STRING);
+        GetAllProjects getAllProjectsElement = new GetAllProjects(1, DUMMY, -1l, EMPTY_STRING);
         getAllProjectsElementList.add(getAllProjectsElement);
 
         updateProjectElement = new UpdateProject(1l, emptyParameterSet, OTHER_DUMMY, ALGORITHM_TYPE, 0l, 0l, emptyRadioMapIdArray);

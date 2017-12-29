@@ -7,14 +7,17 @@ public class GetAllProjects {
 
     long projectId;
     String projectName;
+    long buildingId;
     String buildingName;
 
     @JsonCreator
     public GetAllProjects(@JsonProperty("projectId") long projectId,
                           @JsonProperty("projectName") String projectName,
+                          @JsonProperty("buildingId") long buildingId,
                           @JsonProperty("buildingName") String buildingName) {
         this.projectId = projectId;
         this.projectName = projectName;
+        this.buildingId = buildingId;
         this.buildingName = buildingName;
     }
 
@@ -32,6 +35,14 @@ public class GetAllProjects {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public long getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(long buildingId) {
+        this.buildingId = buildingId;
     }
 
     public String getBuildingName() {

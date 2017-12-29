@@ -35,7 +35,7 @@ public class ResponseConstants {
     public static final String PROJECT_UPDATE_FAILURE_INVALID_DATA = "Unable to update project: Invalid or incomplete data received.";
     public static final String PROJECT_UPDATE_FAILURE_ALGORITHM_NULL = "Unable to update project: Unspecified calculation algorithm.";
     public static final String PROJECT_UPDATE_FAILURE_ID_NOT_FOUND = "Unable to update project: The project with the given ID does not exist.";
-    public static final String PROJECT_UPDATE_SUCCESS = "Project updates successfully.";
+    public static final String PROJECT_UPDATE_SUCCESS = "Project updated successfully.";
     public static final String PROJECT_UPDATE_FAILURE_DB_WRITE = "Unable to update project: Could not write entity to database.";
 
     public static final String PROJECT_DELETE_SUCCESS = "Project deleted successfully.";

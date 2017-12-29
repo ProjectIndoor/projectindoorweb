@@ -691,13 +691,15 @@ public class RestTransmissionServiceImpl implements RestTransmissionService {
 
         List<GetAllProjects> result = new ArrayList<>(projects.size());
 
+        long buildingId = -1;
         String buildingName = "";
         for (Project project :
                 projects) {
             if (project.getBuilding() != null) {
                 buildingName = project.getBuilding().getBuildingName();
+                buildingId = project.getBuilding().getId();
             }
-            result.add(new GetAllProjects(project.getId(), project.getProjectName(), buildingName));
+            result.add(new GetAllProjects(project.getId(), project.getProjectName(), buildingId, buildingName));
         }
 
         return result;
