@@ -92,7 +92,7 @@ public class BuildingControllerTest {
     @Before
     public void setUp() throws Exception {
 
-        objectMapper  = new ObjectMapper();
+        objectMapper = new ObjectMapper();
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
@@ -137,7 +137,7 @@ public class BuildingControllerTest {
 
         try {
             long buildingId = addNewBuildingAndRetrieveId();
-            assertTrue("Failed to add new building.", buildingId > 0 );
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
                     + buildingId))
@@ -206,7 +206,7 @@ public class BuildingControllerTest {
             String result = addBuildingActions.andReturn().getResponse().getContentAsString();
             ResponseWrapper responseWrapper = this.objectMapper.readValue(result, ResponseWrapper.class);
             long buildingId = responseWrapper.getId();
-            assertTrue("Failed to add new building.", buildingId > 0 );
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
                     + buildingId))
@@ -268,7 +268,7 @@ public class BuildingControllerTest {
         try {
 
             long buildingId = addNewBuildingAndRetrieveId();
-            assertTrue("Failed to add new building.", buildingId > 0 );
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             this.updateBuilding.setBuildingId(buildingId);
             mockMvc.perform(post("/building/updateBuilding")
@@ -295,7 +295,7 @@ public class BuildingControllerTest {
 
         try {
             long buildingId = addNewBuildingAndRetrieveId();
-            assertTrue("Failed to add new building.", buildingId > 0 );
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
                     "buildingIdentifier=" + buildingId));
@@ -314,8 +314,8 @@ public class BuildingControllerTest {
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?" +
                     "buildingIdentifier=" + buildingId))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,9 +324,39 @@ public class BuildingControllerTest {
 
     }
 
+    @Test
+    public void testDeleteBuilding() {
+
+        try {
+
+            long[] buildingIds = new long[10];
+            for (int i = 0; i < buildingIds.length; i++) {
+                buildingIds[i] = addNewBuildingAndRetrieveId();
+            }
+
+            for (int i = 0; i < buildingIds.length; i++) {
+                mockMvc.perform(delete("/building/deleteSelectedBuilding?buildingIdentifier="
+                        + buildingIds[i]))
+                        .andExpect(status().isOk());
+            }
+
+            for (int i = 0; i < buildingIds.length; i++) {
+                mockMvc.perform(get("/building/getSingleBuildingByBuildingId?buildingIdentifier="
+                        + buildingIds[i]))
+                        .andExpect(status().is4xxClientError());
+            }
 
 
-    private long addNewBuildingAndRetrieveId() throws Exception{
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+
+    }
+
+
+    private long addNewBuildingAndRetrieveId() throws Exception {
 
         ResultActions addBuildingActions = mockMvc.perform(post("/building/addNewBuilding")
                 .content(this.jsonify(this.addNewBuilding))
@@ -342,7 +372,6 @@ public class BuildingControllerTest {
     private String jsonify(Object o) throws IOException {
         return new ObjectMapper().writeValueAsString(o);
     }
-
 
 
 }
