@@ -9,12 +9,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Configuration
-@ComponentScan({"de.hftstuttgart.projectindoorweb.web.controllertests"})
+@ComponentScan({"de.hftstuttgart.projectindoorweb.web",
+        "de.hftstuttgart.projectindoorweb.persistence.repositories",
+        "de.hftstuttgart.projectindoorweb.web.controllertests"})
 @EnableWebMvc
-public class TestWebConfiguration extends WebMvcConfigurationSupport{
+public class TestWebConfiguration extends WebMvcConfigurationSupport {
 
     @Bean
-    public MultipartResolver initMultipartResolver(){
+    public MultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         return multipartResolver;
     }

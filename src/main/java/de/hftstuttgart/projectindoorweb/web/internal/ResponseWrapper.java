@@ -5,6 +5,10 @@ public class ResponseWrapper {
     private long id;
     private String message;
 
+    /*For JSON deserialization by Jackson*/
+    protected ResponseWrapper() {
+    }
+
     public ResponseWrapper(long id, String message) {
         this.id = id;
         this.message = message;
