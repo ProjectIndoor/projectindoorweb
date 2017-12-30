@@ -1,10 +1,19 @@
 package de.hftstuttgart.projectindoorweb.web.helpers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import org.hibernate.sql.Update;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TestHelper {
 
@@ -74,4 +83,24 @@ public class TestHelper {
                 southEastAnchor, southWestAnchor, centerPoint, rotationAngle, metersPerPixel);
 
     }
+
+    public static long addNewBuildingAndRetrieveId(MockMvc mockMvc, MediaType contentType) throws Exception {
+
+        ResultActions addBuildingActions = mockMvc.perform(post("/building/addNewBuilding")
+                .content(TestHelper.jsonify(createGenericBuildingRequestObject()))
+                .contentType(contentType));
+
+        addBuildingActions.andExpect(status().isOk());
+        String result = addBuildingActions.andReturn().getResponse().getContentAsString();
+        ResponseWrapper responseWrapper = new ObjectMapper().readValue(result, ResponseWrapper.class);
+        long buildingId = responseWrapper.getId();
+        return buildingId;
+
+    }
+
+    public static String jsonify(Object o) throws IOException {
+        return new ObjectMapper().writeValueAsString(o);
+    }
+
+
 }

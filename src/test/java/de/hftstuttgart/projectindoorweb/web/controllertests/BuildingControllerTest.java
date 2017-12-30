@@ -1,30 +1,27 @@
 package de.hftstuttgart.projectindoorweb.web.controllertests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import de.hftstuttgart.projectindoorweb.Application;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.web.configuration.TestWebConfiguration;
 import de.hftstuttgart.projectindoorweb.web.helpers.TestHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
-import org.junit.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,10 +34,11 @@ import java.math.MathContext;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,8 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestWebConfiguration.class)
 @WebAppConfiguration
 public class BuildingControllerTest {
-
-    private static final long ASYNC_RESULT_WAIT_MILLIS = 5000;
 
     private static final double ROTATION_ANGLE_ACCEPTABLE_ERROR = 0.0000000000000001;
     private static final double LAT_LONG_ACCEPTABLE_ERROR = 0.00000000000001;
@@ -64,7 +60,6 @@ public class BuildingControllerTest {
     private AddNewBuilding addNewBuilding;
     private GetSingleBuilding getSingleBuilding;
 
-    private AddNewBuilding addNewBuildingEmptyCornerAnchors;
 
     private AddNewBuilding addNewBuildingEmptyRefPoint;
     private GetSingleBuilding getSingleBuildingEmptyRefPoint;
@@ -82,13 +77,6 @@ public class BuildingControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-
-    @Bean
-    public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        return multipartResolver;
-    }
-
     @Before
     public void setUp() throws Exception {
 
@@ -99,12 +87,6 @@ public class BuildingControllerTest {
         this.buildingRepository.deleteAll();
 
         addNewBuilding = TestHelper.createGenericBuildingRequestObject();
-
-        addNewBuildingEmptyCornerAnchors = TestHelper.createGenericBuildingRequestObject();
-        addNewBuildingEmptyCornerAnchors.setNorthWest(null);
-        addNewBuildingEmptyCornerAnchors.setNorthEast(null);
-        addNewBuildingEmptyCornerAnchors.setSouthEast(null);
-        addNewBuildingEmptyCornerAnchors.setSouthWest(null);
 
         addNewBuildingEmptyRefPoint = TestHelper.createGenericBuildingRequestObject();
         addNewBuildingEmptyRefPoint.setBuildingCenterPoint(null);
@@ -136,7 +118,7 @@ public class BuildingControllerTest {
     public void testAddBuildingWithNullCornerAnchors() throws IOException {
 
         try {
-            long buildingId = addNewBuildingAndRetrieveId();
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
             assertTrue("Failed to add new building.", buildingId > 0);
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
@@ -199,7 +181,7 @@ public class BuildingControllerTest {
         try {
 
             ResultActions addBuildingActions = mockMvc.perform(post("/building/addNewBuilding")
-                    .content(this.jsonify(this.addNewBuildingEmptyRefPoint))
+                    .content(TestHelper.jsonify(this.addNewBuildingEmptyRefPoint))
                     .contentType(contentType));
 
             addBuildingActions.andExpect(status().isOk());
@@ -267,12 +249,12 @@ public class BuildingControllerTest {
 
         try {
 
-            long buildingId = addNewBuildingAndRetrieveId();
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
             assertTrue("Failed to add new building.", buildingId > 0);
 
             this.updateBuilding.setBuildingId(buildingId);
             mockMvc.perform(post("/building/updateBuilding")
-                    .content(this.jsonify(this.updateBuilding))
+                    .content(TestHelper.jsonify(this.updateBuilding))
                     .contentType(contentType))
                     .andExpect(status().isOk());
 
@@ -294,7 +276,7 @@ public class BuildingControllerTest {
     public void testAddFloorMap() {
 
         try {
-            long buildingId = addNewBuildingAndRetrieveId();
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
             assertTrue("Failed to add new building.", buildingId > 0);
 
             ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
@@ -331,7 +313,7 @@ public class BuildingControllerTest {
 
             long[] buildingIds = new long[10];
             for (int i = 0; i < buildingIds.length; i++) {
-                buildingIds[i] = addNewBuildingAndRetrieveId();
+                buildingIds[i] = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
             }
 
             for (int i = 0; i < buildingIds.length; i++) {
@@ -354,24 +336,5 @@ public class BuildingControllerTest {
 
 
     }
-
-
-    private long addNewBuildingAndRetrieveId() throws Exception {
-
-        ResultActions addBuildingActions = mockMvc.perform(post("/building/addNewBuilding")
-                .content(this.jsonify(this.addNewBuilding))
-                .contentType(contentType));
-
-        addBuildingActions.andExpect(status().isOk());
-        String result = addBuildingActions.andReturn().getResponse().getContentAsString();
-        ResponseWrapper responseWrapper = this.objectMapper.readValue(result, ResponseWrapper.class);
-        long buildingId = responseWrapper.getId();
-        return buildingId;
-    }
-
-    private String jsonify(Object o) throws IOException {
-        return new ObjectMapper().writeValueAsString(o);
-    }
-
 
 }
