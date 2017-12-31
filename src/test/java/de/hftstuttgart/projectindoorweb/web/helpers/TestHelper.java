@@ -3,6 +3,8 @@ package de.hftstuttgart.projectindoorweb.web.helpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import org.hibernate.sql.Update;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -10,14 +12,16 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TestHelper {
 
-    public static AddNewBuilding createGenericBuildingRequestObject(){
+    public static AddNewBuilding createGenericBuildingRequestObject() {
 
         String buildingName = "CAR";
         int numberOfFloors = 1;
@@ -36,7 +40,7 @@ public class TestHelper {
 
     }
 
-    public static GetSingleBuilding createGenericBuildingSingleResponseObject(){
+    public static GetSingleBuilding createGenericBuildingSingleResponseObject() {
 
         long buildingId = 1;
         String buildingName = "CAR";
@@ -61,7 +65,7 @@ public class TestHelper {
 
     }
 
-    public static UpdateBuilding createGenericUpdateBuildingRequest(){
+    public static UpdateBuilding createGenericUpdateBuildingRequest() {
 
         long buildingId = 3;
         String buildingName = "Some Updated Building";
@@ -95,6 +99,33 @@ public class TestHelper {
         ResponseWrapper responseWrapper = new ObjectMapper().readValue(result, ResponseWrapper.class);
         long buildingId = responseWrapper.getId();
         return buildingId;
+
+    }
+
+    public static GenerateBatchPositionResults createDefaultBatchPositionRequestObject() {
+
+        Set<SaveNewProjectParameters> saveNewProjectParameters = new HashSet<>();
+        saveNewProjectParameters.add(new SaveNewProjectParameters("lowestConsideredRssiValue", "-95"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("mergeRadioMaps", "true"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("radioPropagationExponent", "2.5"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("weightedModeNumReferences", "3"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("correlationMode", "scalar"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult3", "0.9"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("floorHeight", "1.0"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("useFixedWeights", "true"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("posiReferenceSimilarityTimeDelta", "2000"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult1", "2.0"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("smoothenWifiPositions", "true"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("wifiPositionSmootheningFactor", "0.2"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("useShiftedPosiReferences", "false"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult2", "0.9"));
+        saveNewProjectParameters.add(new SaveNewProjectParameters("positionSimilarityThreshold", "0.7"));
+
+        String algorithmType = "WIFI";
+        boolean withPixelPosition = false;
+
+        return new GenerateBatchPositionResults(-1L, -1L, -1L,
+                null, algorithmType, saveNewProjectParameters, withPixelPosition);
 
     }
 

@@ -25,8 +25,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -67,7 +65,10 @@ public class BuildingControllerTest {
     private UpdateBuilding updateBuilding;
     private GetSingleBuilding getSingleBuildingUpdated;
 
-    private MockMultipartFile floorMapFileBmp;
+    private MockMultipartFile floorMapBmp;
+    private MockMultipartFile floorMapGif;
+    private MockMultipartFile floorMapPng;
+    private MockMultipartFile floorMapJpg;
 
     private ObjectMapper objectMapper;
 
@@ -109,8 +110,14 @@ public class BuildingControllerTest {
         getSingleBuildingUpdated.setBuildingId(updateBuilding.getBuildingId());
         getSingleBuildingUpdated.setBuildingName(updateBuilding.getBuildingName());
 
-        floorMapFileBmp = new MockMultipartFile("floorMapFile", "CAR.bmp", "image/bmp",
-                Files.readAllBytes(Paths.get("./src/test/resources/CAR.bmp")));
+        floorMapBmp = new MockMultipartFile("floorMapFile", "CAR.bmp", "image/bmp",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR.bmp")));
+        floorMapGif = new MockMultipartFile("floorMapFile", "CAR_R1.gif", "image/gif",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR_R1.gif")));
+        floorMapPng = new MockMultipartFile("floorMapFile", "hft_2_floor_3.png", "image/png",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/hft_2_floor_3.png")));
+        floorMapJpg = new MockMultipartFile("floorMapFile", "CAR.jpg", "image/jpg",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR.jpg")));
 
     }
 
@@ -273,7 +280,7 @@ public class BuildingControllerTest {
     }
 
     @Test
-    public void testAddFloorMap() {
+    public void testAddFloorMapBmp() {
 
         try {
             long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
@@ -288,7 +295,7 @@ public class BuildingControllerTest {
             String floorName = "SomeFloor";
             mockMvc.perform(MockMvcRequestBuilders
                     .fileUpload("/building/addFloorToBuilding")
-                    .file(floorMapFileBmp)
+                    .file(floorMapBmp)
                     .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
                     .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
                     .param("floorName", floorName))
@@ -305,6 +312,111 @@ public class BuildingControllerTest {
         }
 
     }
+
+    @Test
+    public void testAddFloorMapGif(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapGif)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+
+    }
+
+    @Test
+    public void testAddFloorMapPng(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapPng)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+
+    }
+
+    @Test
+    public void testAddFloorMapJpg(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapJpg)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+    }
+
+
 
     @Test
     public void testDeleteBuilding() {
