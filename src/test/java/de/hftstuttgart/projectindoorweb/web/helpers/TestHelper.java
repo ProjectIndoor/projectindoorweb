@@ -104,22 +104,7 @@ public class TestHelper {
 
     public static GenerateBatchPositionResults createDefaultBatchPositionRequestObject() {
 
-        Set<SaveNewProjectParameters> saveNewProjectParameters = new HashSet<>();
-        saveNewProjectParameters.add(new SaveNewProjectParameters("lowestConsideredRssiValue", "-95"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("mergeRadioMaps", "true"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("radioPropagationExponent", "2.5"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("weightedModeNumReferences", "3"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("correlationMode", "scalar"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult3", "0.9"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("floorHeight", "1.0"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("useFixedWeights", "true"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("posiReferenceSimilarityTimeDelta", "2000"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult1", "2.0"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("smoothenWifiPositions", "true"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("wifiPositionSmootheningFactor", "0.2"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("useShiftedPosiReferences", "false"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("weightResult2", "0.9"));
-        saveNewProjectParameters.add(new SaveNewProjectParameters("positionSimilarityThreshold", "0.7"));
+        Set<SaveNewProjectParameters> saveNewProjectParameters = getSimpleProjectParameterSet();
 
         String algorithmType = "WIFI";
         boolean withPixelPosition = false;
@@ -129,9 +114,38 @@ public class TestHelper {
 
     }
 
+    public static Set<SaveNewProjectParameters> getSimpleProjectParameterSet() {
+        Set<SaveNewProjectParameters> result = new HashSet<>();
+        result.add(new SaveNewProjectParameters("lowestConsideredRssiValue", "-95"));
+        result.add(new SaveNewProjectParameters("mergeRadioMaps", "true"));
+        result.add(new SaveNewProjectParameters("radioPropagationExponent", "2.5"));
+        result.add(new SaveNewProjectParameters("weightedModeNumReferences", "3"));
+        result.add(new SaveNewProjectParameters("correlationMode", "scalar"));
+        result.add(new SaveNewProjectParameters("weightResult3", "0.9"));
+        result.add(new SaveNewProjectParameters("floorHeight", "1.0"));
+        result.add(new SaveNewProjectParameters("useFixedWeights", "true"));
+        result.add(new SaveNewProjectParameters("posiReferenceSimilarityTimeDelta", "2000"));
+        result.add(new SaveNewProjectParameters("weightResult1", "2.0"));
+        result.add(new SaveNewProjectParameters("smoothenWifiPositions", "true"));
+        result.add(new SaveNewProjectParameters("wifiPositionSmootheningFactor", "0.2"));
+        result.add(new SaveNewProjectParameters("useShiftedPosiReferences", "false"));
+        result.add(new SaveNewProjectParameters("weightResult2", "0.9"));
+        result.add(new SaveNewProjectParameters("positionSimilarityThreshold", "0.7"));
+        return result;
+    }
+
+    public static GenerateBatchPositionResults createPositionRequestObjectWithProjectId(long projectIdentifier) {
+
+
+        String algorithmType = "WIFI";
+        boolean withPixelPosition = false;
+
+        return new GenerateBatchPositionResults(-1L, -1L, projectIdentifier,
+                null, algorithmType, null, withPixelPosition);
+
+    }
+
     public static String jsonify(Object o) throws IOException {
         return new ObjectMapper().writeValueAsString(o);
     }
-
-
 }
