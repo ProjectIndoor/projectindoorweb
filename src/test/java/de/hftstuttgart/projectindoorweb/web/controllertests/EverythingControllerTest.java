@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.Application;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
 import de.hftstuttgart.projectindoorweb.web.configuration.TestWebConfiguration;
 import de.hftstuttgart.projectindoorweb.web.helpers.TestHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
@@ -86,6 +87,9 @@ public class EverythingControllerTest {
     @Autowired
     private BuildingRepository buildingRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @Before
     public void setUp() throws Exception {
 
@@ -93,6 +97,7 @@ public class EverythingControllerTest {
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
+        this.projectRepository.deleteAll();
         this.buildingRepository.deleteAll();
 
         radioMapFileR01A5 = new MockMultipartFile("radioMapFiles", "logfile_CAR_R01-2017_A5.txt",
@@ -386,6 +391,7 @@ public class EverythingControllerTest {
     }
 
     private long prepareBatchPositionResultCalculations() throws Exception {
+
         long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
         assertTrue("Failed to add new building.", buildingId > 0);
 
