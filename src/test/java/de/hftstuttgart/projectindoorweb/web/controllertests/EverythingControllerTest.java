@@ -13,10 +13,8 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.Genera
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,9 +33,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -230,34 +226,11 @@ public class EverythingControllerTest {
     @Test
     public void testGenerateBatchPositionResultsWoProject() {
 
-
         try {
 
-            long buildingId = prepareBatchPositionResultCalculations();
-
-            ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
-                    "buildingIdentifier=" + buildingId));
-            getRadioMapResultActions.andExpect(status().isOk());
-
-            String getRadioMapResult = getRadioMapResultActions.andReturn().getResponse().getContentAsString();
-            List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding = (List<GetRadioMapFilesForBuilding>)
-                    this.objectMapper.readValue(getRadioMapResult, new TypeReference<List<GetRadioMapFilesForBuilding>>() {
-                    });
-            assertTrue("The returned list of type " + GetRadioMapFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                    getRadioMapFilesForBuilding.size() == 1);
-
-            ResultActions getEvalFileResultActions = mockMvc.perform(get("/position/getEvalFilesForBuildingId?" +
-                    "buildingIdentifier=" + buildingId));
-            getEvalFileResultActions.andExpect(status().isOk());
-            String getEvalFileResult = getEvalFileResultActions.andReturn().getResponse().getContentAsString();
-            List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding = (List<GetEvaluationFilesForBuilding>)
-                    this.objectMapper.readValue(getEvalFileResult, new TypeReference<List<GetEvaluationFilesForBuilding>>() {
-                    });
-            assertTrue("The returned list of type " + GetEvaluationFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                    getEvaluationFilesForBuilding.size() == 1);
-
-            long radioMapFileId = getRadioMapFilesForBuilding.get(0).getId();
-            long evalFileId = getEvaluationFilesForBuilding.get(0).getId();
+            long buildingId = prepareBuildingForBatchPositionResultCalculations();
+            long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
+            long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
 
             GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper.createDefaultBatchPositionRequestObject();
             defaultGenerateBatchPositionResults.setBuildingIdentifier(buildingId);
@@ -267,6 +240,7 @@ public class EverythingControllerTest {
             ResultActions generateBatchPositionsResultActions = mockMvc.perform(post("/position/generateBatchPositionResults")
                     .content(TestHelper.jsonify(defaultGenerateBatchPositionResults))
                     .contentType(this.contentType));
+
             generateBatchPositionsResultActions.andExpect(status().isOk());
             String batchPositionResult = generateBatchPositionsResultActions.andReturn().getResponse().getContentAsString();
             List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
@@ -279,52 +253,18 @@ public class EverythingControllerTest {
             fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
         }
 
-
     }
 
 
     @Test
     public void testGenerateBatchPositionResultsWithProject() throws Exception {
 
-        long buildingId = prepareBatchPositionResultCalculations();
+        long buildingId = prepareBuildingForBatchPositionResultCalculations();
+        long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
+        long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
+        long projectId = prepareProjectForBatchPositionResultCalculations(buildingId);
 
-        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getSimpleProjectParameterSet(), DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
-
-        ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
-                .content(TestHelper.jsonify(addNewProjectElement))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
-
-        String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
-        ResponseWrapper responseWrapper = this.objectMapper.readValue(saveNewProjectResult, new TypeReference<ResponseWrapper>() {
-        });
-        long retrievedProjectId = responseWrapper.getId();
-
-        ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
-                "buildingIdentifier=" + buildingId));
-        getRadioMapResultActions.andExpect(status().isOk());
-
-        String getRadioMapResult = getRadioMapResultActions.andReturn().getResponse().getContentAsString();
-        List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding = (List<GetRadioMapFilesForBuilding>)
-                this.objectMapper.readValue(getRadioMapResult, new TypeReference<List<GetRadioMapFilesForBuilding>>() {
-                });
-        assertTrue("The returned list of type " + GetRadioMapFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                getRadioMapFilesForBuilding.size() == 1);
-
-        ResultActions getEvalFileResultActions = mockMvc.perform(get("/position/getEvalFilesForBuildingId?" +
-                "buildingIdentifier=" + buildingId));
-        getEvalFileResultActions.andExpect(status().isOk());
-        String getEvalFileResult = getEvalFileResultActions.andReturn().getResponse().getContentAsString();
-        List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding = (List<GetEvaluationFilesForBuilding>)
-                this.objectMapper.readValue(getEvalFileResult, new TypeReference<List<GetEvaluationFilesForBuilding>>() {
-                });
-        assertTrue("The returned list of type " + GetEvaluationFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                getEvaluationFilesForBuilding.size() == 1);
-
-        long radioMapFileId = getRadioMapFilesForBuilding.get(0).getId();
-        long evalFileId = getEvaluationFilesForBuilding.get(0).getId();
-
-        GenerateBatchPositionResults positionRequestObject = TestHelper.createPositionRequestObjectWithProjectId(retrievedProjectId);
+        GenerateBatchPositionResults positionRequestObject = TestHelper.createPositionRequestObjectWithProjectId(projectId);
         positionRequestObject.setBuildingIdentifier(buildingId);
         positionRequestObject.setEvalFileIdentifier(evalFileId);
         positionRequestObject.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -341,36 +281,16 @@ public class EverythingControllerTest {
 
     }
 
-
     @Test
     public void testGenerateBatchPositionResultsWoProjectWoParameterSet() throws Exception {
 
-        long buildingId = prepareBatchPositionResultCalculations();
-        assertTrue("Failed to add new building.", buildingId > 0);
+        long buildingId = prepareBuildingForBatchPositionResultCalculations();
+        long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
+        long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
 
         ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
                 "buildingIdentifier=" + buildingId));
         getRadioMapResultActions.andExpect(status().isOk());
-
-        String getRadioMapResult = getRadioMapResultActions.andReturn().getResponse().getContentAsString();
-        List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding = (List<GetRadioMapFilesForBuilding>)
-                this.objectMapper.readValue(getRadioMapResult, new TypeReference<List<GetRadioMapFilesForBuilding>>() {
-                });
-        assertTrue("The returned list of type " + GetRadioMapFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                getRadioMapFilesForBuilding.size() == 1);
-
-        ResultActions getEvalFileResultActions = mockMvc.perform(get("/position/getEvalFilesForBuildingId?" +
-                "buildingIdentifier=" + buildingId));
-        getEvalFileResultActions.andExpect(status().isOk());
-        String getEvalFileResult = getEvalFileResultActions.andReturn().getResponse().getContentAsString();
-        List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding = (List<GetEvaluationFilesForBuilding>)
-                this.objectMapper.readValue(getEvalFileResult, new TypeReference<List<GetEvaluationFilesForBuilding>>() {
-                });
-        assertTrue("The returned list of type " + GetEvaluationFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
-                getEvaluationFilesForBuilding.size() == 1);
-
-        long radioMapFileId = getRadioMapFilesForBuilding.get(0).getId();
-        long evalFileId = getEvaluationFilesForBuilding.get(0).getId();
 
         GenerateBatchPositionResults positionRequestObject = TestHelper.createPositionRequestObjectWithProjectId(1l);
         positionRequestObject.setBuildingIdentifier(buildingId);
@@ -390,7 +310,7 @@ public class EverythingControllerTest {
 
     }
 
-    private long prepareBatchPositionResultCalculations() throws Exception {
+    private long prepareBuildingForBatchPositionResultCalculations() throws Exception {
 
         long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
         assertTrue("Failed to add new building.", buildingId > 0);
@@ -406,6 +326,49 @@ public class EverythingControllerTest {
                 .andExpect(status().isOk());
 
         return buildingId;
+    }
+
+    private long prepareRadioMapForBatchPositionResultCalculations(long buildingId) throws Exception {
+        ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
+                "buildingIdentifier=" + buildingId));
+        getRadioMapResultActions.andExpect(status().isOk());
+
+        String getRadioMapResult = getRadioMapResultActions.andReturn().getResponse().getContentAsString();
+        List<GetRadioMapFilesForBuilding> getRadioMapFilesForBuilding = (List<GetRadioMapFilesForBuilding>)
+                this.objectMapper.readValue(getRadioMapResult, new TypeReference<List<GetRadioMapFilesForBuilding>>() {
+                });
+        assertTrue("The returned list of type " + GetRadioMapFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
+                getRadioMapFilesForBuilding.size() == 1);
+
+        return getRadioMapFilesForBuilding.get(0).getId();
+    }
+
+    private long prepareEvalFileForBatchPositionResultCalculations(long buildingId) throws Exception {
+        ResultActions getEvalFileResultActions = mockMvc.perform(get("/position/getEvalFilesForBuildingId?" +
+                "buildingIdentifier=" + buildingId));
+        getEvalFileResultActions.andExpect(status().isOk());
+        String getEvalFileResult = getEvalFileResultActions.andReturn().getResponse().getContentAsString();
+        List<GetEvaluationFilesForBuilding> getEvaluationFilesForBuilding = (List<GetEvaluationFilesForBuilding>)
+                this.objectMapper.readValue(getEvalFileResult, new TypeReference<List<GetEvaluationFilesForBuilding>>() {
+                });
+        assertTrue("The returned list of type " + GetEvaluationFilesForBuilding.class.getSimpleName() + " had an unexpected size.",
+                getEvaluationFilesForBuilding.size() == 1);
+
+        return getEvaluationFilesForBuilding.get(0).getId();
+    }
+
+    private long prepareProjectForBatchPositionResultCalculations(long buildingId) throws Exception {
+        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getSimpleProjectParameterSet(), DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
+
+        ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
+                .content(TestHelper.jsonify(addNewProjectElement))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+
+        String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
+        ResponseWrapper responseWrapper = this.objectMapper.readValue(saveNewProjectResult, new TypeReference<ResponseWrapper>() {
+        });
+        return responseWrapper.getId();
     }
 
     //To be continued ;)
