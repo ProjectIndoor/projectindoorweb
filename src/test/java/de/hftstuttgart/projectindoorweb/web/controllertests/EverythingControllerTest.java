@@ -75,8 +75,6 @@ public class EverythingControllerTest {
 
     private MockMultipartFile evaluationFile;
 
-    private AddNewProject addNewProjectElement;
-
     private long[] emptyRadioMapIdArray = new long[2];
 
     private final static String ALGORITHM_TYPE = "WIFI";
@@ -127,9 +125,6 @@ public class EverythingControllerTest {
 
         evaluationFile = new MockMultipartFile("evalFiles", "logfile_CAR_R01-2017_A5.txt",
                 "text/plain", Files.readAllBytes(Paths.get("./src/test/resources/evaluationfiles/logfile_CAR_R01-2017_A5.txt")));
-
-
-        addNewProjectElement = new AddNewProject(TestHelper.getSimpleProjectParameterSet(), DUMMY, ALGORITHM_TYPE, 0l, 0l, emptyRadioMapIdArray);
 
     }
 
@@ -232,18 +227,8 @@ public class EverythingControllerTest {
 
 
         try {
-            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
-            assertTrue("Failed to add new building.", buildingId > 0);
 
-            mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processRadioMapFiles")
-                    .file(radioMapFileR01A5)
-                    .param("buildingIdentifier", String.valueOf(buildingId)))
-                    .andExpect(status().isOk());
-
-            mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
-                    .file(evaluationFile)
-                    .param("buildingIdentifier", String.valueOf(buildingId)))
-                    .andExpect(status().isOk());
+            long buildingId = prepareBatchPositionResultCalculations();
 
             ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
                     "buildingIdentifier=" + buildingId));
@@ -296,22 +281,13 @@ public class EverythingControllerTest {
     @Test
     public void testGenerateBatchPositionResultsWithProject() throws Exception {
 
-        long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
-        assertTrue("Failed to add new building.", buildingId > 0);
+        long buildingId = prepareBatchPositionResultCalculations();
+
+        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getSimpleProjectParameterSet(), DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
 
         ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
-                .content(TestHelper.jsonify(this.addNewProjectElement))
+                .content(TestHelper.jsonify(addNewProjectElement))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processRadioMapFiles")
-                .file(radioMapFileR01A5)
-                .param("buildingIdentifier", String.valueOf(buildingId)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
-                .file(evaluationFile)
-                .param("buildingIdentifier", String.valueOf(buildingId)))
                 .andExpect(status().isOk());
 
         String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
@@ -364,18 +340,8 @@ public class EverythingControllerTest {
     @Test
     public void testGenerateBatchPositionResultsWoProjectWoParameterSet() throws Exception {
 
-        long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+        long buildingId = prepareBatchPositionResultCalculations();
         assertTrue("Failed to add new building.", buildingId > 0);
-
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processRadioMapFiles")
-                .file(radioMapFileR01A5)
-                .param("buildingIdentifier", String.valueOf(buildingId)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
-                .file(evaluationFile)
-                .param("buildingIdentifier", String.valueOf(buildingId)))
-                .andExpect(status().isOk());
 
         ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
                 "buildingIdentifier=" + buildingId));
@@ -417,6 +383,23 @@ public class EverythingControllerTest {
         assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
 
 
+    }
+
+    private long prepareBatchPositionResultCalculations() throws Exception {
+        long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+        assertTrue("Failed to add new building.", buildingId > 0);
+
+        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processRadioMapFiles")
+                .file(radioMapFileR01A5)
+                .param("buildingIdentifier", String.valueOf(buildingId)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
+                .file(evaluationFile)
+                .param("buildingIdentifier", String.valueOf(buildingId)))
+                .andExpect(status().isOk());
+
+        return buildingId;
     }
 
     //To be continued ;)
