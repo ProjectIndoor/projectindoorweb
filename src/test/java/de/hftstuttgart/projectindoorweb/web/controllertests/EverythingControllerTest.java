@@ -277,4 +277,40 @@ public class EverythingControllerTest {
     }
 
 
+    @Test
+    public void testGenerateBatchPositionResultsWithProject() {
+
+        /*TODO Volkan:
+
+        Test generation of batch position results with empty or null parameter set, but existing project (which contains
+        a parameter set) so the backend used the project parameter set.
+
+        For now, it is sufficient to check that the returned size of the list is as expected (should be 396 if you use
+        same files as in 'testGenerateBatchPositionResultsWoProject()').
+
+        */
+
+    }
+
+
+    @Test
+    public void testGenerateBatchPositionResultsWoProjectWoParameterSet() {
+
+        /*
+        * TODO Volkan:
+        *
+        * Test generation of batch position results with empty or null parameter set and a project ID for which there
+        * is no project available backend. This will force the backend to fall back to the default parameters.
+        *
+        * For now, it is sufficient to check that the returned size of the list is as expected (should be 396 if you use
+        * same files as in 'testGenerateBatchPositionResultsWoProject()').
+        *
+        * */
+
+
+    }
+
+    //To be continued ;)
+
+
 }
