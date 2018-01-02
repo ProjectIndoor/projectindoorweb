@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.Application;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectRepository;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
 import de.hftstuttgart.projectindoorweb.web.configuration.TestWebConfiguration;
 import de.hftstuttgart.projectindoorweb.web.helpers.TestHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.Charset;
@@ -33,10 +35,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,6 +50,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestWebConfiguration.class)
 @WebAppConfiguration
 public class EverythingControllerTest {
+
+    private static CorrelationMode PROJECT_DEFAULT_CORRELATION_MODE = CorrelationMode.SCALAR;
+    private static CorrelationMode PARAMETERS_DEFAULT_CORRELATION_MODE = CorrelationMode.EUCLIDIAN;
 
     private static final double LAT_LONG_ACCEPTABLE_ERROR = 0.00000000000001;
 
@@ -80,9 +85,13 @@ public class EverythingControllerTest {
 
     private long[] emptyRadioMapIdArray = new long[2];
 
-    private SinglePositionResult expectedSinglePositionResultDefaultParameters;
+    private SinglePositionResult expectedSinglePositionResultDefaultScalar;
+    private SinglePositionResult expectedSinglePositionResultDefaultEuclidian;
 
     private String[] wifiReadings;
+
+    private List<BatchPositionResult> expectedBatchPositionResultsDefaultScalar;
+    private List<BatchPositionResult> expectedBatchPositionResultsDefaultEuclidian;
 
 
     @Autowired
@@ -135,8 +144,12 @@ public class EverythingControllerTest {
         evaluationFile = new MockMultipartFile("evalFiles", "logfile_CAR_R01-2017_A5.txt",
                 "text/plain", Files.readAllBytes(Paths.get("./src/test/resources/evaluationfiles/logfile_CAR_R01-2017_A5.txt")));
 
-        expectedSinglePositionResultDefaultParameters = new SinglePositionResult(40.31337154315789, -3.4833353957894735,
+        expectedSinglePositionResultDefaultScalar = new SinglePositionResult(40.31337154315789, -3.4833353957894735,
                 0.0, true);
+
+        expectedSinglePositionResultDefaultEuclidian = new SinglePositionResult(40.31329085973684, -3.4832467759210526,
+                0.0, true);
+
 
         wifiReadings = new String[]{
                 "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:36:c2;-83",
@@ -151,6 +164,16 @@ public class EverythingControllerTest {
                 "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:35:82;-90",
                 "WIFI;2.795;4985.268;portal-csic;00:0b:86:27:35:81;-90"
         };
+
+        expectedBatchPositionResultsDefaultScalar = this.objectMapper.readValue(
+                new File("./src/test/resources/verification/BatchPositionResultsDefaultParametersScalar.txt"),
+                new TypeReference<List<BatchPositionResult>>() {
+                });
+
+        expectedBatchPositionResultsDefaultEuclidian = this.objectMapper.readValue(
+                new File("./src/test/resources/verification/BatchPositionResultsDefaultParametersEuclidian.txt"),
+                new TypeReference<List<BatchPositionResult>>() {
+                });
 
     }
 
@@ -262,7 +285,8 @@ public class EverythingControllerTest {
             long radioMapFileId = processRadioMapForBuilding(buildingId);
             long evalFileId = processEvaluationFileForBuilding(buildingId);
 
-            GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper.createDefaultBatchPositionRequestObject();
+            GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper
+                    .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
             defaultGenerateBatchPositionResults.setBuildingIdentifier(buildingId);
             defaultGenerateBatchPositionResults.setEvalFileIdentifier(evalFileId);
             defaultGenerateBatchPositionResults.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -276,7 +300,16 @@ public class EverythingControllerTest {
             List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
                     new TypeReference<List<BatchPositionResult>>() {
                     });
-            assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
+            assertTrue("The backend returned an unexpected number of results.",
+                    batchPositionResults.size() == expectedBatchPositionResultsDefaultEuclidian.size());
+
+            BatchPositionResult currentActual;
+            BatchPositionResult currentExpected;
+            for(int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++){
+                currentActual = batchPositionResults.get(i);
+                currentExpected = expectedBatchPositionResultsDefaultEuclidian.get(i);
+                assertEquals(currentExpected, currentActual);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -298,7 +331,8 @@ public class EverythingControllerTest {
         long evalFileId = processEvaluationFileForBuilding(buildingId);
         long projectId = insertNewProjectWithDefaultParameters(buildingId);
 
-        GenerateBatchPositionResults positionRequestObject = TestHelper.createDefaultBatchPositionRequestObject();
+        GenerateBatchPositionResults positionRequestObject = TestHelper
+                .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
         positionRequestObject.setProjectParameters(null);
         positionRequestObject.setProjectIdentifier(projectId);
         positionRequestObject.setBuildingIdentifier(buildingId);
@@ -313,7 +347,16 @@ public class EverythingControllerTest {
         List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
                 new TypeReference<List<BatchPositionResult>>() {
                 });
-        assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
+        assertTrue("The backend returned an unexpected number of results.",
+                batchPositionResults.size() == expectedBatchPositionResultsDefaultScalar.size());
+
+        BatchPositionResult currentActual;
+        BatchPositionResult currentExpected;
+        for(int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++){
+            currentActual = batchPositionResults.get(i);
+            currentExpected = expectedBatchPositionResultsDefaultScalar.get(i);
+            assertEquals(currentExpected, currentActual);
+        }
 
     }
 
@@ -332,7 +375,8 @@ public class EverythingControllerTest {
                 "buildingIdentifier=" + buildingId));
         getRadioMapResultActions.andExpect(status().isOk());
 
-        GenerateBatchPositionResults positionRequestObject = TestHelper.createDefaultBatchPositionRequestObject();
+        GenerateBatchPositionResults positionRequestObject = TestHelper
+                .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
         positionRequestObject.setProjectParameters(null);
         positionRequestObject.setBuildingIdentifier(buildingId);
         positionRequestObject.setEvalFileIdentifier(evalFileId);
@@ -346,7 +390,16 @@ public class EverythingControllerTest {
         List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
                 new TypeReference<List<BatchPositionResult>>() {
                 });
-        assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
+        assertTrue("The backend returned an unexpected number of results.",
+                batchPositionResults.size() == expectedBatchPositionResultsDefaultScalar.size());
+
+        BatchPositionResult currentActual;
+        BatchPositionResult currentExpected;
+        for(int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++){
+            currentActual = batchPositionResults.get(i);
+            currentExpected = expectedBatchPositionResultsDefaultScalar.get(i);
+            assertEquals(currentExpected, currentActual);
+        }
 
 
     }
@@ -367,7 +420,8 @@ public class EverythingControllerTest {
             long evalFileId = processEvaluationFileForBuilding(buildingId);
             long projectId = insertNewProjectWithDefaultParameters(buildingId);
 
-            GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper.createDefaultBatchPositionRequestObject();
+            GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper
+                    .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
             defaultGenerateBatchPositionResults.setBuildingIdentifier(buildingId);
             defaultGenerateBatchPositionResults.setEvalFileIdentifier(evalFileId);
             defaultGenerateBatchPositionResults.setProjectIdentifier(projectId);
@@ -382,7 +436,16 @@ public class EverythingControllerTest {
             List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
                     new TypeReference<List<BatchPositionResult>>() {
                     });
-            assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
+            assertTrue("The backend returned an unexpected number of results.",
+                    batchPositionResults.size() == expectedBatchPositionResultsDefaultEuclidian.size());
+
+            BatchPositionResult currentActual;
+            BatchPositionResult currentExpected;
+            for(int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++){
+                currentActual = batchPositionResults.get(i);
+                currentExpected = expectedBatchPositionResultsDefaultEuclidian.get(i);
+                assertEquals(currentExpected, currentActual);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -401,7 +464,7 @@ public class EverythingControllerTest {
             long radioMapFileId = processRadioMapForBuilding(buildingId);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
-                    .createDefaultSinglePositionRequestObject();
+                    .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
             defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
             defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
             defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -413,9 +476,9 @@ public class EverythingControllerTest {
             generateSinglePositionResultActions
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.x",
-                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                            is(this.expectedSinglePositionResultDefaultEuclidian.getX())))
                     .andExpect(jsonPath("$.y",
-                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultEuclidian.getY(), MathContext.DECIMAL64),
                                     new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
                     .andExpect(jsonPath("$.z", is(0.0)))
                     .andExpect(jsonPath("$.wgs84", is(true)));
@@ -437,7 +500,8 @@ public class EverythingControllerTest {
             long projectId = insertNewProjectWithDefaultParameters(buildingId);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
-                    .createDefaultSinglePositionRequestObject();
+                    .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
+            defaultGenerateSinglePositionResult.setSaveNewProjectParameters(null);
             defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
             defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
             defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -450,9 +514,9 @@ public class EverythingControllerTest {
             generateSinglePositionResultActions
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.x",
-                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                            is(this.expectedSinglePositionResultDefaultScalar.getX())))
                     .andExpect(jsonPath("$.y",
-                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultScalar.getY(), MathContext.DECIMAL64),
                                     new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
                     .andExpect(jsonPath("$.z", is(0.0)))
                     .andExpect(jsonPath("$.wgs84", is(true)));
@@ -472,7 +536,7 @@ public class EverythingControllerTest {
             long radioMapFileId = processRadioMapForBuilding(buildingId);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
-                    .createDefaultSinglePositionRequestObject();
+                    .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
             defaultGenerateSinglePositionResult.setSaveNewProjectParameters(null);
             defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
             defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
@@ -485,13 +549,12 @@ public class EverythingControllerTest {
             generateSinglePositionResultActions
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.x",
-                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                            is(this.expectedSinglePositionResultDefaultScalar.getX())))
                     .andExpect(jsonPath("$.y",
-                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultScalar.getY(), MathContext.DECIMAL64),
                                     new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
                     .andExpect(jsonPath("$.z", is(0.0)))
                     .andExpect(jsonPath("$.wgs84", is(true)));
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -508,7 +571,7 @@ public class EverythingControllerTest {
             long projectId = insertNewProjectWithDefaultParameters(buildingId);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
-                    .createDefaultSinglePositionRequestObject();
+                    .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
             defaultGenerateSinglePositionResult.setProjectIdentifier(projectId);
             defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
             defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
@@ -521,9 +584,9 @@ public class EverythingControllerTest {
             generateSinglePositionResultActions
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.x",
-                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                            is(this.expectedSinglePositionResultDefaultEuclidian.getX())))
                     .andExpect(jsonPath("$.y",
-                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultEuclidian.getY(), MathContext.DECIMAL64),
                                     new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
                     .andExpect(jsonPath("$.z", is(0.0)))
                     .andExpect(jsonPath("$.wgs84", is(true)));
@@ -588,7 +651,8 @@ public class EverythingControllerTest {
     }
 
     private long insertNewProjectWithDefaultParameters(long buildingId) throws Exception {
-        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getDefaultProjectParameterSet(),
+        AddNewProject addNewProjectElement = new AddNewProject(TestHelper
+                .getDefaultProjectParameterSet(PROJECT_DEFAULT_CORRELATION_MODE),
                 DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
 
         ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")

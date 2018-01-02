@@ -2,6 +2,7 @@ package de.hftstuttgart.projectindoorweb.web.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
+import de.hftstuttgart.projectindoorweb.positionCalculator.internal.CorrelationMode;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
@@ -104,9 +105,9 @@ public class TestHelper {
 
     }
 
-    public static GenerateBatchPositionResults createDefaultBatchPositionRequestObject() {
+    public static GenerateBatchPositionResults createDefaultBatchPositionRequestObject(CorrelationMode correlationMode) {
 
-        Set<SaveNewProjectParameters> saveNewProjectParameters = getDefaultProjectParameterSet();
+        Set<SaveNewProjectParameters> saveNewProjectParameters = getDefaultProjectParameterSet(correlationMode);
 
         String algorithmType = "WIFI";
         boolean withPixelPosition = true;
@@ -116,9 +117,9 @@ public class TestHelper {
 
     }
 
-    public static GenerateSinglePositionResult createDefaultSinglePositionRequestObject() {
+    public static GenerateSinglePositionResult createDefaultSinglePositionRequestObject(CorrelationMode correlationMode) {
 
-        Set<SaveNewProjectParameters> saveNewProjectParameters = getDefaultProjectParameterSet();
+        Set<SaveNewProjectParameters> saveNewProjectParameters = getDefaultProjectParameterSet(correlationMode);
         String algorithmType = "WIFI";
         boolean withPixelPosition = false;
 
@@ -130,7 +131,7 @@ public class TestHelper {
 
     }
 
-    public static Set<SaveNewProjectParameters> getDefaultProjectParameterSet() {
+    public static Set<SaveNewProjectParameters> getDefaultProjectParameterSet(CorrelationMode correlationMode) {
 
         Set<SaveNewProjectParameters> result = new HashSet<>();
 
@@ -143,7 +144,7 @@ public class TestHelper {
         result.add(new SaveNewProjectParameters("weightedModeNumReferences",
                 String.valueOf(ConfigContainer.NUM_REFERENCES_IN_WEIGHTED_MODE)));
         result.add(new SaveNewProjectParameters("correlationMode",
-                String.valueOf(ConfigContainer.CORRELATION_MODE).toLowerCase()));
+                String.valueOf(correlationMode).toLowerCase()));
         result.add(new SaveNewProjectParameters("weightResult3",
                 String.valueOf(ConfigContainer.WEIGHT_RESULT_3)));
         result.add(new SaveNewProjectParameters("floorHeight",

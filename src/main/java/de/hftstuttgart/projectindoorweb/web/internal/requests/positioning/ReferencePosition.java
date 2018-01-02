@@ -3,6 +3,8 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class ReferencePosition {
 
     private int positionId;
@@ -65,5 +67,22 @@ public class ReferencePosition {
 
     public void setWgs84(boolean wgs84) {
         this.wgs84 = wgs84;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReferencePosition that = (ReferencePosition) o;
+        return Double.compare(that.x, x) == 0 &&
+                Double.compare(that.y, y) == 0 &&
+                Double.compare(that.z, z) == 0 &&
+                wgs84 == that.wgs84;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(x, y, z, wgs84);
     }
 }
