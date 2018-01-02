@@ -2,6 +2,7 @@ package de.hftstuttgart.projectindoorweb.web.internal.util;
 
 import de.hftstuttgart.projectindoorweb.geoCalculator.internal.LatLongCoord;
 import de.hftstuttgart.projectindoorweb.geoCalculator.transformation.TransformationHelper;
+import de.hftstuttgart.projectindoorweb.inputHandler.internal.util.ConfigContainer;
 import de.hftstuttgart.projectindoorweb.persistence.entities.*;
 import de.hftstuttgart.projectindoorweb.positionCalculator.CalculationAlgorithm;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
@@ -18,6 +19,8 @@ import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEva
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.ReferencePosition;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.GetAllProjects;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.project.LoadSelectedProject;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.SaveNewProjectParameters;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -419,6 +422,62 @@ public class TransmissionHelper {
     public static ResponseWrapper createExternalSimpleResponseWrapper(long resultId, String resultMessage){
 
         return new ResponseWrapper(resultId, resultMessage);
+
+    }
+
+    public static SinglePositionResult createEmptySinglePositionResult() {
+        return new SinglePositionResult(0, 0, 0, false);
+    }
+
+    public static GetSingleBuilding createEmptySingleBuildingResult() {
+        return new GetSingleBuilding(-1, "", -1, -1, -1, null, null,
+                null, null, null, -1.0, -1.0, null, null);
+    }
+
+    public static LoadSelectedProject createEmptyProjectElement() {
+        return new LoadSelectedProject(-1L, null, "", "",
+                -1L, -1L, new long[]{-1L});
+    }
+
+    public static List<GetAllProjects> convertToProjectElements(List<Project> projects) {
+
+        List<GetAllProjects> result = new ArrayList<>(projects.size());
+
+        long buildingId = -1;
+        String buildingName = "";
+        for (Project project :
+                projects) {
+            if (project.getBuilding() != null) {
+                buildingName = project.getBuilding().getBuildingName();
+                buildingId = project.getBuilding().getId();
+            }
+            result.add(new GetAllProjects(project.getId(), project.getProjectName(), buildingId, buildingName));
+        }
+
+        return result;
+
+    }
+
+    public static Set<SaveNewProjectParameters> getDefaultParameterSet(){
+
+        Set<SaveNewProjectParameters> result = new HashSet<>();
+        result.add(new SaveNewProjectParameters("lowestConsideredRssiValue", String.valueOf(ConfigContainer.LOWEST_RSSI_IN_SCALAR_MODE)));
+        result.add(new SaveNewProjectParameters("mergeRadioMaps", String.valueOf(ConfigContainer.MERGE_RADIOMAP_ELEMENTS)));
+        result.add(new SaveNewProjectParameters("radioPropagationExponent", String.valueOf(ConfigContainer.RADIO_PROPAGATION_EXPONENT)));
+        result.add(new SaveNewProjectParameters("weightedModeNumReferences", String.valueOf(ConfigContainer.NUM_REFERENCES_IN_WEIGHTED_MODE)));
+        result.add(new SaveNewProjectParameters("correlationMode", String.valueOf(ConfigContainer.CORRELATION_MODE).toLowerCase()));
+        result.add(new SaveNewProjectParameters("weightResult3", String.valueOf(ConfigContainer.WEIGHT_RESULT_3)));
+        result.add(new SaveNewProjectParameters("floorHeight", String.valueOf(ConfigContainer.FLOOR_HEIGHT)));
+        result.add(new SaveNewProjectParameters("useFixedWeights", String.valueOf(ConfigContainer.USE_FIXED_WEIGHTS)));
+        result.add(new SaveNewProjectParameters("posiReferenceSimilarityTimeDelta", String.valueOf(ConfigContainer.POSI_REFERENCE_MAX_TIME_DELTA_MILLIS)));
+        result.add(new SaveNewProjectParameters("weightResult1", String.valueOf(ConfigContainer.WEIGHT_RESULT_1)));
+        result.add(new SaveNewProjectParameters("smoothenWifiPositions", String.valueOf(ConfigContainer.SMOOTHEN_WIFI_POSITIONS)));
+        result.add(new SaveNewProjectParameters("wifiPositionSmootheningFactor", String.valueOf(ConfigContainer.WIFI_POSITION_SMOOTHENER)));
+        result.add(new SaveNewProjectParameters("useShiftedPosiReferences", String.valueOf(ConfigContainer.USE_SHIFTED_POSI_REFERENCES)));
+        result.add(new SaveNewProjectParameters("weightResult2", String.valueOf(ConfigContainer.WEIGHT_RESULT_2)));
+        result.add(new SaveNewProjectParameters("positionSimilarityThreshold", String.valueOf(ConfigContainer.SIMILAR_POSITION_THRESHOLD_METERS)));
+
+        return result;
 
     }
 

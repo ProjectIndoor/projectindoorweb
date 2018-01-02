@@ -8,10 +8,7 @@ import de.hftstuttgart.projectindoorweb.persistence.repositories.ProjectReposito
 import de.hftstuttgart.projectindoorweb.web.configuration.TestWebConfiguration;
 import de.hftstuttgart.projectindoorweb.web.helpers.TestHelper;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.project.AddNewProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +26,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,9 +35,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -47,6 +48,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestWebConfiguration.class)
 @WebAppConfiguration
 public class EverythingControllerTest {
+
+    private static final double LAT_LONG_ACCEPTABLE_ERROR = 0.00000000000001;
+
+    private final static String ALGORITHM_TYPE = "WIFI";
+    private final static String DUMMY = "Dummy";
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -74,8 +80,10 @@ public class EverythingControllerTest {
 
     private long[] emptyRadioMapIdArray = new long[2];
 
-    private final static String ALGORITHM_TYPE = "WIFI";
-    private final static String DUMMY = "Dummy";
+    private SinglePositionResult expectedSinglePositionResultDefaultParameters;
+
+    private String[] wifiReadings;
+
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -127,6 +135,23 @@ public class EverythingControllerTest {
         evaluationFile = new MockMultipartFile("evalFiles", "logfile_CAR_R01-2017_A5.txt",
                 "text/plain", Files.readAllBytes(Paths.get("./src/test/resources/evaluationfiles/logfile_CAR_R01-2017_A5.txt")));
 
+        expectedSinglePositionResultDefaultParameters = new SinglePositionResult(40.31337154315789, -3.4833353957894735,
+                0.0, true);
+
+        wifiReadings = new String[]{
+                "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:36:c2;-83",
+                "WIFI;2.795;4985.268;portal-csic;00:0b:86:27:32:e1;-69",
+                "WIFI;2.795;4985.268;portal-csic;00:0b:86:27:36:c1;-83",
+                "WIFI;2.795;4985.268;eduroam;00:0b:86:27:32:e0;-65",
+                "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:32:e2;-69",
+                "WIFI;2.795;4985.268;eduroam;00:0b:86:27:35:90;-77",
+                "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:35:92;-77",
+                "WIFI;2.795;4985.268;portal-csic;00:0b:86:27:35:91;-77",
+                "WIFI;2.795;4985.268;eduroam;00:0b:86:27:35:80;-91",
+                "WIFI;2.795;4985.268;test-CAR;00:0b:86:27:35:82;-90",
+                "WIFI;2.795;4985.268;portal-csic;00:0b:86:27:35:81;-90"
+        };
+
     }
 
 
@@ -145,7 +170,7 @@ public class EverythingControllerTest {
 
         } catch (Exception e) {
             e.printStackTrace();
-            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occuured.");
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
         }
 
 
@@ -223,14 +248,19 @@ public class EverythingControllerTest {
 
     }
 
+
+    /*
+     * Expected behavior in backend: Automatically generate a new project based on the given parameter set.
+     *
+     * */
     @Test
-    public void testGenerateBatchPositionResultsWoProject() {
+    public void testGenerateBatchPositionResultsWithParametersWoProject() {
 
         try {
 
-            long buildingId = prepareBuildingForBatchPositionResultCalculations();
-            long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
-            long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+            long evalFileId = processEvaluationFileForBuilding(buildingId);
 
             GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper.createDefaultBatchPositionRequestObject();
             defaultGenerateBatchPositionResults.setBuildingIdentifier(buildingId);
@@ -256,15 +286,21 @@ public class EverythingControllerTest {
     }
 
 
+    /*
+     * Expected behavior in backend: Use the given project -- do not auto-generate a new project.
+     *
+     * */
     @Test
-    public void testGenerateBatchPositionResultsWithProject() throws Exception {
+    public void testGenerateBatchPositionResultsWoParametersWithProject() throws Exception {
 
-        long buildingId = prepareBuildingForBatchPositionResultCalculations();
-        long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
-        long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
-        long projectId = prepareProjectForBatchPositionResultCalculations(buildingId);
+        long buildingId = insertNewBuilding();
+        long radioMapFileId = processRadioMapForBuilding(buildingId);
+        long evalFileId = processEvaluationFileForBuilding(buildingId);
+        long projectId = insertNewProjectWithDefaultParameters(buildingId);
 
-        GenerateBatchPositionResults positionRequestObject = TestHelper.createPositionRequestObjectWithProjectId(projectId);
+        GenerateBatchPositionResults positionRequestObject = TestHelper.createDefaultBatchPositionRequestObject();
+        positionRequestObject.setProjectParameters(null);
+        positionRequestObject.setProjectIdentifier(projectId);
         positionRequestObject.setBuildingIdentifier(buildingId);
         positionRequestObject.setEvalFileIdentifier(evalFileId);
         positionRequestObject.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -281,18 +317,23 @@ public class EverythingControllerTest {
 
     }
 
+    /*
+     * Expected behavior in backend: Automatically generate a project with default parameters.
+     *
+     * */
     @Test
-    public void testGenerateBatchPositionResultsWoProjectWoParameterSet() throws Exception {
+    public void testGenerateBatchPositionResultsWoParametersWoProject() throws Exception {
 
-        long buildingId = prepareBuildingForBatchPositionResultCalculations();
-        long radioMapFileId = prepareRadioMapForBatchPositionResultCalculations(buildingId);
-        long evalFileId = prepareEvalFileForBatchPositionResultCalculations(buildingId);
+        long buildingId = insertNewBuilding();
+        long radioMapFileId = processRadioMapForBuilding(buildingId);
+        long evalFileId = processEvaluationFileForBuilding(buildingId);
 
         ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
                 "buildingIdentifier=" + buildingId));
         getRadioMapResultActions.andExpect(status().isOk());
 
-        GenerateBatchPositionResults positionRequestObject = TestHelper.createPositionRequestObjectWithProjectId(1l);
+        GenerateBatchPositionResults positionRequestObject = TestHelper.createDefaultBatchPositionRequestObject();
+        positionRequestObject.setProjectParameters(null);
         positionRequestObject.setBuildingIdentifier(buildingId);
         positionRequestObject.setEvalFileIdentifier(evalFileId);
         positionRequestObject.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
@@ -310,25 +351,206 @@ public class EverythingControllerTest {
 
     }
 
-    private long prepareBuildingForBatchPositionResultCalculations() throws Exception {
+    /*
+     * Expected behavior in backend: Do not use the given project; instead, use the given parameter set to
+     * generate a new project. Reason: The parameter set is more explicit than the project, hence if both are given,
+     * use the former rather than the latter.
+     *
+     * */
+    @Test
+    public void testGenerateBatchPositionResultsWithParametersWithProject() {
+
+        try {
+
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+            long evalFileId = processEvaluationFileForBuilding(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+
+            GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper.createDefaultBatchPositionRequestObject();
+            defaultGenerateBatchPositionResults.setBuildingIdentifier(buildingId);
+            defaultGenerateBatchPositionResults.setEvalFileIdentifier(evalFileId);
+            defaultGenerateBatchPositionResults.setProjectIdentifier(projectId);
+            defaultGenerateBatchPositionResults.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
+
+            ResultActions generateBatchPositionsResultActions = mockMvc.perform(post("/position/generateBatchPositionResults")
+                    .content(TestHelper.jsonify(defaultGenerateBatchPositionResults))
+                    .contentType(this.contentType));
+
+            generateBatchPositionsResultActions.andExpect(status().isOk());
+            String batchPositionResult = generateBatchPositionsResultActions.andReturn().getResponse().getContentAsString();
+            List<BatchPositionResult> batchPositionResults = (List<BatchPositionResult>) this.objectMapper.readValue(batchPositionResult,
+                    new TypeReference<List<BatchPositionResult>>() {
+                    });
+            assertTrue("The backend returned an unexpected number of results.", batchPositionResults.size() == 396);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+    }
+
+    @Test
+    public void testGenerateSinglePositionResultWithParametersWoProject() {
+
+
+        try {
+
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+
+            GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
+                    .createDefaultSinglePositionRequestObject();
+            defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
+            defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
+            defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
+
+            ResultActions generateSinglePositionResultActions = mockMvc.perform(post("/position/generateSinglePositionResult")
+                    .content(TestHelper.jsonify(defaultGenerateSinglePositionResult))
+                    .contentType(this.contentType));
+
+            generateSinglePositionResultActions
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.x",
+                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                    .andExpect(jsonPath("$.y",
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                                    new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
+                    .andExpect(jsonPath("$.z", is(0.0)))
+                    .andExpect(jsonPath("$.wgs84", is(true)));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+    }
+
+    @Test
+    public void testGenerateSinglePositionResultWoParametersWithProject() {
+
+        try {
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+
+            GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
+                    .createDefaultSinglePositionRequestObject();
+            defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
+            defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
+            defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
+            defaultGenerateSinglePositionResult.setProjectIdentifier(projectId);
+
+            ResultActions generateSinglePositionResultActions = mockMvc.perform(post("/position/generateSinglePositionResult")
+                    .content(TestHelper.jsonify(defaultGenerateSinglePositionResult))
+                    .contentType(this.contentType));
+
+            generateSinglePositionResultActions
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.x",
+                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                    .andExpect(jsonPath("$.y",
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                                    new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
+                    .andExpect(jsonPath("$.z", is(0.0)))
+                    .andExpect(jsonPath("$.wgs84", is(true)));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+    }
+
+    @Test
+    public void testGenerateSinglePositionResultWoParametersWoProject() {
+
+        try {
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+
+            GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
+                    .createDefaultSinglePositionRequestObject();
+            defaultGenerateSinglePositionResult.setSaveNewProjectParameters(null);
+            defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
+            defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
+            defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
+
+            ResultActions generateSinglePositionResultActions = mockMvc.perform(post("/position/generateSinglePositionResult")
+                    .content(TestHelper.jsonify(defaultGenerateSinglePositionResult))
+                    .contentType(this.contentType));
+
+            generateSinglePositionResultActions
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.x",
+                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                    .andExpect(jsonPath("$.y",
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                                    new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
+                    .andExpect(jsonPath("$.z", is(0.0)))
+                    .andExpect(jsonPath("$.wgs84", is(true)));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+    }
+
+    @Test
+    public void testGenerateSinglePositionResultWithParametersWithProject() {
+
+        try {
+            long buildingId = insertNewBuilding();
+            long radioMapFileId = processRadioMapForBuilding(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+
+            GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
+                    .createDefaultSinglePositionRequestObject();
+            defaultGenerateSinglePositionResult.setProjectIdentifier(projectId);
+            defaultGenerateSinglePositionResult.setBuildingIdentifier(buildingId);
+            defaultGenerateSinglePositionResult.setWifiReadings(this.wifiReadings);
+            defaultGenerateSinglePositionResult.setRadioMapFileIdentifiers(new long[]{radioMapFileId});
+
+            ResultActions generateSinglePositionResultActions = mockMvc.perform(post("/position/generateSinglePositionResult")
+                    .content(TestHelper.jsonify(defaultGenerateSinglePositionResult))
+                    .contentType(this.contentType));
+
+            generateSinglePositionResultActions
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.x",
+                            is(this.expectedSinglePositionResultDefaultParameters.getX())))
+                    .andExpect(jsonPath("$.y",
+                            closeTo(new BigDecimal(this.expectedSinglePositionResultDefaultParameters.getY(), MathContext.DECIMAL64),
+                                    new BigDecimal(LAT_LONG_ACCEPTABLE_ERROR, MathContext.DECIMAL64))))
+                    .andExpect(jsonPath("$.z", is(0.0)))
+                    .andExpect(jsonPath("$.wgs84", is(true)));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+    }
+
+    private long insertNewBuilding() throws Exception {
 
         long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
         assertTrue("Failed to add new building.", buildingId > 0);
+
+        return buildingId;
+
+    }
+
+    private long processRadioMapForBuilding(long buildingId) throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processRadioMapFiles")
                 .file(radioMapFileR01A5)
                 .param("buildingIdentifier", String.valueOf(buildingId)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
-                .file(evaluationFile)
-                .param("buildingIdentifier", String.valueOf(buildingId)))
-                .andExpect(status().isOk());
-
-        return buildingId;
-    }
-
-    private long prepareRadioMapForBatchPositionResultCalculations(long buildingId) throws Exception {
         ResultActions getRadioMapResultActions = mockMvc.perform(get("/position/getRadioMapsForBuildingId?" +
                 "buildingIdentifier=" + buildingId));
         getRadioMapResultActions.andExpect(status().isOk());
@@ -341,9 +563,16 @@ public class EverythingControllerTest {
                 getRadioMapFilesForBuilding.size() == 1);
 
         return getRadioMapFilesForBuilding.get(0).getId();
+
     }
 
-    private long prepareEvalFileForBatchPositionResultCalculations(long buildingId) throws Exception {
+    private long processEvaluationFileForBuilding(long buildingId) throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.fileUpload("/position/processEvalFiles")
+                .file(evaluationFile)
+                .param("buildingIdentifier", String.valueOf(buildingId)))
+                .andExpect(status().isOk());
+
         ResultActions getEvalFileResultActions = mockMvc.perform(get("/position/getEvalFilesForBuildingId?" +
                 "buildingIdentifier=" + buildingId));
         getEvalFileResultActions.andExpect(status().isOk());
@@ -355,14 +584,16 @@ public class EverythingControllerTest {
                 getEvaluationFilesForBuilding.size() == 1);
 
         return getEvaluationFilesForBuilding.get(0).getId();
+
     }
 
-    private long prepareProjectForBatchPositionResultCalculations(long buildingId) throws Exception {
-        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getSimpleProjectParameterSet(), DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
+    private long insertNewProjectWithDefaultParameters(long buildingId) throws Exception {
+        AddNewProject addNewProjectElement = new AddNewProject(TestHelper.getDefaultProjectParameterSet(),
+                DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
 
         ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
                 .content(TestHelper.jsonify(addNewProjectElement))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .contentType(this.contentType))
                 .andExpect(status().isOk());
 
         String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
@@ -370,8 +601,6 @@ public class EverythingControllerTest {
         });
         return responseWrapper.getId();
     }
-
-    //To be continued ;)
 
 
 }
