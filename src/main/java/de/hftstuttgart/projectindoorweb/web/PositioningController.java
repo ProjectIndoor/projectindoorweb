@@ -55,7 +55,7 @@ public class PositioningController {
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
 
-    @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
+    @ApiOperation(value = "Deletes a selected Evaal file", nickname = "position/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
     @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
