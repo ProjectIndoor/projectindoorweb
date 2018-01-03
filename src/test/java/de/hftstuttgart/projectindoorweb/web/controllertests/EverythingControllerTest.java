@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.Charset;
@@ -40,8 +41,10 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -305,7 +308,7 @@ public class EverythingControllerTest {
 
             BatchPositionResult currentActual;
             BatchPositionResult currentExpected;
-            for(int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++){
+            for (int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++) {
                 currentActual = batchPositionResults.get(i);
                 currentExpected = expectedBatchPositionResultsDefaultEuclidian.get(i);
                 assertEquals(currentExpected, currentActual);
@@ -352,7 +355,7 @@ public class EverythingControllerTest {
 
         BatchPositionResult currentActual;
         BatchPositionResult currentExpected;
-        for(int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++){
+        for (int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++) {
             currentActual = batchPositionResults.get(i);
             currentExpected = expectedBatchPositionResultsDefaultScalar.get(i);
             assertEquals(currentExpected, currentActual);
@@ -395,7 +398,7 @@ public class EverythingControllerTest {
 
         BatchPositionResult currentActual;
         BatchPositionResult currentExpected;
-        for(int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++){
+        for (int i = 0; i < expectedBatchPositionResultsDefaultScalar.size(); i++) {
             currentActual = batchPositionResults.get(i);
             currentExpected = expectedBatchPositionResultsDefaultScalar.get(i);
             assertEquals(currentExpected, currentActual);
@@ -441,7 +444,7 @@ public class EverythingControllerTest {
 
             BatchPositionResult currentActual;
             BatchPositionResult currentExpected;
-            for(int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++){
+            for (int i = 0; i < expectedBatchPositionResultsDefaultEuclidian.size(); i++) {
                 currentActual = batchPositionResults.get(i);
                 currentExpected = expectedBatchPositionResultsDefaultEuclidian.get(i);
                 assertEquals(currentExpected, currentActual);
@@ -598,21 +601,50 @@ public class EverythingControllerTest {
         }
     }
 
-    /*
-    * TODO Volkan: Insert methods that test deletion behavior.
-    *
-    * Behavior that should be tested:
-    *
-    * - What happens if an EvAAL file (processed radio map or evaluation file, that is) is not
-    * referenced by a project? ----> Must be possible to delete without issues
-    * - Is the building that referenced an EvAAL file still present in the database after you deleted the EvAAL
-    * file? ----> The building must still be present
-    * - What happens if you delete a project that references one building or multiple buildings? ----> After project deletion,
-    * all the buildings must still be available
-    * - What happens if you try to delete an EvAAL file that is still referenced by a project? ----> The deletion attempt
-    * must cause an error
-    *
-    * */
+    @Test
+    public void removeEvaalFileWithoutProjectTest() throws Exception {
+        long buildingId = insertNewBuilding();
+        long radioMapFileId = processRadioMapForBuilding(buildingId);
+
+        ResultActions deleteSelectedEvaalFileResultActions = mockMvc.perform(delete("/position/deleteSelectedEvaalFile?" +
+                "evaalFileIdentifier=" + radioMapFileId));
+        deleteSelectedEvaalFileResultActions.andExpect(status().isOk());
+
+        mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
+                + buildingId))
+                .andExpect(status().isOk()).andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.buildingId",
+                        is((int) buildingId)));
+    }
+
+    @Test
+    public void removeEvaalFileWithProjectTest () throws Exception {
+        long buildingId = insertNewBuilding();
+        long radioMapFileId = processRadioMapForBuilding(buildingId);
+        long[] radioMapIdArray = {radioMapFileId};
+        insertNewProjectWithEvaalFileIds(buildingId, radioMapIdArray);
+
+        ResultActions deleteSelectedEvaalFileResultActions = mockMvc.perform(delete("/position/deleteSelectedEvaalFile?" +
+                "evaalFileIdentifier=" + radioMapFileId));
+        deleteSelectedEvaalFileResultActions.andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void removeProjectWithBuildingTest() throws Exception {
+        long buildingId = insertNewBuilding();
+        long projectId = insertNewProjectWithDefaultParameters(buildingId);
+
+        mockMvc.perform(delete("/project/deleteSelectedProject?projectIdentifier="
+                + projectId)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
+                + buildingId))
+                .andExpect(status().isOk()).andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$.buildingId",
+                        is((int) buildingId)));
+    }
 
     private long insertNewBuilding() throws Exception {
 
@@ -682,5 +714,19 @@ public class EverythingControllerTest {
         return responseWrapper.getId();
     }
 
+    private long insertNewProjectWithEvaalFileIds(long buildingId, long[] evaalFileIds) throws Exception {
+        AddNewProject addNewProjectElement = new AddNewProject(TestHelper
+                .getDefaultProjectParameterSet(PROJECT_DEFAULT_CORRELATION_MODE),
+                DUMMY, ALGORITHM_TYPE, buildingId, 0l, evaalFileIds);
 
+        ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
+                .content(TestHelper.jsonify(addNewProjectElement))
+                .contentType(this.contentType))
+                .andExpect(status().isOk());
+
+        String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
+        ResponseWrapper responseWrapper = this.objectMapper.readValue(saveNewProjectResult, new TypeReference<ResponseWrapper>() {
+        });
+        return responseWrapper.getId();
+    }
 }
