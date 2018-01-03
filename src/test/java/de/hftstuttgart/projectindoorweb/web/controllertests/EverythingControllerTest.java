@@ -598,6 +598,22 @@ public class EverythingControllerTest {
         }
     }
 
+    /*
+    * TODO Volkan: Insert methods that test deletion behavior.
+    *
+    * Behavior that should be tested:
+    *
+    * - What happens if an EvAAL file (processed radio map or evaluation file, that is) is not
+    * referenced by a project? ----> Must be possible to delete without issues
+    * - Is the building that referenced an EvAAL file still present in the database after you deleted the EvAAL
+    * file? ----> The building must still be present
+    * - What happens if you delete a project that references one building or multiple buildings? ----> After project deletion,
+    * all the buildings must still be available
+    * - What happens if you try to delete an EvAAL file that is still referenced by a project? ----> The deletion attempt
+    * must cause an error
+    *
+    * */
+
     private long insertNewBuilding() throws Exception {
 
         long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
