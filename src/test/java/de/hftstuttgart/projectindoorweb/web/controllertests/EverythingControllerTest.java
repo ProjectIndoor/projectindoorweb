@@ -332,7 +332,7 @@ public class EverythingControllerTest {
         long buildingId = insertNewBuilding();
         long radioMapFileId = processRadioMapForBuilding(buildingId);
         long evalFileId = processEvaluationFileForBuilding(buildingId);
-        long projectId = insertNewProjectWithDefaultParameters(buildingId);
+        long projectId = insertNewProjectWithDefaultParameters(buildingId, null);
 
         GenerateBatchPositionResults positionRequestObject = TestHelper
                 .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
@@ -421,7 +421,7 @@ public class EverythingControllerTest {
             long buildingId = insertNewBuilding();
             long radioMapFileId = processRadioMapForBuilding(buildingId);
             long evalFileId = processEvaluationFileForBuilding(buildingId);
-            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId, null);
 
             GenerateBatchPositionResults defaultGenerateBatchPositionResults = TestHelper
                     .createDefaultBatchPositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
@@ -500,7 +500,7 @@ public class EverythingControllerTest {
         try {
             long buildingId = insertNewBuilding();
             long radioMapFileId = processRadioMapForBuilding(buildingId);
-            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId, null);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
                     .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
@@ -571,7 +571,7 @@ public class EverythingControllerTest {
         try {
             long buildingId = insertNewBuilding();
             long radioMapFileId = processRadioMapForBuilding(buildingId);
-            long projectId = insertNewProjectWithDefaultParameters(buildingId);
+            long projectId = insertNewProjectWithDefaultParameters(buildingId, null);
 
             GenerateSinglePositionResult defaultGenerateSinglePositionResult = TestHelper
                     .createDefaultSinglePositionRequestObject(PARAMETERS_DEFAULT_CORRELATION_MODE);
@@ -602,7 +602,7 @@ public class EverythingControllerTest {
     }
 
     @Test
-    public void removeEvaalFileWithoutProjectTest() throws Exception {
+    public void testRemoveEvaalFileWithoutProject() throws Exception {
         long buildingId = insertNewBuilding();
         long radioMapFileId = processRadioMapForBuilding(buildingId);
 
@@ -618,11 +618,11 @@ public class EverythingControllerTest {
     }
 
     @Test
-    public void removeEvaalFileWithProjectTest () throws Exception {
+    public void testRemoveEvaalFileWithProject() throws Exception {
         long buildingId = insertNewBuilding();
         long radioMapFileId = processRadioMapForBuilding(buildingId);
         long[] radioMapIdArray = {radioMapFileId};
-        insertNewProjectWithEvaalFileIds(buildingId, radioMapIdArray);
+        insertNewProjectWithDefaultParameters(buildingId, radioMapIdArray);
 
         ResultActions deleteSelectedEvaalFileResultActions = mockMvc.perform(delete("/position/deleteSelectedEvaalFile?" +
                 "evaalFileIdentifier=" + radioMapFileId));
@@ -630,9 +630,9 @@ public class EverythingControllerTest {
     }
 
     @Test
-    public void removeProjectWithBuildingTest() throws Exception {
+    public void testRemoveProjectWithBuilding() throws Exception {
         long buildingId = insertNewBuilding();
-        long projectId = insertNewProjectWithDefaultParameters(buildingId);
+        long projectId = insertNewProjectWithDefaultParameters(buildingId, null);
 
         mockMvc.perform(delete("/project/deleteSelectedProject?projectIdentifier="
                 + projectId)
@@ -698,26 +698,11 @@ public class EverythingControllerTest {
 
     }
 
-    private long insertNewProjectWithDefaultParameters(long buildingId) throws Exception {
+    private long insertNewProjectWithDefaultParameters(long buildingId, long[] evaalFileIds) throws Exception {
+        long[] evaalFileIdsToUse = evaalFileIds == null ? emptyRadioMapIdArray : evaalFileIds;
         AddNewProject addNewProjectElement = new AddNewProject(TestHelper
                 .getDefaultProjectParameterSet(PROJECT_DEFAULT_CORRELATION_MODE),
-                DUMMY, ALGORITHM_TYPE, buildingId, 0l, emptyRadioMapIdArray);
-
-        ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
-                .content(TestHelper.jsonify(addNewProjectElement))
-                .contentType(this.contentType))
-                .andExpect(status().isOk());
-
-        String saveNewProjectResult = saveNewProjectAction.andReturn().getResponse().getContentAsString();
-        ResponseWrapper responseWrapper = this.objectMapper.readValue(saveNewProjectResult, new TypeReference<ResponseWrapper>() {
-        });
-        return responseWrapper.getId();
-    }
-
-    private long insertNewProjectWithEvaalFileIds(long buildingId, long[] evaalFileIds) throws Exception {
-        AddNewProject addNewProjectElement = new AddNewProject(TestHelper
-                .getDefaultProjectParameterSet(PROJECT_DEFAULT_CORRELATION_MODE),
-                DUMMY, ALGORITHM_TYPE, buildingId, 0l, evaalFileIds);
+                DUMMY, ALGORITHM_TYPE, buildingId, 0l, evaalFileIdsToUse);
 
         ResultActions saveNewProjectAction = mockMvc.perform(post("/project/saveNewProject")
                 .content(TestHelper.jsonify(addNewProjectElement))
