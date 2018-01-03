@@ -1,9 +1,6 @@
 <!-- View Settings (button toggles if they should be visible) -->
 <div layout="row" layout-xs="column" layout-align-gt-xs="space-between center">
-    <md-button ng-click="collapseViewSettings = !collapseViewSettings"
-               ng-class="md-primary">
-        {{!collapseViewSettings && 'Clear ' || 'Hide '}} map
-    </md-button>
+    <md-button ng-click="clearMap">Clear map</md-button>
     <md-button ng-click="collapseViewSettings = !collapseViewSettings"
                ng-class="{true: 'md-primary', false: ''}[!collapseViewSettings]">
         {{!collapseViewSettings && 'Show ' || 'Hide '}} view settings

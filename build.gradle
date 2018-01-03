@@ -75,7 +75,7 @@ findbugs {
 }
 
 docker {
-    name "${project.group}/${jar.baseName}"
+    name "hftstuttgart/${jar.baseName}"
     files jar.archivePath
     buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }

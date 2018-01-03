@@ -27,7 +27,7 @@
             <!-- File chooser radiomap log -->
             <md-input-container flex="100" layout="row">
                 <input id="inputFile" name="file" class="ng-hide" type="file" ng-files="getTheFiles($files)"
-                       aria-label="logFileUpload"/>
+                       aria-label="logFileUpload" multiple/>
                 <md-button class="md-button" ng-click="uploadLogClick()">
                     Choose File
                 </md-button>
@@ -43,7 +43,7 @@
             <md-input-container ng-if="toggleTransformedPoints" flex="100" layout="row">
                 <input id="transformedPointsFile" name="tpFile" class="ng-hide" type="file"
                        ng-files="getTpFiles($files)"
-                       aria-label="transformedPointsUpload"/>
+                       aria-label="transformedPointsUpload" multiple/>
                 <md-button class="md-button" ng-click="uploadTransformedClick()">
                     Choose File
                 </md-button>
