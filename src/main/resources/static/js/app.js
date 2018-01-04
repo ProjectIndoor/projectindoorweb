@@ -686,8 +686,8 @@ function MapService() {
                     name: 'ErrorLines'
                 },
                 geometry: {
-                    type: 'MultiPolygon',
-                    coordinates: [lines]
+                    type: 'MultiLineString',
+                    coordinates: lines
                 }
             }
         ]
@@ -730,7 +730,9 @@ function MapService() {
     var referencePoints = loadedRefs;
 
     // map service properties
-    var staticMap = {};
+    var staticMap = {
+        index: 0
+    };
     var mDefaults = {
         interactions: {
             mouseWheelZoom: true
