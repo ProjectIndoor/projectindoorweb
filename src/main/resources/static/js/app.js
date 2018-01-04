@@ -160,11 +160,11 @@ function UploadService($http, toastService) {
                     'Content-Type': 'application/json'
                 }
             }).then(function (response) {
-                logMessage = "Building Data uploaded successfully!";
+                logMessage = response.data.message;
                 toastService.showToast(logMessage, "success-toast");
                 return response.data;
             }, function errorCallback(response) {
-                logMessage = "Error while uploading Building Data";
+                logMessage = response.data.message;
                 toastService.showToast(logMessage, "error-toast");
             });
             return promise;
@@ -199,7 +199,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = "Radio map uploaded successfully!";
+                    logMessage = response.data;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
@@ -232,7 +232,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = "Evaluation file uploaded successfully!";
+                    logMessage = response.data;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
@@ -265,7 +265,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = "Floor map uploaded successfully!";
+                    logMessage = response.data;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
@@ -457,7 +457,7 @@ function DataService($http, toastService) {
 app.factory("dataService", DataService);
 
 // Calculation service (setup and call position calculations)
-function CalculationService($http) {
+function CalculationService($http, toastService) {
     //api endpoints
     var generatePositionsUrl = 'position/generateBatchPositionResults';
     var createProjectUrl = 'project/saveNewProject';
