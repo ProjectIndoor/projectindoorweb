@@ -15,7 +15,13 @@ public class HttpResultHandler {
     private Map<String, HttpStatus> simplePositionOperationResultMap = new HashMap<>();
     private Map<String, HttpStatus> simpleProjectOperationResultMap = new HashMap<>();
 
+    private Map<String, HttpStatus> longBuildingOperationResultMap = new HashMap<>();
+    private Map<String, HttpStatus> longPositionOperationResultMap = new HashMap<>();
+    private Map<String, HttpStatus> longProjectOperationResultMap = new HashMap<>();
+
     public static final String SHOULD_NOT_HAPPEN = "HTTP message type not found";
+
+    public static final ResponseWrapper SHOULD_NOT_HAPPEN_WRAPPER = new ResponseWrapper(-1l,SHOULD_NOT_HAPPEN);
 
     private HttpResultHandler() {
 
@@ -23,6 +29,9 @@ public class HttpResultHandler {
         initSimplePositioningOperationResultMap();
         initSimpleProjectOperationResultMap();
 
+        initLongBuildingOperationResultMap();
+        initLongPositioningOperationResultMap();
+        initLongProjectOperationResultMap();
     }
 
     public static HttpResultHandler getInstance() {
@@ -48,6 +57,24 @@ public class HttpResultHandler {
     public ResponseEntity handleSimplePositioningResult(String operationResultMessage) {
 
         return getSimpleResponseEntity(simplePositionOperationResultMap, operationResultMessage);
+
+    }
+
+    public ResponseEntity handleLongPositioningResult(ResponseWrapper postionResponseWrapper) {
+
+        return getLongResponseEntity(longPositionOperationResultMap, postionResponseWrapper);
+
+    }
+
+    public ResponseEntity handleLongBuildingResult(ResponseWrapper buildingResponseWrapper) {
+
+        return getLongResponseEntity(longBuildingOperationResultMap, buildingResponseWrapper);
+
+    }
+
+    public ResponseEntity handleLongProjectResult(ResponseWrapper projectResponseWrapper) {
+
+        return getLongResponseEntity(longProjectOperationResultMap, projectResponseWrapper);
 
     }
 
@@ -91,6 +118,21 @@ public class HttpResultHandler {
         simpleProjectOperationResultMap.put(ResponseConstants.PROJECT_DELETE_FAILURE_DB_WRITE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private void initLongBuildingOperationResultMap() {
+        longBuildingOperationResultMap.put(ResponseConstants.BUILDING_CREATION_SUCCESS, HttpStatus.OK);
+        longBuildingOperationResultMap.put(ResponseConstants.BUILDING_CREATION_FAILURE, HttpStatus.NOT_FOUND);
+    }
+
+    private void initLongPositioningOperationResultMap() {
+        //Nothing to do here yet
+    }
+
+    private void initLongProjectOperationResultMap() {
+        longProjectOperationResultMap.put(ResponseConstants.PROJECT_CREATION_SUCCESS, HttpStatus.OK);
+        longProjectOperationResultMap.put(ResponseConstants.PROJECT_CREATION_FAILURE, HttpStatus.NOT_FOUND);
+        longProjectOperationResultMap.put(ResponseConstants.PROJECT_CREATION_FAILURE_ALGORITHM_NULL, HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity getSimpleResponseEntity(Map<String, HttpStatus> operationResultMap, String operationResultMessage) {
         for (Map.Entry<String, HttpStatus> entry : operationResultMap.entrySet()) {
             String actualOperationResult = entry.getKey();
@@ -103,9 +145,28 @@ public class HttpResultHandler {
         return createSimpleResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN);
     }
 
-    private ResponseEntity createSimpleResponseEntity(HttpStatus status, Object body) {
+    private ResponseEntity getLongResponseEntity(Map<String, HttpStatus> operationResultMap, ResponseWrapper responseWrapper) {
+        for (Map.Entry<String, HttpStatus> entry : operationResultMap.entrySet()) {
+            String actualOperationResult = entry.getKey();
+            HttpStatus actualHttpStatus = entry.getValue();
+
+            if (actualOperationResult.equals(responseWrapper.getMessage())) {
+                return createLongResponseEntity(actualHttpStatus, responseWrapper);
+            }
+        }
+
+        return createLongResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN_WRAPPER);
+    }
+
+    private ResponseEntity createSimpleResponseEntity(HttpStatus status, String messageBody) {
         return ResponseEntity
                 .status(status)
-                .body(body);
+                .body(messageBody);
+    }
+
+    private ResponseEntity createLongResponseEntity(HttpStatus status, ResponseWrapper responseWrapper) {
+        return ResponseEntity
+                .status(status)
+                .body(responseWrapper);
     }
 }

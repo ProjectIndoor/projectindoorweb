@@ -1,43 +1,49 @@
 package de.hftstuttgart.projectindoorweb.web.controllertests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.Application;
 import de.hftstuttgart.projectindoorweb.persistence.repositories.BuildingRepository;
+import de.hftstuttgart.projectindoorweb.web.configuration.TestWebConfiguration;
 import de.hftstuttgart.projectindoorweb.web.helpers.TestHelper;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.building.*;
-import org.junit.*;
+import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.BuildingPositionAnchor;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.GetSingleBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.building.UpdateBuilding;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
+@ContextConfiguration(classes = TestWebConfiguration.class)
 @WebAppConfiguration
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BuildingControllerTest {
 
     private static final double ROTATION_ANGLE_ACCEPTABLE_ERROR = 0.0000000000000001;
@@ -49,12 +55,9 @@ public class BuildingControllerTest {
 
     private MockMvc mockMvc;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
     private AddNewBuilding addNewBuilding;
     private GetSingleBuilding getSingleBuilding;
 
-    private AddNewBuilding addNewBuildingEmptyCornerAnchors;
 
     private AddNewBuilding addNewBuildingEmptyRefPoint;
     private GetSingleBuilding getSingleBuildingEmptyRefPoint;
@@ -62,7 +65,12 @@ public class BuildingControllerTest {
     private UpdateBuilding updateBuilding;
     private GetSingleBuilding getSingleBuildingUpdated;
 
-    private MockMultipartFile floorMapFileBmp;
+    private MockMultipartFile floorMapBmp;
+    private MockMultipartFile floorMapGif;
+    private MockMultipartFile floorMapPng;
+    private MockMultipartFile floorMapJpg;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
     private BuildingRepository buildingRepository;
@@ -70,32 +78,16 @@ public class BuildingControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    void setMappingJackson2HttpMessageConverter(HttpMessageConverter<?>[] converters) {
-
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                .findAny()
-                .orElse(null);
-
-        assertNotNull("JSON message converter must not be null.", this.mappingJackson2HttpMessageConverter);
-
-    }
-
     @Before
     public void setUp() throws Exception {
 
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        objectMapper = new ObjectMapper();
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         this.buildingRepository.deleteAll();
 
         addNewBuilding = TestHelper.createGenericBuildingRequestObject();
-
-        addNewBuildingEmptyCornerAnchors = TestHelper.createGenericBuildingRequestObject();
-        addNewBuildingEmptyCornerAnchors.setNorthWest(null);
-        addNewBuildingEmptyCornerAnchors.setNorthEast(null);
-        addNewBuildingEmptyCornerAnchors.setSouthEast(null);
-        addNewBuildingEmptyCornerAnchors.setSouthWest(null);
 
         addNewBuildingEmptyRefPoint = TestHelper.createGenericBuildingRequestObject();
         addNewBuildingEmptyRefPoint.setBuildingCenterPoint(null);
@@ -118,26 +110,30 @@ public class BuildingControllerTest {
         getSingleBuildingUpdated.setBuildingId(updateBuilding.getBuildingId());
         getSingleBuildingUpdated.setBuildingName(updateBuilding.getBuildingName());
 
-        floorMapFileBmp = new MockMultipartFile("CAR.bmp",
-                new FileInputStream(new File("./src/test/resources/CAR.bmp")));
+        floorMapBmp = new MockMultipartFile("floorMapFile", "CAR.bmp", "image/bmp",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR.bmp")));
+        floorMapGif = new MockMultipartFile("floorMapFile", "CAR_R1.gif", "image/gif",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR_R1.gif")));
+        floorMapPng = new MockMultipartFile("floorMapFile", "hft_2_floor_3.png", "image/png",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/hft_2_floor_3.png")));
+        floorMapJpg = new MockMultipartFile("floorMapFile", "CAR.jpg", "image/jpg",
+                Files.readAllBytes(Paths.get("./src/test/resources/floormaps/CAR.jpg")));
 
     }
 
     @Test
-    public void a_testAddBuildingWithNullCornerAnchors() throws IOException {
+    public void testAddBuildingWithNullCornerAnchors() throws IOException {
 
         try {
-            mockMvc.perform(post("/building/addNewBuilding")
-                    .content(this.json(this.addNewBuildingEmptyCornerAnchors))
-                    .contentType(contentType))
-                    .andExpect(status().isOk());
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
-                    + getSingleBuilding.getBuildingId()))
+                    + buildingId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(contentType))
                     .andExpect(jsonPath("$.buildingId",
-                            is((int) getSingleBuilding.getBuildingId())))
+                            is((int) buildingId)))
                     .andExpect(jsonPath("$.buildingName",
                             is(getSingleBuilding.getBuildingName())))
                     .andExpect(jsonPath("$.numberOfFloors",
@@ -155,8 +151,6 @@ public class BuildingControllerTest {
                             is(getSingleBuilding.getMetersPerPixel())))
                     .andExpect(jsonPath("$.evaalFiles",
                             is(getSingleBuilding.getEvaalFiles())))
-                    .andExpect(jsonPath("$.buildingFloors[0].floorId",
-                            is((int) getSingleBuilding.getBuildingFloors().get(0).getFloorId())))
                     .andExpect(jsonPath("$.buildingFloors[0].floorLevel",
                             is(getSingleBuilding.getBuildingFloors().get(0).getFloorLevel())))
                     .andExpect(jsonPath("$.buildingFloors[0].floorName",
@@ -189,20 +183,26 @@ public class BuildingControllerTest {
     }
 
     @Test
-    public void b_testAddBuildingWithNullReferencePoint() {
+    public void testAddBuildingWithNullReferencePoint() {
 
         try {
-            mockMvc.perform(post("/building/addNewBuilding")
-                    .content(this.json(this.addNewBuildingEmptyRefPoint))
-                    .contentType(contentType))
-                    .andExpect(status().isOk());
+
+            ResultActions addBuildingActions = mockMvc.perform(post("/building/addNewBuilding")
+                    .content(TestHelper.jsonify(this.addNewBuildingEmptyRefPoint))
+                    .contentType(contentType));
+
+            addBuildingActions.andExpect(status().isOk());
+            String result = addBuildingActions.andReturn().getResponse().getContentAsString();
+            ResponseWrapper responseWrapper = this.objectMapper.readValue(result, ResponseWrapper.class);
+            long buildingId = responseWrapper.getId();
+            assertTrue("Failed to add new building.", buildingId > 0);
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
-                    + getSingleBuildingEmptyRefPoint.getBuildingId()))
+                    + buildingId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(contentType))
                     .andExpect(jsonPath("$.buildingId",
-                            is((int) getSingleBuildingEmptyRefPoint.getBuildingId())))
+                            is((int) buildingId)))
                     .andExpect(jsonPath("$.buildingName",
                             is(getSingleBuildingEmptyRefPoint.getBuildingName())))
                     .andExpect(jsonPath("$.numberOfFloors",
@@ -219,8 +219,6 @@ public class BuildingControllerTest {
                             is(getSingleBuildingEmptyRefPoint.getMetersPerPixel())))
                     .andExpect(jsonPath("$.evaalFiles",
                             is(getSingleBuildingEmptyRefPoint.getEvaalFiles())))
-                    .andExpect(jsonPath("$.buildingFloors[0].floorId",
-                            is((int) getSingleBuildingEmptyRefPoint.getBuildingFloors().get(0).getFloorId())))
                     .andExpect(jsonPath("$.buildingFloors[0].floorLevel",
                             is(getSingleBuildingEmptyRefPoint.getBuildingFloors().get(0).getFloorLevel())))
                     .andExpect(jsonPath("$.buildingFloors[0].floorName",
@@ -254,21 +252,21 @@ public class BuildingControllerTest {
     }
 
     @Test
-    public void c_testUpdateBuilding() {
+    public void testUpdateBuilding() {
 
         try {
-            mockMvc.perform(post("/building/addNewBuilding")
-                    .content(this.json(this.addNewBuilding))
-                    .contentType(contentType))
-                    .andExpect(status().isOk());
 
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            this.updateBuilding.setBuildingId(buildingId);
             mockMvc.perform(post("/building/updateBuilding")
-                    .content(this.json(this.updateBuilding))
+                    .content(TestHelper.jsonify(this.updateBuilding))
                     .contentType(contentType))
                     .andExpect(status().isOk());
 
             mockMvc.perform(get("/building/getBuildingByBuildingId?buildingIdentifier="
-                    + getSingleBuildingUpdated.getBuildingId()))
+                    + buildingId))
                     .andExpect(jsonPath("$.buildingName",
                             is(getSingleBuildingUpdated.getBuildingName())));
 
@@ -282,18 +280,173 @@ public class BuildingControllerTest {
     }
 
     @Test
-    public void d_testAddFloorMap(){
+    public void testAddFloorMapBmp() {
 
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapBmp)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+    }
+
+    @Test
+    public void testAddFloorMapGif(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapGif)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
 
 
     }
 
-    private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+    @Test
+    public void testAddFloorMapPng(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapPng)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+
     }
 
+    @Test
+    public void testAddFloorMapJpg(){
+
+        try {
+            long buildingId = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            assertTrue("Failed to add new building.", buildingId > 0);
+
+            ResultActions getBuildingActions = mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId));
+            getBuildingActions.andExpect(status().isOk());
+            String result = getBuildingActions.andReturn().getResponse().getContentAsString();
+            GetSingleBuilding getSingleBuilding = this.objectMapper.readValue(result, GetSingleBuilding.class);
+
+            String floorName = "SomeFloor";
+            mockMvc.perform(MockMvcRequestBuilders
+                    .fileUpload("/building/addFloorToBuilding")
+                    .file(floorMapJpg)
+                    .param("buildingIdentifier", String.valueOf(getSingleBuilding.getBuildingId()))
+                    .param("floorIdentifier", String.valueOf(getSingleBuilding.getBuildingFloors().get(0).getFloorId()))
+                    .param("floorName", floorName))
+                    .andExpect(status().isOk());
+
+            mockMvc.perform(get("/building/getBuildingByBuildingId?" +
+                    "buildingIdentifier=" + buildingId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.buildingFloors[0].floorMapUrl", is("building/getFloorMap?floorIdentifier=" + buildingId)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+    }
+
+
+
+    @Test
+    public void testDeleteBuilding() {
+
+        try {
+
+            long[] buildingIds = new long[10];
+            for (int i = 0; i < buildingIds.length; i++) {
+                buildingIds[i] = TestHelper.addNewBuildingAndRetrieveId(this.mockMvc, this.contentType);
+            }
+
+            for (int i = 0; i < buildingIds.length; i++) {
+                mockMvc.perform(delete("/building/deleteSelectedBuilding?buildingIdentifier="
+                        + buildingIds[i]))
+                        .andExpect(status().isOk());
+            }
+
+            for (int i = 0; i < buildingIds.length; i++) {
+                mockMvc.perform(get("/building/getSingleBuildingByBuildingId?buildingIdentifier="
+                        + buildingIds[i]))
+                        .andExpect(status().is4xxClientError());
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected Exception of type " + e.getClass().getSimpleName() + " has occurred.");
+        }
+
+
+    }
 
 }

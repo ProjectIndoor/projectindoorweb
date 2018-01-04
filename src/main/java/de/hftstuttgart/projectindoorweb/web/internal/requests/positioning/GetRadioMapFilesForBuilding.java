@@ -2,9 +2,12 @@ package de.hftstuttgart.projectindoorweb.web.internal.requests.positioning;
 
 public class GetRadioMapFilesForBuilding {
 
-    private final long id;
+    private long id;
 
-    private final String radioMapSourceFileName;
+    private String radioMapSourceFileName;
+
+    /*For JSON deserialization by Jackson*/
+    protected GetRadioMapFilesForBuilding(){}
 
     public GetRadioMapFilesForBuilding(long id, String radioMapSourceFileName) {
         this.id = id;

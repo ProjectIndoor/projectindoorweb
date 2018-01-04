@@ -1,5 +1,6 @@
 package de.hftstuttgart.projectindoorweb.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -52,7 +55,7 @@ public class PositioningController {
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
 
-    @ApiOperation(value = "Deletes a selected Evaal file", nickname = "project/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
+    @ApiOperation(value = "Deletes a selected Evaal file", nickname = "position/deleteEvaalFile", notes = TransmissionConstants.DELETE_EVAAL_FILE_NOTE)
     @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
