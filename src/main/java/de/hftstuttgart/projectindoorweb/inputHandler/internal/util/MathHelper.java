@@ -23,7 +23,7 @@ public class MathHelper {
 
         LocXYZ resultWrapper = wrapperA.add(wrapperB);
 
-        return new Position(resultWrapper.x, resultWrapper.y, resultWrapper.z, a.isWgs84() && b.isWgs84());
+        return new Position(resultWrapper.getX(), resultWrapper.getY(), resultWrapper.getZ(), a.isWgs84() && b.isWgs84());
 
 
     }

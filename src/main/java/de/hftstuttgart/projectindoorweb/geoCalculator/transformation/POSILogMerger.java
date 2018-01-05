@@ -19,6 +19,27 @@ import java.util.stream.Collectors;
 public final class POSILogMerger {
 
     /**
+     * constant-value for integer 3.
+     */
+    private static final int INT3 = 3;
+    /**
+     * constant-value for integer 4.
+     */
+    private static final int INT4 = 4;
+    /**
+     * constant-value for integer 4.
+     */
+    private static final int INT5 = 5;
+    /**
+     * constant-value for integer 6.
+     */
+    private static final int INT6 = 6;
+    /**
+     * constant-value for integer 7.
+     */
+    private static final int INT7 = 7;
+
+    /**
      * Private constructor to prevent creating an object.
      */
     private POSILogMerger() {
@@ -41,8 +62,8 @@ public final class POSILogMerger {
                 String pointNumber = elements[0];
                 double coord1 = Double.valueOf(elements[1]);
                 double coord2 = Double.valueOf(elements[2]);
-                int building = Integer.valueOf(elements[3]);
-                int floor = Integer.valueOf(elements[4]);
+                int building = Integer.valueOf(elements[INT3]);
+                int floor = Integer.valueOf(elements[INT4]);
 
                 return new XYPoint(pointNumber, new LocalXYCoord(coord1, coord2), building, floor);
 
@@ -63,7 +84,7 @@ public final class POSILogMerger {
     private static boolean isValidLine(final String line) {
         return !line.contains("%")
                 && !line.isEmpty()
-                && line.split(";").length == 5;
+                && line.split(";").length == INT5;
     }
 
     /**
@@ -93,14 +114,14 @@ public final class POSILogMerger {
         List<String> result = new ArrayList<String>();
         for (int i = 0; i < posiLines.size(); i++) {
             String[] line = posiLines.get(i).split(";");
-            if (line[0].equals("POSI") && line.length == 7) {
+            if (line[0].equals("POSI") && line.length == INT7) {
                 LLPoint p = transformedPoints.get(i);
-                line[3] = Double.toString(p.getCoords().latitude);
-                line[4] = Double.toString(p.getCoords().longitude);
-                line[5] = Integer.toString(p.getFloor());
-                line[6] = Integer.toString(p.getBuilding());
+                line[INT3] = Double.toString(p.getCoords().getLatitude());
+                line[INT4] = Double.toString(p.getCoords().getLongitude());
+                line[INT5] = Integer.toString(p.getFloor());
+                line[INT6] = Integer.toString(p.getBuilding());
 
-                result.add(line[0] + ";" + line[1] + ";" + line[2] + ";" + line[3] + ";" + line[4] + ";" + line[5] + ";" + line[6] + ";");
+                result.add(line[0] + ";" + line[1] + ";" + line[2] + ";" + line[INT3] + ";" + line[INT4] + ";" + line[INT5] + ";" + line[INT6] + ";");
             } else {
                 result.add(posiLines.get(i));
             }

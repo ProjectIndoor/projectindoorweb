@@ -134,7 +134,7 @@ public class EvaalFileHelper {
         wrapperMerged = wrapperMerged.mul(1.0d / (a.getAvgNumber() + b.getAvgNumber()));
 
         return new PosiReference(-1, a.getAvgNumber() + b.getAvgNumber(),
-                new Position(wrapperMerged.x, wrapperMerged.y, wrapperMerged.z, false),
+                new Position(wrapperMerged.getX(), wrapperMerged.getY(), wrapperMerged.getZ(), false),
                 -1, -1, -1, -1, null);
 
     }

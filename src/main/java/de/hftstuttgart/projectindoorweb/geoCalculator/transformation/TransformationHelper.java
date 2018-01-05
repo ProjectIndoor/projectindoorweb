@@ -38,7 +38,7 @@ public final class TransformationHelper {
                                      final LatLongCoord sw, final LatLongCoord se) {
         XYPoint p1 = Transformation.transformDataWGStoXY(new LLPoint("", point1, 0, 0), sw, se);
         XYPoint p2 = Transformation.transformDataWGStoXY(new LLPoint("", point2, 0, 0), sw, se);
-        return Math.sqrt(Math.pow(p1.getCoords().x - p2.getCoords().x, 2) + Math.pow(p1.getCoords().y - p2.getCoords().y, 2));
+        return Math.sqrt(Math.pow(p1.getCoords().getX() - p2.getCoords().getX(), 2) + Math.pow(p1.getCoords().getY() - p2.getCoords().getY(), 2));
     }
 
     /**
@@ -57,7 +57,7 @@ public final class TransformationHelper {
      *
      * @param path Path to the image
      * @return Image-size in pixel
-     * @throws IOException
+     * @throws IOException Throws exception when file-access fails
      */
     public static Dimension getPictureSize(final String path) throws IOException {
         try (ImageInputStream in = ImageIO.createImageInputStream(path)) {
@@ -156,7 +156,7 @@ public final class TransformationHelper {
                                                     final LatLongCoord ne, final LocalXYCoord bp,
                                                     final double buildingSizeX, final double buildingSizeY,
                                                     final int imgSizeX, final int imgSizeY) {
-        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(0, 0), buildingSizeX, buildingSizeY, imgSizeY, bp.x, bp.y);
+        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(0, 0), buildingSizeX, buildingSizeY, imgSizeY, bp.getX(), bp.getY());
     }
 
     /**
@@ -177,7 +177,7 @@ public final class TransformationHelper {
                                                     final LatLongCoord ne, final LocalXYCoord bp,
                                                     final double buildingSizeX, final double buildingSizeY,
                                                     final int imgSizeX, final int imgSizeY) {
-        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(imgSizeX, 0), buildingSizeX, buildingSizeY, imgSizeY, bp.x, bp.y);
+        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(imgSizeX, 0), buildingSizeX, buildingSizeY, imgSizeY, bp.getX(), bp.getY());
     }
 
     /**
@@ -198,7 +198,7 @@ public final class TransformationHelper {
                                                     final LatLongCoord ne, final LocalXYCoord bp,
                                                     final double buildingSizeX, final double buildingSizeY,
                                                     final int imgSizeX, final int imgSizeY) {
-        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(0, imgSizeY), buildingSizeX, buildingSizeY, imgSizeY, bp.x, bp.y);
+        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(0, imgSizeY), buildingSizeX, buildingSizeY, imgSizeY, bp.getX(), bp.getY());
     }
 
     /**
@@ -219,7 +219,7 @@ public final class TransformationHelper {
                                                     final LatLongCoord ne, final LocalXYCoord bp,
                                                     final double buildingSizeX, final double buildingSizeY,
                                                     final int imgSizeX, final int imgSizeY) {
-        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(imgSizeX, imgSizeY), buildingSizeX, buildingSizeY, imgSizeY, bp.x, bp.y);
+        return TransformationHelper.pictToWGS(se, sw, ne, new LocalXYCoord(imgSizeX, imgSizeY), buildingSizeX, buildingSizeY, imgSizeY, bp.getX(), bp.getY());
     }
 
     /**
@@ -241,8 +241,8 @@ public final class TransformationHelper {
 
         XYPoint pPict = Transformation.transformDataXYtoPictXY(pXY, scaleX, scaleY, picHeight, 0, 0);
         double[] result = new double[2];
-        result[0] = pPict.getCoords().x;
-        result[1] = pPict.getCoords().y;
+        result[0] = pPict.getCoords().getX();
+        result[1] = pPict.getCoords().getY();
         return result;
     }
 
@@ -258,8 +258,8 @@ public final class TransformationHelper {
         LatLongCoord sw = new LatLongCoord(b.getSouthWest().getX(), b.getSouthWest().getY());
         XYPoint pXY = Transformation.transformDataWGStoXY(new LLPoint("", point, 0, 0), sw, se);
         double[] result = new double[2];
-        result[0] = pXY.getCoords().x;
-        result[1] = pXY.getCoords().y;
+        result[0] = pXY.getCoords().getX();
+        result[1] = pXY.getCoords().getY();
         return result;
     }
 
@@ -275,8 +275,8 @@ public final class TransformationHelper {
         LatLongCoord sw = new LatLongCoord(b.getSouthWest().getX(), b.getSouthWest().getY());
         LLPoint pLL = Transformation.transformDataXYtoWGS(new XYPoint("", point, 0, 0), sw, se);
         double[] result = new double[2];
-        result[0] = pLL.getCoords().latitude;
-        result[1] = pLL.getCoords().longitude;
+        result[0] = pLL.getCoords().getLatitude();
+        result[1] = pLL.getCoords().getLongitude();
         return result;
     }
 
@@ -299,8 +299,8 @@ public final class TransformationHelper {
 
         XYPoint pPict = Transformation.transformDataXYtoPictXY(new XYPoint("", point, 0, 0), scaleX, scaleY, picHeight, 0, 0);
         double[] result = new double[2];
-        result[0] = pPict.getCoords().x;
-        result[1] = pPict.getCoords().y;
+        result[0] = pPict.getCoords().getX();
+        result[1] = pPict.getCoords().getY();
         return result;
     }
 
@@ -324,8 +324,8 @@ public final class TransformationHelper {
         XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("", point, 0, 0), scaleX, scaleY, picHeight, 0, 0);
 
         double[] result = new double[2];
-        result[0] = pXY.getCoords().x;
-        result[1] = pXY.getCoords().y;
+        result[0] = pXY.getCoords().getX();
+        result[1] = pXY.getCoords().getY();
         return result;
     }
 
@@ -351,8 +351,8 @@ public final class TransformationHelper {
         LLPoint pLL = Transformation.transformDataXYtoWGS(pXY, sw, se);
 
         double[] result = new double[2];
-        result[0] = pLL.getCoords().latitude;
-        result[1] = pLL.getCoords().longitude;
+        result[0] = pLL.getCoords().getLatitude();
+        result[1] = pLL.getCoords().getLongitude();
         return result;
     }
 
@@ -370,13 +370,13 @@ public final class TransformationHelper {
     public static double[] pictToWGS(final LatLongCoord center, final LocalXYCoord point, final LocalXYCoord bp,
                                      final double angle, final double scale, final double picHeight) {
 
-        XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("", point, 0, 0), scale, scale, picHeight, bp.x, bp.y);
+        XYPoint pXY = Transformation.transformDataPictXYtoXY(new XYPoint("", point, 0, 0), scale, scale, picHeight, bp.getX(), bp.getY());
 
         LLPoint pLL = Transformation.transformDataXYtoWGS(pXY, center, angle);
 
         double[] result = new double[2];
-        result[0] = pLL.getCoords().latitude;
-        result[1] = pLL.getCoords().longitude;
+        result[0] = pLL.getCoords().getLatitude();
+        result[1] = pLL.getCoords().getLongitude();
         return result;
     }
 
@@ -406,8 +406,8 @@ public final class TransformationHelper {
         LLPoint pLL = Transformation.transformDataXYtoWGS(pXY, sw, se);
 
         double[] result = new double[2];
-        result[0] = pLL.getCoords().latitude;
-        result[1] = pLL.getCoords().longitude;
+        result[0] = pLL.getCoords().getLatitude();
+        result[1] = pLL.getCoords().getLongitude();
         return result;
     }
 }
