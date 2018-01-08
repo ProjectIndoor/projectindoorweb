@@ -36,8 +36,19 @@ This section is dedicated for the import options. The data needs to be fed to th
 
 #### Buildings
 
+In this page, you can add building related data such as name, number of floors and dimensions of the floor map image.
 
+![Building Data](images/addBuilding1.png)
 
+It also has an option to add the cordinations either with *center and rotation* or add with latitudes and longitudes. Below images show these options.
+
+![Building Data with Latitudes and Longitudes](images/addBuilding2.png)
+
+To add the cordinates with center and rotation the radio button has to be turned on.
+
+![Building Data with Center and Rotation](images/addBuilding3.png)
+
+Even though these parts are explained separately, they are present in the single page.
 
 ## Validation
 
