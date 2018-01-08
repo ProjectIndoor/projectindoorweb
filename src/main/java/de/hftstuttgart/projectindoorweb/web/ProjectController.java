@@ -19,6 +19,9 @@ import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+/**
+ * REST resource handling project operations. Has access to RestTransmissionService. Do not put any logic in here!
+ */
 @Controller
 @RestController
 @Api(value = "/Project", description = "Operations for projects", tags = "Project")

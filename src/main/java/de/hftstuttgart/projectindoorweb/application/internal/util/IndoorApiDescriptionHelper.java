@@ -19,6 +19,10 @@ import java.util.Collections;
 
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
+/**
+ * Generates and displays dynamic REST API documentation. Result can be viewed at
+ * <code>http://ipAdress:port/swagger-ui.html#/</code>. For example: <code>http://localhost:8080/swagger-ui.html#</code>
+ */
 public class IndoorApiDescriptionHelper {
 
     private static final String EXCLUDE_ERROR_PATH_REGEX = "/error.*";
@@ -38,6 +42,11 @@ public class IndoorApiDescriptionHelper {
 
     public static final String TERMS_OF_SERVICE = "Terms of service";
 
+    /**
+     * Creates for the dynamic documentation necessary REST API Docket.
+     * @param typeResolver The type resolver. Must not be <code>null</code>.
+     * @return The requested REST API Docket.
+     */
     public static Docket createIndoorRestApiDocket(TypeResolver typeResolver) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
@@ -57,6 +66,10 @@ public class IndoorApiDescriptionHelper {
                 .tags(new Tag(TAG_NAME, TAG_DESCRIPTION)).apiInfo(apiInfo());
     }
 
+    /**
+     * Creates the REST API UI configuration, necessary for the dynamic API documentation.
+     * @return The requested UI configuration.
+     */
     public static UiConfiguration createIndoorRestApiUiConfiguration() {
         return new UiConfiguration(
                 VALIDATOR_URL,
