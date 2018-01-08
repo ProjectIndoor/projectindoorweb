@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 
-public interface RestTransmissionService { //If too many methods get introduced, split this interface up into multiple services!
+public interface RestTransmissionService {
 
     /*Evaal file processing and generating position results*/
     String processEvaalFiles(String buildingId, boolean evaluationFiles,
