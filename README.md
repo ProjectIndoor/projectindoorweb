@@ -45,9 +45,37 @@ The application then can be accessed with your browser on [http://localhost:8080
 
 For deployment a [Dockerfile](Dockerfile) is provided it can be used to create an image of the application. It can be build from gradle using:
 
-```gradlew
+```sh
 ./gradlew build docker
 ```
+
+Please note that you need a working basic development setup like it is described above.
+
+Pre build docker image releases are also available directly on [docker hub](https://hub.docker.com/r/hftstuttgart/projectindoorweb).
+### Docker-compose
+
+To make the usage of the docker images even easier this repository also comes with an example [docker-compose](docker-compose.yml) setup.
+This setup consists of three containers: mariadb, nginx and the indoor web application.
+To start this setup it is enough to just run in the checked out repository:
+
+```sh
+docker-compose up
+# or in the background with
+docker-compose up -d
+
+# To shut it down
+docker-compose down
+```
+
+Note that the provided compose file defines all three services to restart always.
+
+## Documentation
+
+Additional information about the application is available in the doc folder in this repository.
+
+* [Frontend](doc/frontend.md) - Usage and architecture of the frontend
+* [Backend](doc/backend.md) - Usage and architecture of the backend
+
 
 ## Built With
 

@@ -2,6 +2,7 @@ version: '3'
 services:
   indoor_nginx:
     image: nginx:1.13
+    restart: always
     ports:
       - 80:80
       - 443:443
@@ -11,6 +12,7 @@ services:
       - indoorweb
   indoordb:
     image: mariadb
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=indoor
       - MYSQL_DATABASE=indoor
@@ -18,6 +20,7 @@ services:
       - MYSQL_PASSWORD=indoor
   indoorweb:
     image: hftstuttgart/projectindoorweb
+    restart: always
     ports:
       - "8080:8080"
     environment:
