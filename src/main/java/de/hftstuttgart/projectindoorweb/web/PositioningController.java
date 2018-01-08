@@ -1,8 +1,13 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
-import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.*;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.BatchPositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateBatchPositionResults;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GenerateSinglePositionResult;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetAllEvaalEntries;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetEvaluationFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.GetRadioMapFilesForBuilding;
+import de.hftstuttgart.projectindoorweb.web.internal.requests.positioning.SinglePositionResult;
 import de.hftstuttgart.projectindoorweb.web.internal.util.TransmissionConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,12 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+/**
+ * REST resource handling positioning operations. Has access to RestTransmissionService. Do not put any logic in here!
+ */
 @Controller
 @RestController
 @Api(value = "Position", description = "Operations for positions", tags = "Position")
@@ -36,10 +42,10 @@ public class PositioningController {
     @RequestMapping(path = "/processRadioMapFiles", method = POST, produces = "text/plain")
     public ResponseEntity processRadioMapFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE, required = true) String buildingIdentifier,
-                                        @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
-                                                MultipartFile[] radioMapFiles,
-                                        @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
-                                                MultipartFile[] transformedPointsFiles) {
+                                               @RequestParam(value = TransmissionConstants.RADIOMAP_FILES_PARAM, required = true)
+                                                       MultipartFile[] radioMapFiles,
+                                               @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
+                                                       MultipartFile[] transformedPointsFiles) {
         String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, false, radioMapFiles, transformedPointsFiles);
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
 
@@ -49,8 +55,8 @@ public class PositioningController {
     @RequestMapping(path = "/processEvalFiles", method = POST, produces = "text/plain")
     public ResponseEntity processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
-                                    @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
-                                            MultipartFile[] evalFiles) {
+                                           @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
+                                                   MultipartFile[] evalFiles) {
         String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
@@ -59,7 +65,7 @@ public class PositioningController {
     @RequestMapping(path = "/deleteSelectedEvaalFile", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedEvaalFile(@RequestParam(value = TransmissionConstants.EVAAL_FILE_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                                   String evaalFileIdentifier) {
+                                                          String evaalFileIdentifier) {
 
         String operationResult = restTransmissionService.deleteEvaalFile(evaalFileIdentifier);
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
