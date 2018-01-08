@@ -1,12 +1,12 @@
 # FrontEnd Documentation
 
-## Libraries
-## File Structure
-## Site Overview
+# Libraries
+# File Structure
+# Site Overview
 
 In this section, different components and pages of the front end will be discussed as the front end plays an important role in our project. The components will be discussed according to the workflow i.e in the order how we will use the pages to get the final results.
 
-### Toolbar
+## Toolbar
 
 ![Toolbar](images/toolbar.png)
 
@@ -28,13 +28,13 @@ The toolbar has two options represented with following icons.
 
  The following sections will explain each of these menu options and submenus under them with respect to the workflow.
 
-### Import Data
+## Import Data
 
 This section is dedicated for the import options. The data needs to be fed to the system to obtain the results. Once you click on the Import Data option from the navigation side bar, a secondary toolbar will appear below the main toolbar providing different import options. The second toolbar is shown below.
 
 ![Import Toolbar](images/import.png)
 
-#### Buildings
+### Buildings
 
 In this page, you can add building related data such as name, number of floors and dimensions of the floor map image.
 
@@ -55,7 +55,7 @@ Once the building is added successfully, a toast will appear like below.
 ![Success Toast](images/successMessage.png)
 
 
-#### Floor Maps
+### Floor Maps
 
 This page is dedicated to upload the radio map file along with the building and floor selection which was added previously.
 
@@ -63,17 +63,17 @@ This page is dedicated to upload the radio map file along with the building and 
 
 If the file is uploaded successfully, a toast will be displayed indicating the sucess or a error toast will guide the user.
 
-#### Radiomap Data
+### Radiomap Data
 
 This page will allow the user to upload Radiomap file. The dropdown will provide the list of the building names which were added before. The user can also add transformed log file by switching on the *Add a transformed points file*. This file will be automatically converted to get the positions.
 
 ![Radiomap Data](images/addRadioMap.png)
 
-#### Evaluation Data
+### Evaluation Data
 
 The upload page for Evaluation file works similar to Radiomap upload. It also has a list of buildings for which the user wants to upload the evaluation file. Once the file is uploaded successfully, a toast will be displayed.
 
 ![Evaluation Data](images/addEvaluation.png)
 
-## Validation
+# Validation
 
