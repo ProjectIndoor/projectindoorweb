@@ -1,5 +1,14 @@
 version: '3'
 services:
+  indoor_nginx:
+    image: nginx:1.13
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./deploy/nginx:/etc/nginx/conf.d
+    depends_on:
+      - indoorweb
   indoordb:
     image: mariadb
     environment:
