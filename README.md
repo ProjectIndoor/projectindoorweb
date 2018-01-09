@@ -62,12 +62,16 @@ To start this setup it is enough to just run in the checked out repository:
 docker-compose up
 # or in the background with
 docker-compose up -d
-
-# To shut it down
-docker-compose down
 ```
 
 Note that the provided compose file defines all three services to restart always.
+
+To remove the application run, again in the repository folder:
+
+```sh
+docker-compose down
+```
+But note that the defined example volume indoor_map will be removed too with this method, so either use another volume or a path on the disk to persist them.
 
 ## Documentation
 

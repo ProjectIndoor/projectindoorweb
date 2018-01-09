@@ -25,5 +25,9 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE="prod"
+    volumes:
+      - indoor_maps:/root/.projectindoor/floor_maps
     depends_on:
       - indoordb
+volumes:
+  indoor_maps:
