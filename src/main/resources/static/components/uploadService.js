@@ -64,7 +64,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = response.data;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
@@ -103,7 +103,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = response.data;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
@@ -136,7 +136,7 @@ function UploadService($http, toastService) {
                     }
                 }).then(function successCallback(response) {
                     // success
-                    logMessage = response.data;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure

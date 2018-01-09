@@ -108,7 +108,7 @@ function DataService($http, toastService) {
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while deleting building:" + buildingId;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             return promise;
@@ -127,7 +127,7 @@ function DataService($http, toastService) {
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while deleting evaal entry:" + evaalFileId;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             return promise;
@@ -146,7 +146,7 @@ function DataService($http, toastService) {
                     return response.data;
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while deleting project:" + projectId;
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             return promise;

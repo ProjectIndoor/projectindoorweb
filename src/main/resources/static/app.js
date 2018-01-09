@@ -14,7 +14,7 @@ var app = angular.module('IndoorApp', [
     'ngMaterial',
     'ngRoute',
     'ngMessages',
-    //pages
+    // pages
     'IndoorApp.edit',
     'IndoorApp.import',
     'IndoorApp.map'
