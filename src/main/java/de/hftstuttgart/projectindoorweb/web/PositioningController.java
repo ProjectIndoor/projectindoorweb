@@ -56,8 +56,10 @@ public class PositioningController {
     public ResponseEntity processEvalFiles(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE) String buildingIdentifier,
                                            @RequestParam(value = TransmissionConstants.EVAL_FILE_PARAM)
-                                                   MultipartFile[] evalFiles) {
-        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, null);
+                                                   MultipartFile[] evalFiles,
+                                           @RequestParam(value = TransmissionConstants.TRANSFORMED_POINTS_FILE_PARAM, required = false)
+                                                       MultipartFile[] transformedPointsFiles) {
+        String operationResult = restTransmissionService.processEvaalFiles(buildingIdentifier, true, evalFiles, transformedPointsFiles);
         return HttpResultHandler.getInstance().handleSimplePositioningResult(operationResult);
     }
 
