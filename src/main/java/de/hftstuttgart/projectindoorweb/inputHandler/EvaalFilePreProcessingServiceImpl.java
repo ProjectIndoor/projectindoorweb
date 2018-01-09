@@ -21,14 +21,14 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
 
     @Override
     public List<EvaalFile> processEvaalFiles(Building building, boolean evaluationFiles,
-                                             List<File> radioMapFiles) {
+                                             List<File> evaalFiles) {
 
-        AssertParam.throwIfNull(radioMapFiles, "radioMapFiles");
+        AssertParam.throwIfNull(evaalFiles, "radioMapFiles");
         AssertParam.throwIfNull(building, "building");
 
-        List<EvaalFile> processedEvaalFiles = new ArrayList<>(radioMapFiles.size());
+        List<EvaalFile> processedEvaalFiles = new ArrayList<>(evaalFiles.size());
 
-        for (File inputFile : radioMapFiles) {
+        for (File inputFile : evaalFiles) {
             if (!inputFile.isDirectory() && !inputFile.getPath().contains(".swp")) {
                 List<String> allLines = null;
                 try {
@@ -47,10 +47,10 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
 
     @Override
     public List<EvaalFile> processEmptyEvaalFiles(Building building, boolean evaluationFiles,
-                                                  List<File> emptyRadioMapFiles, List<File> referencePointFiles) {
+                                                  List<File> emptyEvaalFiles, List<File> referencePointFiles) {
 
-        List<EvaalFile> processedEvaalFiles = new ArrayList<>(emptyRadioMapFiles.size());
-        if(emptyRadioMapFiles.size() != referencePointFiles.size()){
+        List<EvaalFile> processedEvaalFiles = new ArrayList<>(emptyEvaalFiles.size());
+        if(emptyEvaalFiles.size() != referencePointFiles.size()){
             return processedEvaalFiles;
         }
 
@@ -61,8 +61,8 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
         List<String> emptyPosiReferences;
         List<String> completedPosiReferences;
         List<String> allLinesWithCompletesPosiReferences;
-        for(int i = 0; i < emptyRadioMapFiles.size(); i++){
-            emptyRadioMapFile = emptyRadioMapFiles.get(i);
+        for(int i = 0; i < emptyEvaalFiles.size(); i++){
+            emptyRadioMapFile = emptyEvaalFiles.get(i);
             referencePointFile = referencePointFiles.get(i);
 
             try {

@@ -1,6 +1,5 @@
 package de.hftstuttgart.projectindoorweb.web;
 
-import de.hftstuttgart.projectindoorweb.persistence.entities.GenericResponse;
 import de.hftstuttgart.projectindoorweb.web.internal.HttpResultHandler;
 import de.hftstuttgart.projectindoorweb.web.internal.ResponseWrapper;
 import de.hftstuttgart.projectindoorweb.web.internal.requests.building.AddNewBuilding;
@@ -29,6 +28,9 @@ import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+/**
+ * REST resource handling building operations. Has access to RestTransmissionService. Do not put any logic in here!
+ */
 @Controller
 @RestController
 @Api(value = "Building", description = "Provides operations for interaction with Buildings.", tags = "Building")
@@ -109,7 +111,7 @@ public class BuildingController {
     @RequestMapping(path = "/deleteSelectedBuilding", method = DELETE, produces = "text/plain")
     public ResponseEntity deleteSelectedBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                                  String buildingIdentifier) {
+                                                         String buildingIdentifier) {
         String operationResult = restTransmissionService.deleteBuilding(buildingIdentifier);
         return HttpResultHandler.getInstance().handleSimpleBuildingResult(operationResult);
     }
@@ -119,15 +121,15 @@ public class BuildingController {
     @RequestMapping(path = "/addFloorToBuilding", method = POST, produces = "text/plain")
     public ResponseEntity addFloorToBuilding(@RequestParam(value = TransmissionConstants.BUILDING_IDENTIFIER_PARAM,
             defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String buildingIdentifier,
-                                      @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
-                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String floorIdentifier,
-                                      @RequestParam(value = TransmissionConstants.FLOOR_NAME_PARAM,
-                                              defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
-                                              String floorName,
-                                      @RequestParam(value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
-                                              MultipartFile floorMapFile) {
+                                                     String buildingIdentifier,
+                                             @RequestParam(value = TransmissionConstants.FLOOR_IDENTIFIER_PARAM,
+                                                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                                     String floorIdentifier,
+                                             @RequestParam(value = TransmissionConstants.FLOOR_NAME_PARAM,
+                                                     defaultValue = TransmissionConstants.EMPTY_STRING_VALUE)
+                                                     String floorName,
+                                             @RequestParam(value = TransmissionConstants.FLOOR_MAP_FILE_PARAM)
+                                                     MultipartFile floorMapFile) {
         String operationResult = restTransmissionService.addFloorToBuilding(buildingIdentifier, floorIdentifier, floorName, floorMapFile);
         return HttpResultHandler.getInstance().handleSimpleBuildingResult(operationResult);
     }
