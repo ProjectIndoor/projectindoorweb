@@ -175,6 +175,9 @@ function UploadService($http, toastService) {
                     logMessage = "Please choose a file to upload";
                     toastService.showToast(logMessage, "error-toast");
                 }
+            } else if (radioMapSet.tpFiles.length && radioMapSet.tpFiles.length !== radioMapSet.radioMapFiles.length) {
+                logMessage = "Number of tp files and radiomap files should match";
+                toastService.showToast(logMessage, "error-toast");
             } else {
                 // body content (log files and buildingId)
                 var formData = new FormData();
@@ -214,11 +217,17 @@ function UploadService($http, toastService) {
                     logMessage = "Please choose a file to upload";
                     toastService.showToast(logMessage, "error-toast");
                 }
+            } else if (evaluationSet.tpFiles.length && evaluationSet.tpFiles.length !== evaluationSet.evalFiles.length) {
+                logMessage = "Number of tp files and eval files should match";
+                toastService.showToast(logMessage, "error-toast");
             } else {
                 // body content (eval files and buildingId)
                 var formData = new FormData();
                 formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
                 formData.append('evalFiles', evaluationSet.evalFiles[0]);
+                for (var j = 0; j < evaluationSet.tpFiles.length; j++) {
+                    formData.append('transformedPointsFiles', evaluationSet.tpFiles[j]);
+                }
 
                 $http({
                     method: 'POST',
@@ -242,7 +251,7 @@ function UploadService($http, toastService) {
             }
         },
         uploadFloorMap: function (floorSet) {
-            if (floorSet.floorFiles[0] == null) {
+            if (floorSet.floorFiles[0] === null) {
                 logMessage = "Please choose an image file to upload";
                 toastService.showToast(logMessage, "error-toast");
             } else {
@@ -1407,6 +1416,9 @@ function EvaluationImportController($scope, dataService, uploadService) {
     $scope.evalUpload = function () {
         angular.element(document.querySelector('#evalInputFile')).click();
     };
+    $scope.uploadTransformedClick = function () {
+        angular.element(document.querySelector('#transformedPointsFileEval')).click();
+    };
 
     dataService.getAllBuildings();
 
@@ -1416,12 +1428,24 @@ function EvaluationImportController($scope, dataService, uploadService) {
     // parameters needed to upload eval file
     $scope.evalFileParameters = {
         buildingIdentifier: 0,
-        evalFiles: []
+        evalFiles: [],
+        tpFiles: []
     };
 
     $scope.getEvalFiles = function ($files) {
         $scope.evalFileParameters.evalFiles = $files;
         $scope.fileUploaded = "File: " + $files[0].name;
+        // notify changed scope to display file name
+        $scope.$apply();
+    };
+
+    $scope.getTpFiles = function ($files) {
+        $scope.evalFileParameters.tpFiles = $files;
+        // set filename on ui
+        $scope.tpFileUploaded = $files[0].name;
+        if ($files.length > 1) {
+            $scope.tpFileUploaded += " and " + ($files.length - 1) + " more file(s)";
+        }
         // notify changed scope to display file name
         $scope.$apply();
     };

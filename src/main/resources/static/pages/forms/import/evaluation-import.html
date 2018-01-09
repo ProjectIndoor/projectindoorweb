@@ -33,6 +33,22 @@
                 <p>{{fileUploaded}}</p>
             </md-input-container>
 
+            <!-- Option to add an optional transformedPointsFile  -->
+            <md-switch ng-model="toggleTransformedPoints" aria-label="Transformed points file">
+                Add a transformed points file
+            </md-switch>
+
+            <!-- File chooser transformed points -->
+            <md-input-container ng-if="toggleTransformedPoints" flex="100" layout="row">
+                <input id="transformedPointsFileEval" name="tpFileEval" class="ng-hide" type="file"
+                       ng-files="getTpFiles($files)"
+                       aria-label="transformedPointsUpload" multiple/>
+                <md-button class="md-button" ng-click="uploadTransformedClick()">
+                    Choose File
+                </md-button>
+                <p id="fileNameTransformedPoints">{{tpFileUploaded}}</p>
+            </md-input-container>
+
         </md-card-content>
 
         <md-card-actions layout="row" layout-align="end center">
