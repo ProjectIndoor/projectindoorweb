@@ -160,7 +160,7 @@ public class HttpResultHandler {
 
     private ResponseEntity createSimpleResponseEntity(HttpStatus status, String messageBody) {
         return ResponseEntity
-                .status(status)
+                .status(status).header("Content-Type","text/plain")
                 .body(messageBody);
     }
 
