@@ -30,6 +30,7 @@ pipeline {
                     unHealthy: ""])
               findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: 'build/reports/findbugs/main.xml', unHealthy: ''
               pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'build/reports/pmd/main.xml', unHealthy: ''
+              junit 'build/test-results/test/*.xml'
           }
        }
    }
