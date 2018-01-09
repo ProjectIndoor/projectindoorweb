@@ -75,5 +75,25 @@ The upload page for Evaluation file works similar to Radiomap upload. It also ha
 
 ![Evaluation Data](images/addEvaluation.png)
 
+## Map View
+
+Once all the data is uploaded successfully in the Import Data section, the results can be fetched in Map View. At the right hand side, ![Settings icon](images/ic_settings_black_24dp_1x.png) button will toggle a side panel. The panel has different parameters to choose from.
+
+The first block provides the list of buildings and the floors available for that building. Once the user clicks on *CHOOSE* button, next block will appear.
+
+![Choose Map](images/chooseMap.png)
+
+Next block allows the user to choose from a prerecorded track for the evaluation.
+
+![Choose Evaluation file](images/chooseEval.png)
+
+After the evaluation file has been choosen, the user has to choose from different algorithms.
+
+![Choose Algorithm](images/chooseAlgorithm.png)
+
+The panel provides many more parameters to play with. These can be accessed under *SHOW MORE PARAMETERS*. These set of parameters can be saved as a project so that the user can reuse the same set of parameters.
+
+![Save Project](images/saveProject.png)
+
 # Validation
 
