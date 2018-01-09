@@ -78,7 +78,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: 'icons/calc-marker.png'
+                src: 'assets/icons/calc-marker.png'
             }
         }
     };
@@ -89,7 +89,7 @@ function MapService() {
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'fraction',
                 opacity: 1.0,
-                src: 'icons/ref-marker.png'
+                src: 'assets/icons/ref-marker.png'
             }
         }
     };

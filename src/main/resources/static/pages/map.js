@@ -21,7 +21,7 @@ mapModule.config(['$routeProvider', function ($routeProvider) {
 // controller which handles the map
 function MapController($scope, mapService) {
     // example map service setup
-    mapService.setMap("maps/hft_2_floor_3.png", 3688, 2304);
+    mapService.setMap("assets/maps/hft_2_floor_3.png", 3688, 2304);
 
     // setup usage of map service
     angular.extend($scope, {
