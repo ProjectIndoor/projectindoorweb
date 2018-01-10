@@ -13,6 +13,7 @@ Controller Resource* which generally provides functionality concerning position 
 Resources* which generally provides functionalities concerning building associations and processing. Finally the *Project 
 Controller Resource* which provides functionalities concerning project management and associations. These Ressources will 
 now be further analyzed.
+
 ### Overview
 
 (Volkan)
@@ -32,6 +33,7 @@ REST Controller Projects methods and calls
 
 (Volkan)
 REST Controller Positioning methods and calls
+
 
 ##Indoor Positioning Architecture Overview
 
@@ -82,7 +84,7 @@ The persistency service controls every access to and from the database. Like any
 initialized on application startup and disposed on application shutdown. To achieve these
 requirements, this service has the following structure.
 
-
+![Persistency Service](./images/)
 
 The left hand side of the UML diagram above, shows the component class of this service. It provides all functionalities 
 required to initialize and dispose of the service implementation itself. *Spring* provides its own function to 
@@ -105,6 +107,8 @@ functionalities can only be accessed through this system. No data is being persi
 wanted to store calculated data in the database, you first need to access the *Positioning service* and then call 
 the *Persistency service* to store returned data. The following graph shows a simplified UML diagram of this service.
 
+![Positioning Service](./images/)
+
 As you can see, the general structure of this service is exactly the same as in the service above. 
 Also the Calculator service shares this structure. The only difference lies within the service and its implementation 
 itself. All internal functionalities as well as the used positioning algorithms themselves are stored withing the internal 
@@ -116,6 +120,8 @@ is controlled through the interface itself.
 The Pre Processing service provides all kind of pre processing functionality. That includes Processing of certain Radiomap
 or evaluation files. This is required in order for the calculation service to function properly. Just like the other two
 services, this one is structured in the same way.
+
+![PreProcessing Service](./images/)
 
 The only difference once again lies within the implementation and offered interface itself. Just like in the other services,
 all internal functionalities are inside the associated internal package.
