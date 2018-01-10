@@ -139,10 +139,12 @@ public class HttpResultHandler {
             HttpStatus actualHttpStatus = entry.getValue();
 
             if (actualOperationResult.equals(operationResultMessage)) {
-                return createSimpleResponseEntity(actualHttpStatus, actualOperationResult);
+                ResponseWrapper wrapper = new ResponseWrapper(-1l,actualOperationResult);
+                return createResponseEntity(actualHttpStatus, wrapper);
             }
         }
-        return createSimpleResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN);
+        ResponseWrapper wrapper = new ResponseWrapper(-1l,SHOULD_NOT_HAPPEN);
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, wrapper);
     }
 
     private ResponseEntity getLongResponseEntity(Map<String, HttpStatus> operationResultMap, ResponseWrapper responseWrapper) {
@@ -151,20 +153,14 @@ public class HttpResultHandler {
             HttpStatus actualHttpStatus = entry.getValue();
 
             if (actualOperationResult.equals(responseWrapper.getMessage())) {
-                return createLongResponseEntity(actualHttpStatus, responseWrapper);
+                return createResponseEntity(actualHttpStatus, responseWrapper);
             }
         }
 
-        return createLongResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN_WRAPPER);
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, SHOULD_NOT_HAPPEN_WRAPPER);
     }
 
-    private ResponseEntity createSimpleResponseEntity(HttpStatus status, String messageBody) {
-        return ResponseEntity
-                .status(status)
-                .body(messageBody);
-    }
-
-    private ResponseEntity createLongResponseEntity(HttpStatus status, ResponseWrapper responseWrapper) {
+    private ResponseEntity createResponseEntity(HttpStatus status, ResponseWrapper responseWrapper) {
         return ResponseEntity
                 .status(status)
                 .body(responseWrapper);

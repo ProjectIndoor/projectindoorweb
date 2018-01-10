@@ -6,7 +6,7 @@
     <!-- Web manifest -->
     <link rel="manifest" href="manifest.json">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="icons/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
     <!-- Support mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Angular Material CSS -->
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="assets/vendor/angular-openlayers-directive/angular-openlayers-directive.css"
           type="text/css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/custom-indoor.css">
+    <link rel="stylesheet" href="./assets/css/custom-indoor.css">
 </head>
 <body ng-cloak layout="column" layout-fill>
 
@@ -117,7 +117,29 @@
 <!-- Angular Openlayers Library -->
 <script src="assets/vendor/angular-openlayers-directive/angular-openlayers-directive.js"></script>
 <!-- Indoor App -->
-<script src="js/app.js"></script>
+<script src="app.js"></script>
+<script src="components/dataService.js"></script>
+<script src="components/projectService.js"></script>
+<script src="components/toastService.js"></script>
+<script src="components/uploadService.js"></script>
+<script src="components/calculationService.js"></script>
+<script src="components/mapService.js"></script>
+<script src="pages/map.js"></script>
+<script src="pages/import.js"></script>
+<script src="pages/edit.js"></script>
+<script src="pages/forms/edit/building-edit.js"></script>
+<script src="pages/forms/edit/evaal-edit.js"></script>
+<script src="pages/forms/edit/project-edit.js"></script>
+<script src="pages/forms/import/building-import.js"></script>
+<script src="pages/forms/import/evaluation-import.js"></script>
+<script src="pages/forms/import/floor-import.js"></script>
+<script src="pages/forms/import/radiomap-import.js"></script>
+<script src="pages/forms/map/result.js"></script>
+<script src="pages/forms/map/map-chooser.js"></script>
+<script src="pages/forms/map/algorithm-chooser.js"></script>
+<script src="pages/forms/map/track-chooser.js"></script>
+<script src="pages/forms/map/view-settings.js"></script>
+
 
 </body>
 </html>
