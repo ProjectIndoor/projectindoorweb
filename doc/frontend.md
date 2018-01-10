@@ -40,11 +40,11 @@ In this page, you can add building related data such as name, number of floors a
 
 ![Building Data](images/addBuilding1.png)
 
-It also has an option to add the cordinations either with *center and rotation* or add with *Latitudes and Longitudes*. Below images show these options.
+It also has an option to add the coordinates either with *center and rotation* or add with *Latitudes and Longitudes*. Below images show these options.
 
 ![Building Data with Latitudes and Longitudes](images/addBuilding2.png)
 
-To add the cordinates with *Center and Rotation* the radio button has to be turned on.
+To add the coordinates with *Center and Rotation* the radio button has to be turned on.
 
 ![Building Data with Center and Rotation](images/addBuilding3.png)
 
@@ -61,7 +61,7 @@ This page is dedicated to upload the radio map file along with the building and 
 
 ![Floor Map](images/addFloorMap.png)
 
-If the file is uploaded successfully, a toast will be displayed indicating the sucess or a error toast will guide the user.
+If the file is uploaded successfully, a toast will be displayed indicating the success or a error toast will guide the user.
 
 ### Radiomap Data
 
@@ -87,7 +87,7 @@ Next block allows the user to choose from a prerecorded track for the evaluation
 
 ![Choose Evaluation file](images/chooseEval.png)
 
-After the evaluation file has been choosen, the user has to choose from different algorithms.
+After the evaluation file has been chosen, the user has to choose from different algorithms.
 
 ![Choose Algorithm](images/chooseAlgorithm.png)
 
@@ -98,6 +98,44 @@ The panel provides many more parameters to play with. These can be accessed unde
 After all the parameters are set, the user needs to click on *CALCULATE*. This will populate the results on the map showing the reference points, calculated positions and error lines.
 
 ![Map](images/map.png)
+
+At the end of the panel, there is also indication of error in calculation of positions with this set of parameters and algorithm.
+
+![Error Display](images/errorDisplay.png)
+
+## Manage Data
+
+Since the project needs comparatively high amount of parameters to be fed to the backend, it can be time consuming every time to repeat the same process. Therefore, we have provided a feature where the user can access the data which he/she has uploaded already. This is achieved in the *Manage Data* section.
+
+Once the Manage Data menu option is clicked, a secondary toolbar will appear below the main tool bar.
+
+![Manage Data Toolbar](images/manageData.png)
+
+### Buildings
+
+This page lists all the projects saved by the user.
+
+![Manage Buildings](images/manageBuildings.png)
+
+The user can click on any project to view the details. Also, the project can be deleted. But if the project is associated with any radio map, evaluation files or any building data, the user cannot delete the project.
+
+![Detailed View](images/detailedView.png)
+
+### Evaluation Files
+
+This page lists all the evaluation and radio map files uploaded. The user can also delete any of these files similar to deleting a project.
+
+![Manage Evaluation File](images/manageEval.png)
+
+### Projects
+
+The list of all the saved projects can be accessed from here.
+
+![Manage Projects](images/manageProjects.png)
+
+## View Projects
+
+This section is same as the list of projects which is available in the *Manage Data* menu. It is made available separately for easy access.
 
 # Validation
 
