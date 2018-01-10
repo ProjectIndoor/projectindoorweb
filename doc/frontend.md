@@ -1,6 +1,26 @@
 # FrontEnd Documentation
 
 # Libraries
+
+This section lists all the libraries which are used to implement the frontend of the project.
+
+- AngularJS (1.5.5)
+
+   The main framework used is AngularJS with version mentioned above. We have used plugins like routes, messages to implement different functionality.
+
+- AngularJS Material (1.1.0)
+
+    This is a framework for UI components. It provides reusable, tested and easily accessible UI components.
+
+- Openlayers (3.18.1)
+
+    It is a javascript library which makes it easy to implement the maps in the project. It uses *angular-openlayers-directive* to connect with angular.
+
+- Other
+
+    The project also makes use of JQuery and Material design icons. The later provides different ready to use icons.
+
+
 # File Structure
 # Site Overview
 
