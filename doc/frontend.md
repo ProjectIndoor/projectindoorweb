@@ -1,5 +1,14 @@
 # FrontEnd Documentation
 
+This file contains documentation regarding the structure and usage of the frontend.
+
+# Table of Contents
+
+  * [Libraries](#Libraries)
+  * [File structure](#file-structure)
+  * [Site overview](#site-overview)
+  * [Validation](#validation)
+
 # Libraries
 
 To make development easier several libraries were used for frontend development.
