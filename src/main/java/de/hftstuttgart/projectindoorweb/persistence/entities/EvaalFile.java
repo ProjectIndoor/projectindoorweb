@@ -29,9 +29,6 @@ public class EvaalFile {
     @ManyToOne(targetEntity = Building.class)
     private Building recordedInBuilding;
 
-    @ManyToOne(targetEntity = Phone.class)
-    private Phone recordedByPhone;
-
     @OneToOne(targetEntity = RadioMap.class, cascade = CascadeType.ALL)
     private RadioMap radioMap;
 
@@ -39,7 +36,7 @@ public class EvaalFile {
     }
 
     public EvaalFile(boolean evaluationFile, String sourceFileName, String customFileName, int appVersion, Map<Integer, WifiBlock> wifiBlocks,
-                     Building recordedInBuilding, Phone recordedByPhone, RadioMap radioMap) {
+                     Building recordedInBuilding, RadioMap radioMap) {
 
         this.evaluationFile = evaluationFile;
         this.sourceFileName = sourceFileName;
@@ -47,7 +44,6 @@ public class EvaalFile {
         this.appVersion = appVersion;
         this.wifiBlocks = wifiBlocks;
         this.recordedInBuilding = recordedInBuilding;
-        this.recordedByPhone = recordedByPhone;
         this.radioMap = radioMap;
 
     }
@@ -102,14 +98,6 @@ public class EvaalFile {
 
     public void setRecordedInBuilding(Building recordedInBuilding) {
         this.recordedInBuilding = recordedInBuilding;
-    }
-
-    public Phone getRecordedByPhone() {
-        return recordedByPhone;
-    }
-
-    public void setRecordedByPhone(Phone recordedByPhone) {
-        this.recordedByPhone = recordedByPhone;
     }
 
     public RadioMap getRadioMap() {

@@ -20,18 +20,14 @@ public class Floor {
     private String floorMapUrl;
     private String floorMapPath;
 
-    @OneToMany(targetEntity = PosiReference.class, mappedBy = "floor")
-    private List<PosiReference> posiReferences;
-
     protected Floor() {
     }
 
-    public Floor(int level, String floorName, String floorMapUrl, String floorMapPath, List<PosiReference> posiReferences) {
+    public Floor(int level, String floorName, String floorMapUrl, String floorMapPath) {
         this.level = level;
         this.floorName = floorName;
         this.floorMapUrl = floorMapUrl;
         this.floorMapPath = floorMapPath;
-        this.posiReferences = posiReferences;
     }
 
     public Floor(int level) {
@@ -74,11 +70,4 @@ public class Floor {
         this.floorMapPath = floorMapPath;
     }
 
-    public List<PosiReference> getPosiReferences() {
-        return posiReferences;
-    }
-
-    public void setPosiReferences(List<PosiReference> posiReferences) {
-        this.posiReferences = posiReferences;
-    }
 }
