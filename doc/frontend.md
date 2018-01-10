@@ -1,7 +1,67 @@
 # FrontEnd Documentation
 
 # Libraries
+
+To make development easier several libraries were used.
+Here is a small overview:
+
+- **AngularJS** - main UI framework
+  - **angular-material** - material UI components
+- **Openlayers** - html/js map library
+  - **angular-openlayers-directive** - connect map with angular
+- Others
+  - **jquery** 
+  - **Material Design Icons**
+  
+Main framework for HTML/JS was AngularJS which allows us to create single page applications easily.
+We used angular-material to get nicer material design UI components.
+Openlayers was used to be able to display maps in our app.
+
+
 # File Structure
+
+The frontend part of the application can be found in the folder `src/main/resources/static`.
+It is structured like this:
+
+```
+static
+├── index.html                      # main html page
+├── app.js                          # main application definition
+├── manifest.json                   # additional information for browsers
+├── assets                          # assets like libraries and css
+│   ├── css                             # own css files
+│   ├── icons                           # own icons
+│   └── vendor                          # external libraries (auto gen) 
+├── pages                           # html/js files for pages
+│   ├── map.html                        
+│   ├── map.js
+│   ├── ...
+│   ├── forms                           # files describing parts of a page
+│   │   ├── edit
+│   │   │   ├── building-edit.html
+│   │   │   ├── building-edit.js
+│   │   │   └── ...
+│   │   └── ...
+│   └── panels                          # layouts for additional panels
+└── components                          # services used by the pages
+    ├── mapService.js
+    ├── calculationService.js
+    └── ...
+
+```
+
+- On the root the index.html can be found which is the entry point of our single page application,
+it describes the outer layout and imports all needed libraries.
+In addition you also find the app.js file which is the entry point of our angular application.
+- The pages folders holds the dedicated pages (consisting of html and js with page logic) which are
+injected by angular into the main html file to display the contents (e.g. map.html/js for the map view).
+The subfolder forms holds single components describing dedicated parts of a page like the
+edit-building.html/js for the building part of the edit page
+- The components folder is for additional angular components not bound to a specific page,
+it contains services e.g. the calculationService.js which provides access to the calculation API of the backend
+to all pages which need it.
+
+
 # Site Overview
 
 In this section, different components and pages of the front end will be discussed as the front end plays an important role in our project. The components will be discussed according to the workflow i.e in the order how we will use the pages to get the final results.
