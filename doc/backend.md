@@ -35,7 +35,7 @@ REST Controller Projects methods and calls
 REST Controller Positioning methods and calls
 
 
-##Indoor Positioning Architecture Overview
+## Indoor Positioning Architecture Overview
 
 The project itself consists of four different systems that communicate with each other. The Back End consists of a H2 
 database and an Application server.  The Front End consists of two Clients. A Web Client and an Android App. 
