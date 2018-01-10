@@ -1,5 +1,18 @@
 ## Description of the REST API
+This section provides an overview of the currently available REST API that this project offers. As soon as the 
+application is running, a dynamically generated documentation can be found here: *http://ipAdress:port/swagger-ui.html#/*
+If the application is running on your local machine, you would be able to access this documentation through: 
+*http://localhost:8080/swagger-ui.html#*
 
+Every operation provided by this application, is accessible through this interface. The implementation takes advantage 
+of the *<b>Spring Web framework</b>* provided by <b>Spring</b>. This means that every REST call is available in certain 
+API endpoint resources.
+
+There are currently three main API endpoints and therefore functionalities available for this system. The *Positioning 
+Controller Resource* which generally provides functionality concerning position calculation. The *Building Controller 
+Resources* which generally provides functionalities concerning building associations and processing. Finally the *Project 
+Controller Resource* which provides functionalities concerning project management and associations. These Ressources will 
+now be further analyzed.
 ### Overview
 
 (Volkan)
@@ -20,27 +33,92 @@ REST Controller Projects methods and calls
 (Volkan)
 REST Controller Positioning methods and calls
 
-## Backend architecture
+##Indoor Positioning Architecture Overview
+
+The project itself consists of four different systems that communicate with each other. The Back End consists of a H2 
+database and an Application server.  The Front End consists of two Clients. A Web Client and an Android App. 
+The following figure provides a graphical representation of this architecture.
+
+![Indoor Positioning Architecture Overview](./images/ArchitectureOverview.PNG)
+
+As you can see in the graphic above, the Application server and the database are communicating with each other over JDBC.
+Note that in no place in the actual implementation, JDBC is actually used. The application server uses JPA which in turn
+uses JDBC to communicate with the database. The right hand side shows the two mentioned Clients. The Web Client can be 
+accessed from a standard web browser, while App can be installed on an Android operated phone. Both clients communicate 
+with the Back End over the already show REST API.
+
+## Backend Architecture
+
+The Backend architecture section provides deeper insights into the general service oriented architecture of the 
+application's BackEnd.
+
+All functionalities that the application provides, are accessible through the REST API. The functionalities themselves 
+are structured into three different Micro services. This generally has the advantage, that each service can run 
+independently from each other and that a higher availability of the application itself is present. Keep in mind that 
+this happens at the cost of performance as communication between the services requires the data to be converted into 
+needed data structures, in order to keep the services independent from each other.
+
+The structure of this service oriented architecture and its functionalities will now be further analyzed.
 
 ### Service architecture overview
 
-(Volkan)
-Overview of available services as class diagram
+As already mentioned, there are three micro services currently available. These are structured similar to the 
+available REST resources and are operating independently from each other.
+
+![Indoor Positioning Architecture Overview](./images/Services.PNG)
+
+The graphic above shows a simplified UML-Diagram which describes how the service architecture is structured. 
+The top of the diagram shows the interface "RestTransmissionService" which works as a gateway between the REST Resource
+endpoints and the provided functionality of the Back End. All Controllers are accessing the mentioned interface directly
+while the implementation of that interface accesses the Micro Services shown at the bottom of the diagram. There is no 
+direct connection between the REST endpoints and the provided services. This is done to keep every layer independent 
+from each other and to provide a more clean and accessible structure. It is also possible to extend the given structure 
+in order to let every component run on different machines and therefore have a more distributed system. 
+The next chapters will now go into more detail about each shown Service.
 
 ### Persistency Service
 
-(Volkan)
-Overview of persistency service with component as class diagram
+The persistency service controls every access to and from the database. Like any other service, it needs to be 
+initialized on application startup and disposed on application shutdown. To achieve these
+requirements, this service has the following structure.
+
+
+
+The left hand side of the UML diagram above, shows the component class of this service. It provides all functionalities 
+required to initialize and dispose of the service implementation itself. *Spring* provides its own function to 
+initialize and dispose of components during runtime. So this structure is not necessary in production environment.
+
+However in cases Spring is not available, for example for Unit testing, the service has to be initialized and disposed of
+with this component manually. The component class holds a *Singleton* reference to the service implementation and 
+controls its access. This way it is, all data access and changes are persistent throughout the system. Also the service
+itself can be initialized and disposed of in a controlled way.
+
+The top right corner of the diagram contains the service's interface itself. It provides access to the functionality of
+micro service. below it lies the implementation of the service as well as all required functionalities which are not 
+viewable by the public. The service accesses these functionalities but does not allow further modifications or 
+examination to it.
 
 ### Positioning Service
 
-(Volkan)
-Overview of positioning service with component as class diagram
+The positioning service controls access to all positioning algorithms of this project. All positioning calculations and 
+functionalities can only be accessed through this system. No data is being persisted in this micro service. In case you 
+wanted to store calculated data in the database, you first need to access the *Positioning service* and then call 
+the *Persistency service* to store returned data. The following graph shows a simplified UML diagram of this service.
 
-### Calculator Service
+As you can see, the general structure of this service is exactly the same as in the service above. 
+Also the Calculator service shares this structure. The only difference lies within the service and its implementation 
+itself. All internal functionalities as well as the used positioning algorithms themselves are stored withing the internal 
+package of this service. This way the more detailed implementations are capsuled away from other developers and access
+is controlled through the interface itself.
 
-(Volkan)
-Overview of calculator service with component as class diagram
+### Pre Processing Service
+
+The Pre Processing service provides all kind of pre processing functionality. That includes Processing of certain Radiomap
+or evaluation files. This is required in order for the calculation service to function properly. Just like the other two
+services, this one is structured in the same way.
+
+The only difference once again lies within the implementation and offered interface itself. Just like in the other services,
+all internal functionalities are inside the associated internal package.
 
 ### Example Workflow
 
