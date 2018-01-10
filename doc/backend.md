@@ -54,10 +54,10 @@ The following figure provides a graphical representation of this architecture.
 ![Indoor Positioning Architecture Overview](./images/ArchitectureOverview.PNG)
 
 As you can see in the graphic above, the Application server and the database are communicating with each other over JDBC.
-Note that in no place in the actual implementation, JDBC is actually used. The application server uses JPA which in turn
+Note that in no place in the actual implementation, JDBC is actually coded. The application server uses JPA which in turn
 uses JDBC to communicate with the database. The right hand side shows the two mentioned Clients. The Web Client can be 
 accessed from a standard web browser, while App can be installed on an Android operated phone. Both clients communicate 
-with the Back End over the already show REST API.
+with the Back End over the already shown REST API.
 
 ## Backend Architecture
 
@@ -68,7 +68,7 @@ All functionalities that the application provides, are accessible through the RE
 are structured into three different Micro services. This generally has the advantage, that each service can run 
 independently from each other and that a higher availability of the application itself is present. Keep in mind that 
 this happens at the cost of performance as communication between the services requires the data to be converted into 
-needed data structures, in order to keep the services independent from each other.
+needed data structures.
 
 The structure of this service oriented architecture and its functionalities will now be further analyzed.
 
@@ -102,11 +102,11 @@ initialize and dispose of components during runtime. So this structure is not ne
 
 However in cases Spring is not available, for example for Unit testing, the service has to be initialized and disposed of
 with this component manually. The component class holds a *Singleton* reference to the service implementation and 
-controls its access. This way it is, all data access and changes are persistent throughout the system. Also the service
+controls its access. This way all data access and changes are persistent throughout the system. Also the service
 itself can be initialized and disposed of in a controlled way.
 
 The top right corner of the diagram contains the service's interface itself. It provides access to the functionality of
-micro service. below it lies the implementation of the service as well as all required functionalities which are not 
+the micro service. Below it lies the implementation of the service as well as all required functionalities which are not 
 viewable by the public. The service accesses these functionalities but does not allow further modifications or 
 examination to it.
 
