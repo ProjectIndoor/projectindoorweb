@@ -1,3 +1,13 @@
+# Backend Overview
+
+This section provides a general overview of the Backend. You find a description of the following things here:
+
+- Description of the REST API provided by the application
+- A small Architecture Overview of the project
+- The Backend Architecture
+- The architecture and functionality of the Persistence Layer
+- Available automated tests
+
 ## Description of the REST API
 This section provides an overview of the currently available REST API that this project offers. As soon as the 
 application is running, a dynamically generated documentation can be found here: *http://ipAdress:port/swagger-ui.html#/*
@@ -84,7 +94,7 @@ The persistency service controls every access to and from the database. Like any
 initialized on application startup and disposed on application shutdown. To achieve these
 requirements, this service has the following structure.
 
-![Persistency Service](./images/)
+![Persistency Service](./images/persistency.PNG)
 
 The left hand side of the UML diagram above, shows the component class of this service. It provides all functionalities 
 required to initialize and dispose of the service implementation itself. *Spring* provides its own function to 
@@ -107,7 +117,7 @@ functionalities can only be accessed through this system. No data is being persi
 wanted to store calculated data in the database, you first need to access the *Positioning service* and then call 
 the *Persistency service* to store returned data. The following graph shows a simplified UML diagram of this service.
 
-![Positioning Service](./images/)
+![Positioning Service](./images/Position.PNG)
 
 As you can see, the general structure of this service is exactly the same as in the service above. 
 Also the Calculator service shares this structure. The only difference lies within the service and its implementation 
@@ -121,7 +131,7 @@ The Pre Processing service provides all kind of pre processing functionality. Th
 or evaluation files. This is required in order for the calculation service to function properly. Just like the other two
 services, this one is structured in the same way.
 
-![PreProcessing Service](./images/)
+![PreProcessing Service](./images/PreProcessing.PNG)
 
 The only difference once again lies within the implementation and offered interface itself. Just like in the other services,
 all internal functionalities are inside the associated internal package.
