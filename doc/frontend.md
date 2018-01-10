@@ -139,3 +139,6 @@ This section is same as the list of projects which is available in the *Manage D
 
 # Validation
 
+In this project, the frontend validation is handled through a module called *ngMessages* provided by AngularJS. It provides an elegent way to validate mandatory fields, emails, min/max for a field and customised validation using regular expressions. In this project, we are using it to check for required fields, range of Latitudes and Longitudes. 
+
+![Validation](images/validation.png)
