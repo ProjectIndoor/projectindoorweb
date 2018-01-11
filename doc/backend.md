@@ -31,8 +31,8 @@ which are independent from each other. The following graph shows a general overv
 
 ![REST API overview](./images/RESTOverview.PNG)
 
-The graph above is a screenshot directly taken from the dynamically generated documentation. The following chapters will
-now showcase every endpoint in more detail.
+The graph above is a screenshot directly taken from the dynamically generated documentation. You can see each REST resource
+that the application provides. The following chapters will now showcase every endpoint in more detail.
 
 ### Buildings
 
@@ -47,7 +47,7 @@ Controller offers three types of requests for this service. <b>*GET*</b> request
 requested data, given that the request was valid and that the wanted data is available. <b>*POST*</b> requests often require a 
 wrapped request object which contains all the needed parameters in the request body. These requests often also return a
 wrapped result object which contain a status message and, depending on the request type, a created identifier of the POST
-process. Finally the <b>*Delete*</b> request just requires an identifier in the request header and also return a wrapped result
+process. Finally the <b>*Delete*</b> request just requires an identifier in the request header and also returns a wrapped result
 object.
 
 ### Projects
@@ -74,7 +74,7 @@ certain PreProcessing functionalities and calculate positions based on the given
 is only one available algorithm to calculate positions of a user. This can be extended in the future. As this REST resource
 is build in a way to provide this functionality, only certain parameters need to change to allow other algorithm implementations
 to take effect. The Backend then only needs to point at the correct service implementation. How the Backend is structured 
-to allow this sort of behaviour, is described in the next chapter.
+to allow this sort of behaviour, is described in the next two chapters.
 
 
 ## Indoor Positioning Architecture Overview
@@ -88,8 +88,8 @@ The following figure provides a graphical representation of this architecture.
 As you can see in the graphic above, the Application server and the database are communicating with each other over JDBC.
 Note that in no place in the actual implementation, JDBC is actually coded. The application server uses JPA which in turn
 uses JDBC to communicate with the database. The right hand side shows the two mentioned Clients. The Web Client can be 
-accessed from a standard web browser, while App can be installed on an Android operated phone. Both clients communicate 
-with the Back End over the already shown REST API.
+accessed from a standard web browser, while the provided App can be installed on an Android operated phone. Both clients 
+communicate with the Back End over the already shown REST API.
 
 ## Backend Architecture
 
@@ -165,8 +165,11 @@ services, this one is structured in the same way.
 
 ![PreProcessing Service](./images/PreProcessing.PNG)
 
-The only difference once again lies within the implementation and offered interface itself. Just like in the other services,
-all internal functionalities are inside the associated internal package.
+The only difference once again lies within the implementation and within the offered interface itself. Just like in the 
+other services, all internal functionalities are inside the associated internal package.
+
+How does one now use these available functionalities of this application? The following chapter tries to answer this question
+by showing a workflow example which showcases when and how to call these services and how they interact with each other.
 
 ### Example Workflow
 
