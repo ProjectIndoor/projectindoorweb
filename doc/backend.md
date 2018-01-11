@@ -26,23 +26,55 @@ now be further analyzed.
 
 ### Overview
 
-(Volkan)
-General overview of available REST resources 
+As already mentioned, there are three main API endpoints available. Each of them provides a certain batch of functionalities
+which are independent from each other. The following graph shows a general overview of the REST API.
+
+![REST API overview](./images/RESTOverview.PNG)
+
+The graph above is a screenshot directly taken from the dynamically generated documentation. The following chapters will
+now showcase every endpoint in more detail.
 
 ### Buildings
 
-(Volkan)
-REST Controller Building methods and calls
+First off, the building Controller handles all operations concerning building associations and processing. It provides 
+a number of endpoints which allow the addition of buildings, the deletion of old buildings as well as many other functions.
+The following graphic shows all available endpoints of the building Controller.
+
+![BuildingController](./images/BuildingResource.PNG)
+
+Just like before, this graphic is also a screenshot directly taken from the dynamically generated documentation. The building
+Controller offers three types of requests for this service. <b>*GET*</b> requests return a wrapped Result object which contain all
+requested data, given that the request was valid and that the wanted data is available. <b>*POST*</b> requests often require a 
+wrapped request object which contains all the needed parameters in the request body. These requests often also return a
+wrapped result object which contain a status message and, depending on the request type, a created identifier of the POST
+process. Finally the <b>*Delete*</b> request just requires an identifier in the request header and also return a wrapped result
+object.
 
 ### Projects
 
-(Volkan)
-REST Controller Projects methods and calls
+Next up, the Project Controller. This one handles all operations concerning projects of this application. The following 
+graphic will now show all available endpoints for the Project Controller.
+
+![ProjectController](images/ProjectResource.PNG)
+
+Like the Building Controller this graphic was also taken directly from the dynamic documentation. Generally, this 
+Controller offers CRUD operations for projects. You can *Create*, *Read*, *Update* and *Delete* projects that are associated
+with any positioning functionalities of this application. Any endpoint this Resource offers, features the mentioned 
+request types that the Building Controller also offers.
 
 ### Positioning
 
-(Volkan)
-REST Controller Positioning methods and calls
+Finally the Positioning Controller features the heart of this project. Every actual position calculation and algorithm 
+application can be executed through this REST resource. The following graphic will now show the last part of the REST API.
+
+![PositionController](images/PositionResource.PNG)
+
+Like with the other two Controllers, this graphic was also taken from the generated documentation. Here you can start 
+certain PreProcessing functionalities and calculate positions based on the given pre processed data. At the moment there 
+is only one available algorithm to calculate positions of a user. This can be extended in the future. As this REST resource
+is build in a way to provide this functionality, only certain parameters need to change to allow other algorithm implementations
+to take effect. The Backend then only needs to point at the correct service implementation. How the Backend is structured 
+to allow this sort of behaviour, is described in the next chapter.
 
 
 ## Indoor Positioning Architecture Overview
