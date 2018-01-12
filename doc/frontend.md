@@ -78,16 +78,16 @@ In this section, different components and pages of the front end will be discuss
 
 ## Toolbar
 
-![Toolbar](images/toolbar.png)
+![Toolbar](images/fe_toolbar.png)
 
 The toolbar is the main navigation element of the site. It is available at all pages which makes the navigation easy. Since the project makes use of the single page application, the toolbar is not required to be added in each html page and implemented only at one place.
 
 The toolbar has two options represented with following icons.
 
 
- The first icon is ![Toolbar](images/ic_menu_black_24dp_1x.png). Once this menu button is clicked, the following side bar will appear.
+ The first icon is ![Toolbar](images/fe_ic_menu_black_24dp_1x.png). Once this menu button is clicked, the following side bar will appear.
 
- ![Navigation](images/navigation.png)
+ ![Navigation](images/fe_navigation.png)
 
  It has the following options
 
@@ -102,34 +102,34 @@ The toolbar has two options represented with following icons.
 
 This section is dedicated for the import options. The data needs to be fed to the system to obtain the results. Once you click on the Import Data option from the navigation side bar, a secondary toolbar will appear below the main toolbar providing different import options. The second toolbar is shown below.
 
-![Import Toolbar](images/import.png)
+![Import Toolbar](images/fe_import.png)
 
 ### Buildings
 
 In this page, you can add building related data such as name, number of floors and dimensions of the floor map image.
 
-![Building Data](images/addBuilding1.png)
+![Building Data](images/fe_addBuilding1.png)
 
 It also has an option to add the coordinates either with *center and rotation* or add with *Latitudes and Longitudes*. Below images show these options.
 
-![Building Data with Latitudes and Longitudes](images/addBuilding2.png)
+![Building Data with Latitudes and Longitudes](images/fe_addBuilding2.png)
 
 To add the coordinates with *Center and Rotation* the radio button has to be turned on.
 
-![Building Data with Center and Rotation](images/addBuilding3.png)
+![Building Data with Center and Rotation](images/fe_addBuilding3.png)
 
 Even though these parts are explained separately, they are present in the single page.
 
 Once the building is added successfully, a toast will appear like below.
 
-![Success Toast](images/successMessage.png)
+![Success Toast](images/fe_successMessage.png)
 
 
 ### Floor Maps
 
 This page is dedicated to upload the radio map file along with the building and floor selection which was added previously.
 
-![Floor Map](images/addFloorMap.png)
+![Floor Map](images/fe_addFloorMap.png)
 
 If the file is uploaded successfully, a toast will be displayed indicating the success or a error toast will guide the user.
 
@@ -137,41 +137,41 @@ If the file is uploaded successfully, a toast will be displayed indicating the s
 
 This page will allow the user to upload Radiomap file. The dropdown will provide the list of the building names which were added before. The user can also add transformed log file by switching on the *Add a transformed points file*. This file will be automatically converted to get the positions.
 
-![Radiomap Data](images/addRadioMap.png)
+![Radiomap Data](images/fe_addRadioMap.png)
 
 ### Evaluation Data
 
 The upload page for Evaluation file works similar to Radiomap upload. It also has a list of buildings for which the user wants to upload the evaluation file. Once the file is uploaded successfully, a toast will be displayed.
 
-![Evaluation Data](images/addEvaluation.png)
+![Evaluation Data](images/fe_addEvaluation.png)
 
 ## Map View
 
-Once all the data is uploaded successfully in the Import Data section, the results can be fetched in Map View. At the right hand side, ![Settings icon](images/ic_settings_black_24dp_1x.png) button will toggle a side panel. The panel has different parameters to choose from.
+Once all the data is uploaded successfully in the Import Data section, the results can be fetched in Map View. At the right hand side, ![Settings icon](images/fe_ic_settings_black_24dp_1x.png) button will toggle a side panel. The panel has different parameters to choose from.
 
 The first block provides the list of buildings and the floors available for that building. Once the user clicks on *CHOOSE* button, next block will appear. The floor map image will change according to the building and floor selected.
 
-![Choose Map](images/chooseMap.png)
+![Choose Map](images/fe_chooseMap.png)
 
 Next block allows the user to choose from a prerecorded track for the evaluation.
 
-![Choose Evaluation file](images/chooseEval.png)
+![Choose Evaluation file](images/fe_chooseEval.png)
 
 After the evaluation file has been chosen, the user has to choose from different algorithms.
 
-![Choose Algorithm](images/chooseAlgorithm.png)
+![Choose Algorithm](images/fe_chooseAlgorithm.png)
 
 The panel provides many more parameters to play with. These can be accessed under *SHOW MORE PARAMETERS*. Also these settings can be saved as a project so that the user can reuse the same set of parameters.
 
-![Save Project](images/saveProject.png)
+![Save Project](images/fe_saveProject.png)
 
 After all the parameters are set, the user needs to click on *CALCULATE*. This will populate the results on the map showing the reference points, calculated positions and error lines.
 
-![Map](images/map.png)
+![Map](images/fe_map.png)
 
 At the end of the panel, there is also indication of error in calculation of positions with this set of parameters and algorithm.
 
-![Error Display](images/errorDisplay.png)
+![Error Display](images/fe_errorDisplay.png)
 
 ## Manage Data
 
@@ -179,29 +179,29 @@ Since the project needs comparatively high amount of parameters to be fed to the
 
 Once the Manage Data menu option is clicked, a secondary toolbar will appear below the main tool bar.
 
-![Manage Data Toolbar](images/manageData.png)
+![Manage Data Toolbar](images/fe_manageData.png)
 
 ### Buildings
 
 This page lists all the projects saved by the user.
 
-![Manage Buildings](images/manageBuildings.png)
+![Manage Buildings](images/fe_manageBuildings.png)
 
 The user can click on any project to view the details. Also, the project can be deleted. But if the project is associated with any radio map, evaluation files or any building data, the user cannot delete the project.
 
-![Detailed View](images/detailedView.png)
+![Detailed View](images/fe_detailedView.png)
 
 ### Evaluation Files
 
 This page lists all the evaluation and radio map files uploaded. The user can also delete any of these files similar to deleting a project.
 
-![Manage Evaluation File](images/manageEval.png)
+![Manage Evaluation File](images/fe_manageEval.png)
 
 ### Projects
 
 The list of all the saved projects can be accessed from here.
 
-![Manage Projects](images/manageProjects.png)
+![Manage Projects](images/fe_manageProjects.png)
 
 ## View Projects
 
@@ -211,4 +211,4 @@ This section is same as the list of projects which is available in the *Manage D
 
 In this project, the frontend validation is handled through a module called *ngMessages* provided by AngularJS. It provides an elegent way to validate mandatory fields, emails, min/max for a field and customised validation using regular expressions. In this project, we are using it to check for required fields, range of Latitudes and Longitudes. 
 
-![Validation](images/validation.png)
+![Validation](images/fe_validation.png)
