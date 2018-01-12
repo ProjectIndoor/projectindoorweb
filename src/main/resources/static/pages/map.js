@@ -2,6 +2,7 @@ var mapModule = angular.module('IndoorApp.map', [
     'ngRoute',
     'openlayers-directive',
     'IndoorApp.mapService',
+    'IndoorApp.calculationService',
     'IndoorApp.resultView',
     'IndoorApp.mapChooser',
     'IndoorApp.trackChooser',
@@ -19,9 +20,9 @@ mapModule.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 // controller which handles the map
-function MapController($scope, mapService) {
-    // example map service setup
-    mapService.setMap("assets/maps/hft_2_floor_3.png", 3688, 2304);
+function MapController($scope, mapService, calculationService) {
+    // is map choosen already?
+    $scope.floorChoosen = calculationService.isBuildingSet;
 
     // setup usage of map service
     angular.extend($scope, {

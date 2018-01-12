@@ -40,10 +40,19 @@
 
 </md-sidenav>
 <!-- Actual map -->
-<openlayers id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()" custom-layers="true">
+<openlayers ng-if="floorChoosen()" id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()"
+            custom-layers="true">
     <ol-layer ol-layer-properties="pathsLayer()"></ol-layer>
     <ol-layer ol-layer-properties="map()"></ol-layer>
     <ol-marker ng-repeat="calcPoint in calcPoints()" ol-marker-properties="calcPoint"></ol-marker>
     <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
     <ol-marker ng-repeat="noRefCalcPoint in noRefCalcPoints()" ol-marker-properties="noRefCalcPoint"></ol-marker>
 </openlayers>
+
+<md-content ng-if="!floorChoosen()" class="md-padding" layout="column" layout-align="center center"
+            flex-gt-xs="70">
+    <div layout="column" layout-align="center center">
+        <img src="assets/icons/no-map.png">
+        <h1 style="color: #616161">Choose a map first</h1>
+    </div>
+</md-content>
