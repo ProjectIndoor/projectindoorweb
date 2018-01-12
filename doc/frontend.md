@@ -6,6 +6,7 @@ This file contains documentation regarding the structure and usage of the fronte
 
   * [Libraries](#Libraries)
   * [File structure](#file-structure)
+  * [Page overview](#page-overview)
   * [Site overview](#site-overview)
   * [Validation](#validation)
 
@@ -71,6 +72,23 @@ edit-building.html/js for the building part of the edit page
 it contains services e.g. the calculationService.js which provides access to the calculation API of the backend
 to all pages which need it.
 
+# Page Overview
+
+As already stated the web application was designed as a single page application.
+This does not mean though that there is only one page to work with, its only a single page as which is modified dynamically
+using javascript. 
+This means we also have a certain page hierarchy which you can see here:
+
+![Page overview](images/fe_page_structure.png)
+
+The root (**/**) of the page is provided by the index.html, it does not contain any content (except Toolbar and Navigation) but redirects to the map page automatically.
+From there you can access the map, manage, edit and project pages through the main menu. These pages then can have several sub pages (usually displayed as a tab bar) like the import building page.
+
+Although it is delivered as a single html page to the browser, the sites are defined in single *.html* files (structure see above) with their own *.js* file if logic is needed.
+A dedicated page like the map view may also be split up into multiple parts (.html files) although they are displayed at once (e.g. the map configuration side bar).
+This makes it easier to keep an overview during development.
+
+A description of the single pages is available at the [site overview](#site-overview).
 
 # Site Overview
 
