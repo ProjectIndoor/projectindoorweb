@@ -2,11 +2,11 @@
 
 This section provides a general overview of the Backend. You find a description of the following things here:
 
-- Description of the REST API provided by the application
-- A small Architecture Overview of the project
-- The Backend Architecture
-- The architecture and functionality of the Persistence Layer
-- Available automated tests
+* [Description of the REST API provided by the application](#description-of-the-rest-api)
+* [A small Architecture Overview of the project](#indoor-positioning-architecture-overview)
+* [The Backend Architecture](#backend-architecture)
+* [The architecture and functionality of the Persistence Layer](#persistence-layer)
+* [Available automated tests](#functionality-testing)
 
 ## Description of the REST API
 This section provides an overview of the currently available REST API that this project offers. As soon as the 
