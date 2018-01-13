@@ -145,7 +145,7 @@ Once the building is added successfully, a toast will appear like below.
 
 ### Floor Maps
 
-This page is dedicated to upload the radio map file along with the building and floor selection which was added previously.
+This page is dedicated to upload the floor image along with the building and floor selection which was added previously.
 
 ![Floor Map](images/fe_addFloorMap.png)
 
@@ -205,13 +205,13 @@ This page lists all the projects saved by the user.
 
 ![Manage Buildings](images/fe_manageBuildings.png)
 
-The user can click on any project to view the details. Also, the project can be deleted. But if the project is associated with any radio map, evaluation files or any building data, the user cannot delete the project.
+The user can click on any building to view the details. Also, the building can be deleted. But if the building is associated with any radio map, evaluation files or any other project, the user cannot delete the building.
 
 ![Detailed View](images/fe_detailedView.png)
 
 ### Evaluation Files
 
-This page lists all the evaluation and radio map files uploaded. The user can also delete any of these files similar to deleting a project.
+This page lists all the evaluation and radio map files uploaded. The user can also delete any of these files similar to deleting a building.
 
 ![Manage Evaluation File](images/fe_manageEval.png)
 
