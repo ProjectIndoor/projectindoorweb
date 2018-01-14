@@ -51,7 +51,23 @@ For deployment a [Dockerfile](Dockerfile) is provided it can be used to create a
 
 Please note that you need a working basic development setup like it is described above.
 
-Pre build docker image releases are also available directly on [docker hub](https://hub.docker.com/r/hftstuttgart/projectindoorweb).
+Pre build docker image releases are also available directly on [docker hub](https://hub.docker.com/r/hftstuttgart/projectindoorweb), you can find more information about the image there too.
+
+### Push a new image
+
+To publish a new image you first build it with the command above, this will create a new local version of the docker image.
+This can than be tagged and pushed to docker hub (see [here](https://docs.docker.com/docker-cloud/builds/push-images/) for a detailed explanation).
+
+```sh
+# Create a tag (latest as default)
+docker tag hftstuttgart/projectindoorweb hftstuttgart/projectindoorweb
+# Create a tag for a versioned build (e.g. 1.0)
+docker tag hftstuttgart/projectindoorweb hftstuttgart/projectindoorweb:1.0
+
+# Push the image to docker hub (see link above to setup account)
+docker push hftstuttgart/projectindoorweb
+```
+
 ### Docker-compose
 
 To make the usage of the docker images even easier this repository also comes with an example [docker-compose](docker-compose.yml) setup.
@@ -60,7 +76,7 @@ To start this setup it is enough to just run in the checked out repository:
 
 ```sh
 docker-compose up
-# or in the background with
+# or run it in the background with
 docker-compose up -d
 ```
 
