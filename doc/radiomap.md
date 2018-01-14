@@ -34,7 +34,7 @@ The main difference between the screen coordinate system and the mathematical co
 
 The Latitude/longitude coordinate system is a coordinate system that tries to model the earth. For this purpose it uses an ellipsoid and the center of this ellipsoid is the origin of the system. This coordinate-system is used for the GPS-System and for map-services like Google-Maps. 
 
-![WGS84](images/rmp_WGS84-system.PNG)
+![WGS84](images/rmp_WGS84-system.png)
 
 ## Record Radiomap
 
