@@ -1,8 +1,8 @@
 spring:
     http:
         multipart:
-          max-file-size: 400MB
-          max-request-size: 400MB
+            max-file-size: 400MB
+            max-request-size: 400MB
     datasource:
         url: jdbc:h2:mem:AZ;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
@@ -17,6 +17,9 @@ spring:
         url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
         username: ${DATABASE_USER}
         password: ${DATABASE_PASSWORD}
+    jpa:
+        hibernate:
+            ddl-auto: update
 server:
     context-path: /${CONTEXT_PATH}
 
