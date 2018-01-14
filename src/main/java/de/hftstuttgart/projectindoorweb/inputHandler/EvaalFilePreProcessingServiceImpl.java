@@ -111,7 +111,7 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
         }
 
         return new EvaalFile(evaluationFiles, fileName, fileName, 0,
-                wifiBlocks, building, null, new RadioMap(radioMapElements));
+                wifiBlocks, building,  new RadioMap(radioMapElements));
 
     }
 
@@ -140,31 +140,10 @@ public class EvaalFilePreProcessingServiceImpl implements PreProcessingService {
 
     }
 
-
-    private int retrieveNumberOfMacs(List<RssiSignal> rssiSignals) {
-
-        List<String> macs = new ArrayList<>();
-        String mac;
-        for (RssiSignal signal :
-                rssiSignals) {
-            mac = signal.getWifiAccessPoint().getMacAddress();
-            if (!macs.contains(mac)) {
-                macs.add(mac);
-            }
-        }
-
-        return macs.size();
-
-
-    }
-
     private List<RadioMapElement> assembleRadiomapElements(List<PosiReference> posiReferences, List<RssiSignal> rssiSignals) {
 
         List<RadioMapElement> result = new ArrayList<>(posiReferences.size());
 
-
-        double intervalStart;
-        double intervalEnd;
         List<RssiSignal> relevantReadings;
         List<RssiSignal> averagedReadings;
         for (PosiReference posiReference : posiReferences) {

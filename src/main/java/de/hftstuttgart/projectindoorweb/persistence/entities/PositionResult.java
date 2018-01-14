@@ -1,18 +1,7 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class PositionResult {
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     private double x;
     private double y;
@@ -27,11 +16,6 @@ public class PositionResult {
         this.y = y;
         this.z = z;
         this.wgs84 = wgs84;
-    }
-
-
-    public Long getId() {
-        return id;
     }
 
     public double getX() {

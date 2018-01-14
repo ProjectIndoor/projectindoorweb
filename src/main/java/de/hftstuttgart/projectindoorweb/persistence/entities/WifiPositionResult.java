@@ -1,16 +1,10 @@
 package de.hftstuttgart.projectindoorweb.persistence.entities;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-
-@Entity
 public class WifiPositionResult extends PositionResult implements Comparable<WifiPositionResult> {
 
     private double weight;
     private double rssiSignalsAppTimestamp;
 
-    @ManyToOne(targetEntity = PosiReference.class, cascade = CascadeType.ALL)
     private PosiReference posiReference;
 
     protected WifiPositionResult() {
