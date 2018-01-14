@@ -195,7 +195,7 @@ At the end of the panel, there is also indication of error in calculation of pos
 
 Since the project needs comparatively high amount of parameters to be fed to the backend, it can be time consuming every time to repeat the same process. Therefore, we have provided a feature where the user can access the data which he/she has uploaded already. This is achieved in the *Manage Data* section.
 
-Once the Manage Data menu option is clicked, a secondary toolbar will appear below the main tool bar.
+Once the Manage Data menu option is clicked, a secondary toolbar will appear below the main toolbar.
 
 ![Manage Data Toolbar](images/fe_manageData.png)
 
@@ -227,6 +227,6 @@ This section is same as the list of projects which is available in the *Manage D
 
 # Validation
 
-In this project, the frontend validation is handled through a module called *ngMessages* provided by AngularJS. It provides an elegent way to validate mandatory fields, emails, min/max for a field and customised validation using regular expressions. In this project, we are using it to check for required fields, range of Latitudes and Longitudes. 
+In this project, the frontend validation is handled through a module called *ngMessages* provided by AngularJS. It provides an elegant way to validate mandatory fields, emails, min/max for a field and customized validation using regular expressions. In this project, we are using it to check for required fields, range of Latitudes and Longitudes.
 
 ![Validation](images/fe_validation.png)
