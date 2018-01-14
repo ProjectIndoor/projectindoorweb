@@ -4,11 +4,12 @@ In this document, different components and pages of the front end will be discus
 
 # Table of Contents
 
-  * [Navigation](#Navigation)
-  * [Buildings](#Buildings)
-  * [Radiomap Data and Evaluation Data](#RadiomapDataandEvaluationData)
-  * [Map View](#MapView)
-  * [Validation](#Validation)
+  * [Navigation](#navigation)
+  * [Buildings](#buildings)
+  * [Radiomap Data and Evaluation
+  Data](#radiomap-data-and-evaluation-data)
+  * [Map View](#map-view)
+  * [Validation](#validation)
 
 # Navigation
 
