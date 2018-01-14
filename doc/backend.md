@@ -29,7 +29,7 @@ now be further analyzed.
 As already mentioned, there are three main API endpoints available. Each of them provides a certain batch of functionalities
 which are independent from each other. The following graph shows a general overview of the REST API.
 
-![REST API overview](./images/RESTOverview.PNG)
+![REST API overview](./images/be_RESTOverview.png)
 
 The graph above is a screenshot directly taken from the dynamically generated documentation. You can see each REST resource
 that the application provides. The following chapters will now showcase every endpoint in more detail.
@@ -40,7 +40,7 @@ First off, the building Controller handles all operations concerning building as
 a number of endpoints which allow the addition of buildings, the deletion of old buildings as well as many other functions.
 The following graphic shows all available endpoints of the building Controller.
 
-![BuildingController](./images/BuildingResource.PNG)
+![BuildingController](./images/be_BuildingResource.png)
 
 Just like before, this graphic is also a screenshot directly taken from the dynamically generated documentation. The building
 Controller offers three types of requests for this service. <b>*GET*</b> requests return a wrapped Result object which contain all
@@ -55,7 +55,7 @@ object.
 Next up, the Project Controller. This one handles all operations concerning projects of this application. The following 
 graphic will now show all available endpoints for the Project Controller.
 
-![ProjectController](images/ProjectResource.PNG)
+![ProjectController](images/be_ProjectResource.png)
 
 Like the Building Controller this graphic was also taken directly from the dynamic documentation. Generally, this 
 Controller offers CRUD operations for projects. You can *Create*, *Read*, *Update* and *Delete* projects that are associated
@@ -67,7 +67,7 @@ request types that the Building Controller also offers.
 Finally the Positioning Controller features the heart of this project. Every actual position calculation and algorithm 
 application can be executed through this REST resource. The following graphic will now show the last part of the REST API.
 
-![PositionController](images/PositionResource.PNG)
+![PositionController](images/be_PositionResource.png)
 
 Like with the other two Controllers, this graphic was also taken from the generated documentation. Here you can start 
 certain PreProcessing functionalities and calculate positions based on the given pre processed data. At the moment there 
@@ -83,7 +83,7 @@ The project itself consists of four different systems that communicate with each
 database and an Application server.  The Front End consists of two Clients. A Web Client and an Android App. 
 The following figure provides a graphical representation of this architecture.
 
-![Indoor Positioning Architecture Overview](./images/ArchitectureOverview.PNG)
+![Indoor Positioning Architecture Overview](./images/be_ArchitectureOverview.png)
 
 As you can see in the graphic above, the Application server and the database are communicating with each other over JDBC.
 Note that in no place in the actual implementation, JDBC is actually coded. The application server uses JPA which in turn
@@ -109,7 +109,7 @@ The structure of this service oriented architecture and its functionalities will
 As already mentioned, there are three micro services currently available. These are structured similar to the 
 available REST resources and are operating independently from each other.
 
-![Indoor Positioning Architecture Overview](./images/Services.PNG)
+![Indoor Positioning Architecture Overview](./images/be_Services.png)
 
 The graphic above shows a simplified UML-Diagram which describes how the service architecture is structured. 
 The top of the diagram shows the interface "RestTransmissionService" which works as a gateway between the REST Resource
@@ -126,7 +126,7 @@ The persistency service controls every access to and from the database. Like any
 initialized on application startup and disposed on application shutdown. To achieve these
 requirements, this service has the following structure.
 
-![Persistency Service](./images/persistency.PNG)
+![Persistency Service](./images/be_persistency.png)
 
 The left hand side of the UML diagram above, shows the component class of this service. It provides all functionalities 
 required to initialize and dispose of the service implementation itself. *Spring* provides its own function to 
@@ -149,7 +149,7 @@ functionalities can only be accessed through this system. No data is being persi
 wanted to store calculated data in the database, you first need to access the *Positioning service* and then call 
 the *Persistency service* to store returned data. The following graph shows a simplified UML diagram of this service.
 
-![Positioning Service](./images/Position.PNG)
+![Positioning Service](./images/be_Position.png)
 
 As you can see, the general structure of this service is exactly the same as in the service above. 
 Also the Calculator service shares this structure. The only difference lies within the service and its implementation 
@@ -163,7 +163,7 @@ The Pre Processing service provides all kind of pre processing functionality. Th
 or evaluation files. This is required in order for the calculation service to function properly. Just like the other two
 services, this one is structured in the same way.
 
-![PreProcessing Service](./images/PreProcessing.PNG)
+![PreProcessing Service](./images/be_PreProcessing.png)
 
 The only difference once again lies within the implementation and within the offered interface itself. Just like in the 
 other services, all internal functionalities are inside the associated internal package.
@@ -194,7 +194,7 @@ which functions it serves in the backend, and why its relations to other entitie
 An overview of the database model can be taken from the image below. Entity types are marked in orange; relation types are 
 marked in blue.
 
-![Overview ot the database model](./images/ErDiagram.jpg)
+![Overview ot the database model](./images/be_ErDiagram.jpg)
 
 ### Database Entities
 
