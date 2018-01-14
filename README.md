@@ -93,7 +93,8 @@ But note that the defined example volume indoor_map will be removed too with thi
 
 Additional information about the application is available in the doc folder in this repository.
 
-* [Frontend](doc/frontend.md) - Usage and architecture of the frontend
+* [Frontend](doc/frontend.md) - Structure and architecture of the frontend
+* [Frontend User Guide](doc/frontend_usage.md) - User guide for the frontend
 * [Backend](doc/backend.md) - Usage and architecture of the backend
 
 
