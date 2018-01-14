@@ -68,7 +68,7 @@ function UploadService($http, toastService) {
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while uploading radio map data";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             }
@@ -107,7 +107,7 @@ function UploadService($http, toastService) {
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while uploading evaluation data";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             }
@@ -140,7 +140,7 @@ function UploadService($http, toastService) {
                     toastService.showToast(logMessage, "success-toast");
                 }, function errorCallback(response) {
                     // failure
-                    logMessage = "Error while uploading floor map";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "error-toast");
                 });
             }

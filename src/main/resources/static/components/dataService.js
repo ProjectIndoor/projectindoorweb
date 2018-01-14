@@ -102,7 +102,7 @@ function DataService($http, toastService) {
             };
             var promise = $http.delete(deleteBuildingUrl, config)
                 .then(function (response) {
-                    logMessage = "Building deleted successfully!";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;
@@ -121,7 +121,7 @@ function DataService($http, toastService) {
             };
             var promise = $http.delete(deleteEvaalUrl, config)
                 .then(function (response) {
-                    logMessage = "Evaal entry deleted successfully!";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;
@@ -140,7 +140,7 @@ function DataService($http, toastService) {
             };
             var promise = $http.delete(deleteProjectUrl, config)
                 .then(function (response) {
-                    logMessage = "Project deleted successfully!";
+                    logMessage = response.data.message;
                     toastService.showToast(logMessage, "success-toast");
                     // return response data with promise
                     return response.data;

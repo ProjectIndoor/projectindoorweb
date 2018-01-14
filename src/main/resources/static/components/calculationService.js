@@ -146,11 +146,11 @@ function CalculationService($http, toastService) {
                 }
             };
             var promise = $http.post(createProjectUrl, data, config).then(function (response) {
-                logMessage = "Project saved successfully!";
+                logMessage = response.data.message;
                 toastService.showToast(logMessage, "success-toast");
                 return response.data;
             }, function errorCallback(response) {
-                logMessage = "Error while saving Project";
+                logMessage = response.data.message;
                 toastService.showToast(logMessage, "error-toast");
             });
             return promise;
