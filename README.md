@@ -96,7 +96,7 @@ Additional information about the application is available in the doc folder in t
 * [Frontend](doc/frontend.md) - Structure and architecture of the frontend
 * [Frontend User Guide](doc/frontend_usage.md) - User guide for the frontend
 * [Backend](doc/backend.md) - Usage and architecture of the backend
-* [Radiomap](doc/radiomap.md) - Information about needed files and formats
+* [Radiomap](doc/radiomap.md) - Information about the creation of logfiles and needed information for further processing
 
 ## Built With
 
