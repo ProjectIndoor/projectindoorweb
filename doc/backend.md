@@ -1,6 +1,6 @@
 # Developer Manual
 
-##Table of Content
+## Table of Content
 
 This section provides a general overview of the Backend. You find a description of the following things here:
 
