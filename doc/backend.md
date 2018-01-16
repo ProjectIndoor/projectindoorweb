@@ -308,4 +308,31 @@ dynamically add more or omit some parameters.
 
 ### Blackbox tests overview
 
-(Nico)
+The application contains several automated blackbox tests. These test the available REST API and do not need to access
+the available component structure provided by the system. The *Spring* Framework allows to automatically initialize and
+dispose the needed Service entities and database structures dynamically. Although these tests do not explicitly access 
+the backend components, the components are still implicitly accessed through the commands scheduled by the REST interface. 
+The following graphic shows the current blackbox testing structure.
+
+![Overview of the blackBox testing structure](./images/be_blackBoxTesting.png)
+
+As you can see in the diagram above, there are currently three blackbox test classes which each test their associated 
+Controller. 
+
+The <b>*ProjectControllerTest*</b> explicitly tests all available CRUD operations on projects mentioned in the REST API 
+overview at the beginning of this documentation. The <b>*BuildingControllerTest*</b>, on the other hand, explicitly tests 
+the CRUD operations mentioned in the topic above. Both of these tests primarily have the task to only test the operations 
+of their respective Controller.
+This decision was made to make sure that changes in these Controllers can be tested independently from the other tests 
+and Controllers of this application. 
+
+The <b>*EverythingControllerTest*</b> primarily tests all position calculation functionalities of this application.
+As these require certain data and pre processing runs beforehand, this test also implicitly tests the CRUD operations of
+ the other two Controllers. This however should not be seen as a replacement for the other two Controllers, as this test only uses these
+Controllers in order to ensure correct positioning data calculations. 
+
+Thanks to these blackbox tests, a high quality of this application can be assured. As soon as any changes are made that 
+contain incorrect behaviour, these tests will point these errors out immediately. Any changes made to this application may
+require adjustments to the testing structure and code beforehand.
+  
+
