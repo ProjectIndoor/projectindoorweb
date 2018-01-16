@@ -200,7 +200,7 @@ The process shown above can be divided into three main parts:
   * *Building*
   * *EvAALFile* to serve as evaluation file
   * *EvAALFile*s to serve as radio map files
-2. Determine the *Project* entity to be used during the position calculation. To do so, the following set of rules apply:
+2. Determine the *Project* entity to be used during the position calculation. To do so, the following set of rules applies:
   * If the project referenced by the user is present in the persistence layer and the user has not provided a list of 
     parameters, use the project's parameters.
   * If the user has not provided a project or the project does not exist in the persistence layer, but the user has 
