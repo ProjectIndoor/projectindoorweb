@@ -337,7 +337,7 @@ files to use (each represented by an *EvaalFile* entity), but also a set of para
 position calculation.
 
 #### Parameter
-Last but not least, the *Parameter* entities serve provide the possibility to persist specific characteristics concerning 
+Last but not least, the *Parameter* entities provide the possibility to persist specific characteristics concerning 
 the behavior of position calculation along with their parents (entities of type *Project* where each *Project* gets its own 
 set of *Parameters*). On code level, the parameter objects for one project are simply implemented as a list, which allows to 
 dynamically add more or omit some parameters.
