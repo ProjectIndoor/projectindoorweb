@@ -7,8 +7,6 @@ This file contains documentation regarding the structure and usage of the fronte
   * [Libraries](#Libraries)
   * [File structure](#file-structure)
   * [Page overview](#page-overview)
-  * [Site overview](#site-overview)
-  * [Validation](#validation)
 
 # Libraries
 
