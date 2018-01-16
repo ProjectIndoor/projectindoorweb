@@ -304,8 +304,6 @@ dynamically add more or omit some parameters.
 
 ## Functionality testing
 
-(Nico)
-
 ### Blackbox tests overview
 
 The application contains several automated blackbox tests. These test the available REST API and do not need to access
