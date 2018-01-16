@@ -1,4 +1,6 @@
-# Backend Overview
+# Developer Manual
+
+## Table of Content
 
 This section provides a general overview of the Backend. You find a description of the following things here:
 
@@ -173,10 +175,48 @@ by showing a workflow example which showcases when and how to call these service
 
 ### Example Workflow
 
-(Nico)
-An example workflow that demonstrates how services can be called
-using the REST API, how they interact in the backend, and how they
-yield results. 
+The example workflow we will have a look at in this section introduces you to the details of how to generate position 
+results through the web frontend. This process was chosen because it is part of the core functionality of the *Indoor 
+Localization* project and because it serves as a good example as to how the different layers of the backend work 
+together. 
+
+In order for the position calculation process to yield the expected result -- a list of calculated positions --, 
+the following preconditions have to be fulfilled:
+
+1. A building was added to the application with all information specified correctly, particularly the building reference points.
+2. A set of EvAAL files (arbitrarily many, but at least one) was processed to be used as radio maps.
+3. An EvAAL file was processed to be used as an evaluation file.
+
+If these preconditions are met and you trigger the position calculation by using the web frontend, the backend executes the 
+following process:
+
+![The details of what happens around the calculation of positions when triggered through the web frontend.](./images/be_Bpmn_GenerateBatchPositionResults.png)
+
+Please note that, in order to keep the diagram as straightforward and simple as possible, it neglects all details concerning 
+the various layers of the *Frontend* domain -- instead, the *Frontend* domain is simply seen as a single black box.
+
+The process shown above can be divided into three main parts:
+
+1. Make sure all entities referenced by the request sent in through the frontend exist by calling the *PersistencyService* 
+   with the IDs provided in the request. This concerns the following entities:   
+  * *Building*
+  * *EvAALFile* to serve as evaluation file
+  * *EvAALFile*s to serve as radio map files
+2. Determine the *Project* entity to be used during the position calculation. To do so, the following set of rules applies:
+  * If the project referenced by the user is present in the persistence layer and the user has not provided a list of 
+    parameters, use the project's parameters.
+  * If the user has not provided a project or the project does not exist in the persistence layer, but the user has 
+    provided a list of parameters, use the list of parameters.
+  * If the project provided by the user does not exist in the application's persistence layer and the user has not 
+    specified a list of parameters, fall back to a hard-coded default set of parameters.
+  * If both project and the list of parameters are given, use the list of parameters as it is more explicit than the project.
+3. Carry out the position calculation using all information gathered previously by calling the *PositionCalculationService*.
+
+As soon as step 3 is executed and returns, the *RestTransmissionService* converts the results to an external representation 
+(in order to keep the various services modular, there is always a set of internal entities and a set of external ones). It 
+then hands the result of this transformation back to the *PositioningController*, which sends it back to the frontend in JSON
+format as payload of an HTTP response.
+
 
 ## Persistence Layer
 
@@ -297,15 +337,40 @@ files to use (each represented by an *EvaalFile* entity), but also a set of para
 position calculation.
 
 #### Parameter
-Last but not least, the *Parameter* entities serve provide the possibility to persist specific characteristics concerning 
+Last but not least, the *Parameter* entities provide the possibility to persist specific characteristics concerning 
 the behavior of position calculation along with their parents (entities of type *Project* where each *Project* gets its own 
 set of *Parameters*). On code level, the parameter objects for one project are simply implemented as a list, which allows to 
 dynamically add more or omit some parameters.
 
 ## Functionality testing
 
-(Nico)
-
 ### Blackbox tests overview
 
-(Nico)
+The application contains several automated blackbox tests. These test the available REST API and do not need to access
+the available component structure provided by the system. The *Spring* Framework allows to automatically initialize and
+dispose the needed Service entities and database structures dynamically. Although these tests do not explicitly access 
+the backend components, the components are still implicitly accessed through the commands scheduled by the REST interface. 
+The following graphic shows the current blackbox testing structure.
+
+![Overview of the blackBox testing structure](./images/be_blackBoxTesting.png)
+
+As you can see in the diagram above, there are currently three blackbox test classes which each test their associated 
+Controller. 
+
+The <b>*ProjectControllerTest*</b> explicitly tests all available CRUD operations on projects mentioned in the REST API 
+overview at the beginning of this documentation. The <b>*BuildingControllerTest*</b>, on the other hand, explicitly tests 
+the CRUD operations mentioned in the topic above. Both of these tests primarily have the task to only test the operations 
+of their respective Controller.
+This decision was made to make sure that changes in these Controllers can be tested independently from the other tests 
+and Controllers of this application. 
+
+The <b>*EverythingControllerTest*</b> primarily tests all position calculation functionalities of this application.
+As these require certain data and pre processing runs beforehand, this test also implicitly tests the CRUD operations of
+ the other two Controllers. This however should not be seen as a replacement for the other two Controllers, as this test only uses these
+Controllers in order to ensure correct positioning data calculations. 
+
+Thanks to these blackbox tests, a high quality of this application can be assured. As soon as any changes are made that 
+contain incorrect behaviour, these tests will point these errors out immediately. Any changes made to this application may
+require adjustments to the testing structure and code beforehand.
+  
+
