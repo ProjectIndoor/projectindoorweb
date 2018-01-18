@@ -2,6 +2,55 @@ var mapServiceModule = angular.module('IndoorApp.mapService', []);
 
 // Map service
 function MapService() {
+    // styles
+    var calc_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0.5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 1.0,
+                src: 'assets/icons/calc-marker.png'
+            }
+        }
+    };
+
+    var ref_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0.5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 1.0,
+                src: 'assets/icons/ref-marker.png'
+            }
+        }
+    };
+
+    var no_ref_calc_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0.5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 1.0,
+                src: 'assets/icons/norefcalc-marker.png'
+            }
+        }
+    };
+
+    var selected_marker_style = {
+        image: {
+            icon: {
+                anchor: [0.5, 0.5],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'fraction',
+                opacity: 1.0,
+                src: 'assets/icons/selected-marker.png'
+            }
+        }
+    };
+
     var lines = [];
     // line test
     var errorLineFeatures = {
@@ -20,8 +69,6 @@ function MapService() {
             }
         ]
     };
-
-    //errorLineFeatures.features[0].geometry.coordinates.push(lines);
 
     var errorLineLayer = {
         index: 2,
@@ -45,17 +92,71 @@ function MapService() {
         opacity: 1
     };
 
-    // map object hide cache
-    var loadedNoRefPos = [];
-    var loadedCalcPos = [];
-    var loadedRefs = [];
-    var emptyPoints = [];
+    var calcPointInfo = [];
+    var calcPointFeatures = [];
+    var calcFeatures = {
+        type: 'FeatureCollection',
+        features: calcPointFeatures
+    };
+    var calcLayer = {
+        name: 'calclayer',
+        index: 5,
+        source: {
+            type: 'GeoJSON',
+            geojson: {
+                object: calcFeatures
+            }
+        },
+        style: calc_marker_style,
+        visible: true,
+        opacity: 1
+    };
+
+    var noRefCalcPointInfo = [];
+    var noRefCalcPointFeatures = [];
+    var noRefCalcFeatures = {
+        type: 'FeatureCollection',
+        features: noRefCalcPointFeatures
+    };
+    var noRefCalcLayer = {
+        name: 'norefcalclayer',
+        index: 3,
+        source: {
+            type: 'GeoJSON',
+            geojson: {
+                object: noRefCalcFeatures
+            }
+        },
+        style: no_ref_calc_marker_style,
+        visible: false,
+        opacity: 1
+    };
+
+    var refPointInfo = [];
+    var refPointFeatures = [];
+    var refFeatures = {
+        type: 'FeatureCollection',
+        features: refPointFeatures
+    };
+    var refLayer = {
+        name: 'reflayer',
+        index: 4,
+        source: {
+            type: 'GeoJSON',
+            geojson: {
+                object: refFeatures
+            }
+        },
+        style: ref_marker_style,
+        visible: true,
+        opacity: 1
+    };
+
+    // label cache
+    var labelChache = [];
 
     // map objects
     var pathsLayerObject = {};
-    var calculatedPoints = loadedCalcPos;
-    var noRefCalculatedPoints = emptyPoints;
-    var referencePoints = loadedRefs;
 
     // map service properties
     var staticMap = {
@@ -64,34 +165,15 @@ function MapService() {
     var mDefaults = {
         interactions: {
             mouseWheelZoom: true
-        }
+        },
+        events:{
+            layers: ['click'],
+            map: ['singleclick']
+        },
+        render: 'webgl'
     };
     var mCenter = {
         zoom: 2
-    };
-
-    // styles
-    var calc_marker_style = {
-        image: {
-            icon: {
-                anchor: [0.5, 0.5],
-                anchorXUnits: 'fraction',
-                anchorYUnits: 'fraction',
-                opacity: 1.0,
-                src: 'assets/icons/calc-marker.png'
-            }
-        }
-    };
-    var ref_marker_style = {
-        image: {
-            icon: {
-                anchor: [0.5, 0.5],
-                anchorXUnits: 'fraction',
-                anchorYUnits: 'fraction',
-                opacity: 1.0,
-                src: 'assets/icons/ref-marker.png'
-            }
-        }
     };
 
     // mirror function
@@ -99,92 +181,166 @@ function MapService() {
         return staticMap.source.imageSize[1] - originalY;
     }
 
+    //clear lable function
+    var clearLabel = function () {
+        labelChache.length = 0;
+    };
+
     // map service access functions
     return {
         // lines
         pathsLayer: function () {
             return pathsLayerObject;
         },
-        // calculated points
-        calcPoints: function () {
+        pointLabels: function () {
             // return copy of list
-            return [].concat(calculatedPoints);
+            return [].concat(labelChache);
         },
-        addCalcPoint: function (x, y, error) {
+        // calculated points
+        calcPointLayer: function () {
+            // return copy of list
+            return calcLayer;
+        },
+        addCalcLabel: function (x, y, error) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = mirrorY(y);
             // create a new calculated point
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style,
+                style: selected_marker_style,
                 label: {
                     message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>error: " + error + " m</p>",
-                    show: false,
-                    showOnMouseOver: true
+                    show: true
                 }
             };
-            loadedCalcPos.push(newCalc)
+            labelChache.push(newCalc)
+        },
+        addCalcPoint: function (x, y, error) {
+            var mirroredY = mirrorY(y);
+            var newId = calcPointFeatures.length;
+            newCalcFeature = {
+                type: 'Feature',
+                id: newId,
+                geometry: {
+                    type: 'Point',
+                    coordinates: [x, mirroredY]
+                },
+                style: calc_marker_style
+            };
+            calcPointInfo[newId] = {
+                x: x,
+                y: y,
+                mirroredY: mirroredY,
+                error: error
+            };
+            calcPointFeatures.push(newCalcFeature);
         },
         hideCalcPoints: function () {
-            calculatedPoints = emptyPoints;
+            clearLabel();
+            calcLayer.visible = false;
         },
         showCalcPoints: function () {
-            calculatedPoints = loadedCalcPos;
+            calcLayer.visible = true;
+        },
+        getCalcPointInfo: function (id) {
+            return calcPointInfo[id];
         },
         // calculated points
-        noRefCalcPoints: function () {
+        noRefCalcPointLayer: function () {
             // return copy of list
-            return [].concat(noRefCalculatedPoints);
+            return noRefCalcLayer;
         },
-        addNoRefCalcPoint: function (x, y) {
+        addNoRefCalcLabel: function (x, y) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = mirrorY(y);
             // create a new calculated point
             var newCalc = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: calc_marker_style,
+                style: selected_marker_style,
                 label: {
                     message: "<p>X: " + x + "</p><p>Y: " + y + "</p><p>Error: No reference available</p>",
-                    show: false,
-                    showOnMouseOver: true
+                    show: true
                 }
             };
-            loadedNoRefPos.push(newCalc)
+            labelChache.push(newCalc)
+        },
+        addNoRefCalcPoint: function (x, y) {
+            var newId = noRefCalcPointFeatures.length;
+            var mirroredY = mirrorY(y);
+            newNoRefCalcFeature = {
+                id: newId,
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [x, mirroredY]
+                }
+            };
+            noRefCalcPointInfo[newId] = {
+                x: x,
+                y: y,
+                mirroredY: mirroredY
+            };
+            noRefCalcPointFeatures.push(newNoRefCalcFeature);
         },
         hideNoRefCalcPoints: function () {
-            noRefCalculatedPoints = emptyPoints;
+            clearLabel();
+            noRefCalcLayer.visible = false;
         },
         showNoRefCalcPoints: function () {
-            noRefCalculatedPoints = loadedNoRefPos;
+            noRefCalcLayer.visible = true;
+        },
+        getNoRefCalcPointInfo: function (id) {
+            return noRefCalcPointInfo[id];
         },
         // reference points
-        refPoints: function () {
+        refPointLayer: function () {
             // return copy of list
-            return [].concat(referencePoints);
+            return refLayer;
         },
-        addRefPoint: function (x, y) {
+        addRefLabel: function (x, y) {
             // Y needs mirroring because start of map is at bottom
             var mirroredY = mirrorY(y);
             // create a new calculated point
             var newRef = {
                 coord: [x, mirroredY],
                 projection: 'pixel',
-                style: ref_marker_style,
+                style: selected_marker_style,
                 label: {
                     message: "<p>X: " + x + "</p><p>Y: " + y + "</p>",
-                    show: false,
-                    showOnMouseOver: true
+                    show: true
                 }
             };
-            loadedRefs.push(newRef)
+            labelChache.push(newRef)
+        },
+        addRefPoint: function (x, y) {
+            var newId = refPointFeatures.length;
+            var mirroredY = mirrorY(y);
+            newRefFeature = {
+                id: newId,
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [x, mirroredY]
+                }
+            };
+            refPointInfo[newId] = {
+                x: x,
+                y: y,
+                mirroredY: mirroredY
+            };
+            refPointFeatures.push(newRefFeature);
         },
         hideRefPoints: function () {
-            referencePoints = emptyPoints;
+            clearLabel();
+            refLayer.visible = false;
         },
         showRefPoints: function () {
-            referencePoints = loadedRefs;
+            refLayer.visible = true;
+        },
+        getRefPointInfo: function (id) {
+            return refPointInfo[id];
         },
         // Access map, defaults and center
         map: function () {
@@ -236,9 +392,13 @@ function MapService() {
         clearMap: function () {
             // empty arrays
             lines.length = 0;
-            loadedCalcPos.length = 0;
-            loadedNoRefPos.length = 0;
-            loadedRefs.length = 0;
+            calcPointFeatures.length = 0;
+            noRefCalcPointFeatures.length = 0;
+            refPointFeatures.length = 0;
+            clearLabel();
+        },
+        clearLabels: function () {
+            clearLabel();
         }
     };
 }
