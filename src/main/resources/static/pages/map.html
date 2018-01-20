@@ -44,9 +44,10 @@
             custom-layers="true">
     <ol-layer ol-layer-properties="pathsLayer()"></ol-layer>
     <ol-layer ol-layer-properties="map()"></ol-layer>
-    <ol-marker ng-repeat="calcPoint in calcPoints()" ol-marker-properties="calcPoint"></ol-marker>
-    <ol-marker ng-repeat="refPoint in refPoints()" ol-marker-properties="refPoint"></ol-marker>
-    <ol-marker ng-repeat="noRefCalcPoint in noRefCalcPoints()" ol-marker-properties="noRefCalcPoint"></ol-marker>
+    <ol-layer ol-layer-properties="calcPointLayer()"></ol-layer>
+    <ol-layer ol-layer-properties="noRefCalcPointLayer()"></ol-layer>
+    <ol-layer ol-layer-properties="refPointLayer()"></ol-layer>
+    <ol-marker ng-repeat="pointLabel in pointLabels()" ol-marker-properties="pointLabel"></ol-marker>
 </openlayers>
 
 <md-content ng-if="!floorChoosen()" class="md-padding" layout="column" layout-align="center center"
