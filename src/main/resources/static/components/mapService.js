@@ -71,7 +71,7 @@ function MapService() {
     };
 
     var errorLineLayer = {
-        index: 2,
+        index: 1,
         source: {
             type: 'GeoJSON',
             geojson: {
@@ -100,7 +100,7 @@ function MapService() {
     };
     var calcLayer = {
         name: 'calclayer',
-        index: 5,
+        index: 4,
         source: {
             type: 'GeoJSON',
             geojson: {
@@ -120,7 +120,7 @@ function MapService() {
     };
     var noRefCalcLayer = {
         name: 'norefcalclayer',
-        index: 3,
+        index: 2,
         source: {
             type: 'GeoJSON',
             geojson: {
@@ -140,7 +140,7 @@ function MapService() {
     };
     var refLayer = {
         name: 'reflayer',
-        index: 4,
+        index: 3,
         source: {
             type: 'GeoJSON',
             geojson: {
@@ -166,7 +166,7 @@ function MapService() {
         interactions: {
             mouseWheelZoom: true
         },
-        events:{
+        events: {
             layers: ['click'],
             map: ['singleclick']
         },
@@ -175,19 +175,37 @@ function MapService() {
     var mCenter = {
         zoom: 2
     };
+    var mView = {};
+
+    var currentFloor = -1;
 
     // mirror function
     function mirrorY(originalY) {
         return staticMap.source.imageSize[1] - originalY;
     }
 
-    //clear lable function
+    //clear label function
     var clearLabel = function () {
         labelChache.length = 0;
     };
 
+    var removeMapObjects = function () {
+        // empty arrays
+        lines.length = 0;
+        noRefCalcPointFeatures.length = 0;
+        refPointFeatures.length = 0;
+        calcPointFeatures.length = 0;
+        clearLabel();
+    };
+
     // map service access functions
     return {
+        currentFloorLevel: function () {
+            return currentFloor;
+        },
+        resetFloor: function () {
+            currentFloor = -1;
+        },
         // lines
         pathsLayer: function () {
             return pathsLayerObject;
@@ -352,20 +370,41 @@ function MapService() {
         mapCenter: function () {
             return mCenter;
         },
-        setMap: function (mapUrl, width, height) {
+        mapView: function () {
+            return mView;
+        },
+        setMap: function (floor, width, height) {
+            // clear results from map
+            removeMapObjects();
+            // get floor information
+            var mapUrl = floor.floorMapUrl;
+            currentFloor = floor.floorLevel;
+            //check if map url is available otherwise use placeholder
+
+            if (!mapUrl) {
+                mapUrl = 'assets/icons/no_map_avail.png';
+            }
             // set map image
             staticMap.source = {
                 type: "ImageStatic",
                 url: mapUrl,
-                imageSize: [width, height]
+                imageSize: [width, height],
+                imageExtent: [0, 0, width, height]
             };
+
             // set view size
             mDefaults.view = {
                 projection: 'pixel',
-                extent: [0, 0, width, height]
+                extent: [-500, -500, 10000, 10000]
             };
-            // set view center
-            mCenter.coord = [Math.floor(width / 2), Math.floor(height / 2)];
+
+            mView = {
+                projection: 'pixel',
+                extent: [-500, -500, 10000, 10000]
+            };
+
+            // set view center (add 200 pixel to set it to the left of the sidebar)
+            mCenter.coord = [Math.floor(width / 2) + 200, Math.floor(height / 2)];
         },
         displayLines: function () {
             pathsLayerObject = errorLineLayer;
@@ -390,12 +429,7 @@ function MapService() {
             lines.push(newLine);
         },
         clearMap: function () {
-            // empty arrays
-            lines.length = 0;
-            calcPointFeatures.length = 0;
-            noRefCalcPointFeatures.length = 0;
-            refPointFeatures.length = 0;
-            clearLabel();
+            removeMapObjects();
         },
         clearLabels: function () {
             clearLabel();

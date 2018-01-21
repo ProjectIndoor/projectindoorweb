@@ -41,7 +41,7 @@
 </md-sidenav>
 <!-- Actual map -->
 <openlayers ng-if="floorChoosen()" id="map" class="mapview" ol-center="mapCenter()" ol-defaults="mapDefaults()"
-            custom-layers="true">
+            ol-view="mapView()" custom-layers="true">
     <ol-layer ol-layer-properties="pathsLayer()"></ol-layer>
     <ol-layer ol-layer-properties="map()"></ol-layer>
     <ol-layer ol-layer-properties="calcPointLayer()"></ol-layer>

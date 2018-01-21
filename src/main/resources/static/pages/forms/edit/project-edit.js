@@ -46,12 +46,36 @@ function ProjectController($scope, $mdPanel, projectService) {
 projectEditModule.controller('ProjectCtrl', ProjectController);
 
 
-function ProjectDialogController(mdPanelRef, calculationService, dataService, projectService) {
+function ProjectDialogController(mdPanelRef, calculationService, dataService, projectService, mapService, toastService) {
     var panelRef = mdPanelRef;
+
+    // ensure we have all buildings
+    // load list of buildings when calling controller
+    dataService.loadAllBuildings();
 
     // function to load project into calculation Service
     this.loadProject = function () {
-        calculationService.loadDataFromProject(this.project);
+        // reset floor
+        mapService.resetFloor();
+        calculationService.clearResult();
+
+        // get project
+        lProject = this.project;
+        // list of available buildings
+        buildingList = dataService.getAllBuildings();
+
+        projectBuilding = buildingList.find(function (b) {
+            return b.buildingId == lProject.buildingIdentifier;
+        });
+
+        lProject.building = projectBuilding;
+
+        calculationService.loadDataFromProject(lProject);
+        logMessage = "Project was loaded";
+        toastService.showToast(logMessage, "success-toast");
+        panelRef && panelRef.close().then(function () {
+            panelRef.destroy();
+        });
     };
 
     this.deleteProject = function (projectId) {

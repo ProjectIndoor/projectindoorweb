@@ -22,12 +22,15 @@ mapModule.config(['$routeProvider', function ($routeProvider) {
 // controller which handles the map
 function MapController($scope, mapService, calculationService) {
     // is map choosen already?
-    $scope.floorChoosen = calculationService.isBuildingSet;
+    $scope.floorChoosen = function () {
+        return calculationService.isBuildingSet() && mapService.currentFloorLevel() != -1;
+    };
 
     // setup usage of map service
     angular.extend($scope, {
         mapCenter: mapService.mapCenter,
         mapDefaults: mapService.mapDefaults,
+        mapView: mapService.mapView,
         map: mapService.map,
         calcPointLayer: mapService.calcPointLayer,
         refPointLayer: mapService.refPointLayer,

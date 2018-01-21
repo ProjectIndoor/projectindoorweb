@@ -45,10 +45,10 @@ function UploadService($http, toastService) {
                 var formData = new FormData();
                 formData.append('buildingIdentifier', radioMapSet.buildingIdentifier);
                 for (var i = 0; i < radioMapSet.radioMapFiles.length; i++) {
-                    formData.append('radioMapFiles', radioMapSet.radioMapFiles[i]);
+                    formData.append('radioMapFiles', radioMapSet.radioMapFiles[i], radioMapSet.radioMapFiles[i].name);
                 }
                 for (var j = 0; j < radioMapSet.tpFiles.length; j++) {
-                    formData.append('transformedPointsFiles', radioMapSet.tpFiles[j]);
+                    formData.append('transformedPointsFiles', radioMapSet.tpFiles[j], radioMapSet.tpFiles[j].name);
                 }
 
 
@@ -86,9 +86,9 @@ function UploadService($http, toastService) {
                 // body content (eval files and buildingId)
                 var formData = new FormData();
                 formData.append('buildingIdentifier', evaluationSet.buildingIdentifier);
-                formData.append('evalFiles', evaluationSet.evalFiles[0]);
+                formData.append('evalFiles', evaluationSet.evalFiles[0], evaluationSet.evalFiles[0].name);
                 for (var j = 0; j < evaluationSet.tpFiles.length; j++) {
-                    formData.append('transformedPointsFiles', evaluationSet.tpFiles[j]);
+                    formData.append('transformedPointsFiles', evaluationSet.tpFiles[j], evaluationSet.tpFiles[j].name);
                 }
 
                 $http({
@@ -122,7 +122,7 @@ function UploadService($http, toastService) {
                 formData.append('buildingIdentifier', floorSet.building.buildingId);
                 formData.append('floorIdentifier', floorSet.floorIdentifier);
                 formData.append('floorName', floorSet.floorName);
-                formData.append('floorMapFile', floorSet.floorFiles[0]);
+                formData.append('floorMapFile', floorSet.floorFiles[0], floorSet.floorFiles[0].name);
 
                 $http({
                     method: 'POST',

@@ -37,9 +37,10 @@ function BuildingController($scope, dataService, calculationService, mapService)
 
     $scope.setBuilding = function () {
         // update Map to new building
-        mapService.setMap($scope.selectedFloor.floorMapUrl, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
+        mapService.setMap($scope.selectedFloor, $scope.selectedBuilding.imagePixelWidth, $scope.selectedBuilding.imagePixelHeight);
         // set building for calculation parameters
         calculationService.setCalculationBuilding($scope.selectedBuilding);
+        calculationService.clearResult();
         // load building related evaluation files and radiomaps
         dataService.loadEvalFilesForBuilding($scope.selectedBuilding.buildingId);
         dataService.loadRadiomapsForBuilding($scope.selectedBuilding.buildingId);

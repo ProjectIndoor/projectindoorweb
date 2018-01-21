@@ -9,7 +9,7 @@ function CalculationService($http, toastService) {
     // properties
     var currentBuilding = {};
     var evalFile = {};
-    var radioMapFileIds;
+    var radioMapFileIds = [];
     var algorithmType;
     var projectParameters;
     var asPixel = true;
@@ -22,9 +22,6 @@ function CalculationService($http, toastService) {
         projectName: "",
         loadedProjectId: null
     };
-
-    // workflow progress
-    var workflowProgress = 0;
 
     return {
         // set and get progress
@@ -40,13 +37,20 @@ function CalculationService($http, toastService) {
         hasResult: function () {
             return result;
         },
+        clearResult: function () {
+            return result = null;
+        },
         // set and get building
         getCurrentBuilding: function () {
             return currentBuilding;
         },
         setCalculationBuilding: function (building) {
-            currentBuilding = building;
-            console.log("Building Changed: " + currentBuilding);
+            if (currentBuilding.buildingId !== building.buildingId) {
+                console.log("Building Changed: " + currentBuilding);
+                evalFile = {};
+                radioMapFileIds.length = 0;
+                currentBuilding = building;
+            }
         },
         // set and get eval file
         getEvalFile: function () {
@@ -159,7 +163,7 @@ function CalculationService($http, toastService) {
             console.log("Load project");
             console.log(project);
             algorithmType = project.algorithmType;
-            currentBuilding.buildingId = project.buildingIdentifier;
+            currentBuilding = project.building;
             evalFile.id = project.evalFileIdentifier;
             radioMapFileIds = project.radioMapFileIdentifiers;
             projectParameters = project.saveNewProjectParametersSet;

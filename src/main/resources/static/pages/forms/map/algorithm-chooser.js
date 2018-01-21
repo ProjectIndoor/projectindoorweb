@@ -70,24 +70,28 @@ function AlgorithmController($scope, dataService, calculationService, mapService
             var refCounter = 0;
             var errorSum = 0;
 
+            var currentFloor = mapService.currentFloorLevel();
             for (var i = 0; i < posis.length; i++) {
                 var calcP = posis[i].calculatedPosition;
                 var refP = posis[i].referencePosition;
                 var error = posis[i].distanceInMeters;
 
-                // if no reference is available put points in a separate list
-                if (refP !== null) {
-                    // only when a ref is available error is considered
-                    errorList.push(error);
-                    errorSum += error;
-                    refCounter++;
-                    // after sum error is rounded for a nicer displayed result
-                    error = Math.round(error * 10) / 10;
-                    mapService.addCalcPoint(calcP.x, calcP.y, error);
-                    mapService.addRefPoint(refP.x, refP.y);
-                    mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
-                } else {
-                    mapService.addNoRefCalcPoint(calcP.x, calcP.y)
+                // only add point if floors match
+                if (Math.round(calcP.z) === currentFloor) {
+                    // if no reference is available put points in a separate list
+                    if (refP !== null) {
+                        // only when a ref is available error is considered
+                        errorList.push(error);
+                        errorSum += error;
+                        refCounter++;
+                        // after sum error is rounded for a nicer displayed result
+                        error = Math.round(error * 10) / 10;
+                        mapService.addCalcPoint(calcP.x, calcP.y, error);
+                        mapService.addRefPoint(refP.x, refP.y);
+                        mapService.addErrorLine(calcP.x, calcP.y, refP.x, refP.y);
+                    } else {
+                        mapService.addNoRefCalcPoint(calcP.x, calcP.y)
+                    }
                 }
             }
 
